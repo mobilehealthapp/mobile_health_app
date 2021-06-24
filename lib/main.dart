@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'camera_input.dart';
 
-void main() {
-  runApp(CameraInput());
-}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -62,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
               style: Theme.of(context).textTheme.headline4,
             ),
             TextButton(
-                onPressed: (){runApp(CameraInput());},
+                onPressed: (){},
                 child: Text('Camera'))
           ],
         ),
