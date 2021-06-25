@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -10,15 +11,24 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueGrey,
-      appBar: AppBar(title: Text('Log In')),
+      appBar: AppBar(leading: BackButton(onPressed: (){},),
+      title: Text('Login', style: TextStyle(color: Colors.white,))),
+      backgroundColor: Colors.white,
       body: Container(
         constraints: BoxConstraints.expand(),
         child: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image(image: AssetImage('images/logo-1.png'),),
+              Container(
+                width: 200.0,
+                height: 200.0,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  image: DecorationImage(image: AssetImage('images/logo-1-removebg-preview.png'),
+                  fit: BoxFit.fill),
+                ),
+              ),
               SizedBox(height: 20,),
               Container(
                 padding: EdgeInsets.all(20.0),
@@ -35,7 +45,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     hintText: 'Enter Username',
                     hintStyle: TextStyle(
-                      color: Colors.green,
                       fontSize: 20
                     ),
                     border: OutlineInputBorder(
@@ -62,7 +71,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     hintText: 'Enter Password',
                     hintStyle: TextStyle(
-                      color: Colors.green,
                       fontSize: 20
                     ),
                     border: OutlineInputBorder(
@@ -74,54 +82,41 @@ class _LoginPageState extends State<LoginPage> {
                 )
                 ,
               ),
-              SizedBox(height: 10,),
-              Container(
-                height: 50,
-                width: 200,
-                color: Colors.cyan,
-                child: TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    'Patient Log In',
-                    style: TextStyle(
-                      fontSize: 25,
-                      color: Colors.black
-                    ),
-                  ),
-
+              SizedBox(height: 30,),
+              MaterialButton(
+                minWidth: 250,
+                color: Colors.blueGrey,
+                height: 50.0,
+                onPressed: (){},
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
                 ),
+                child: Text('Patient Login',
+                style: TextStyle(
+                  fontSize: 25,
+                  color: Colors.white,
+                ),),
               ),
-              SizedBox(height: 20,),
-              Container(
-                height: 50,
-                width: 200,
-                color: Colors.cyan,
-                child: TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    'Physician Log In',
-                    style: TextStyle(
-                        fontSize: 25,
-                        color: Colors.black
-                    ),
-                  ),
 
+              SizedBox(height: 30,),
+              MaterialButton(
+                minWidth: 250,
+                color: Colors.blueGrey,
+                height: 50.0,
+                onPressed: (){},
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
                 ),
+                child: Text('Physician Login',
+                  style: TextStyle(
+                    fontSize: 25,
+                    color: Colors.white,
+                  ),),
               ),
-              SizedBox(height: 50,),
-              Container(
-                color: Colors.green,
-                child: TextButton(
-                  onPressed: (){},
-                  child: Text(
-                    'Create Account',
-                    style: TextStyle(
-                      fontSize: 30,
-                      color: Colors.black
-                    ),
-                  ),
-                ),
-              )
+
+
+
+
             ],
           ),
         ),
