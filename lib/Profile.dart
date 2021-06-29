@@ -10,7 +10,9 @@ class Profile_Page extends StatelessWidget {
     return Scaffold(
       drawer: Drawers(),
       appBar: AppBar(
-        title: Text('Profile Page'),
+        title: Text(
+          'Profile Page',
+        ),
       ),
     );
   }

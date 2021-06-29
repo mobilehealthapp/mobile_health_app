@@ -4,7 +4,6 @@ import 'package:mobile_health_app/main.dart';
 
 class Drawers extends StatelessWidget {
   const Drawers({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -47,6 +46,12 @@ class Drawers extends StatelessWidget {
               addItem(
                 text: 'Contact',
                 icon: Icons.contacts,
+                onClicked: () => select(context, 5),
+              ),
+              SizedBox(height: 10),
+              addItem(
+                text: 'Logout ',
+                icon: Icons.logout,
                 onClicked: () => select(context, 5),
               ),
 
