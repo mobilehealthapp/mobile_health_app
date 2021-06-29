@@ -11,10 +11,14 @@ import 'profile_edit.dart';
 
 late List<CameraDescription> cameras;
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+// Future<void> main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//
+//   cameras = await availableCameras();
+//   runApp(MyApp());
+// }
 
-  cameras = await availableCameras();
+void main(){
   runApp(MyApp());
 }
 
@@ -33,6 +37,6 @@ class MyApp extends StatelessWidget {
             displayColor: Color(0xFF757575),
           ),
         ),
-        home: MyApp());
+        home: SettingsPage());
   }
 }
