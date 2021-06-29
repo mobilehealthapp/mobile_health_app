@@ -18,7 +18,7 @@ late List<CameraDescription> cameras;
 //   runApp(MyApp());
 // }
 
-void main(){
+void main() {
   runApp(MyApp());
 }
 

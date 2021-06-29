@@ -55,12 +55,22 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           Expanded(
             child: ProfileTab(
+              editAnswer: 'Date of birth',
+            ),
+          ),
+          Expanded(
+            child: ProfileTab(
               editAnswer: 'Sex',
             ),
           ),
           Expanded(
             child: ProfileTab(
-              editAnswer: 'Date of birth',
+              editAnswer: 'Height',
+            ),
+          ),
+          Expanded(
+            child: ProfileTab(
+              editAnswer: 'Weight',
             ),
           ),
           Expanded(

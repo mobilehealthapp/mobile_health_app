@@ -19,6 +19,8 @@ class _ProfileEditState extends State<ProfileEdit> {
   String dob = 'Date of Birth (DD-MM-YYYY)';
   String meds = 'My Medications';
   String conds = 'My Medical Conditions';
+  String wt = 'Weight';
+  String ht = 'Height';
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +64,12 @@ class _ProfileEditState extends State<ProfileEdit> {
               onChanged: () {},
             ),
           ),
+          Expanded(
+            child: CustomField(
+              hintLabel: dob,
+              onChanged: () {},
+            ),
+          ),
           DropdownButton<String>(
             value: sexChoose,
             items: [
@@ -92,7 +100,13 @@ class _ProfileEditState extends State<ProfileEdit> {
           ),
           Expanded(
             child: CustomField(
-              hintLabel: dob,
+              hintLabel: ht,
+              onChanged: () {},
+            ),
+          ),
+          Expanded(
+            child: CustomField(
+              hintLabel: wt,
               onChanged: () {},
             ),
           ),
