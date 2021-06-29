@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
 import 'camera_input.dart';
+import 'package:camera/camera.dart';
+import 'dart:async';
 
+late List<CameraDescription> cameras;
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  cameras = await availableCameras();
+  runApp(CameraApp());
+
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
