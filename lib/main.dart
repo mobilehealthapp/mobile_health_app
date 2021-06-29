@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/loginpage.dart';
 import 'camera_input.dart';
 import 'package:camera/camera.dart';
 import 'dart:async';
@@ -18,7 +19,6 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
