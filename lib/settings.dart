@@ -3,6 +3,7 @@ import 'settings_card.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'profile_edit.dart';
 import 'profile_tab.dart';
+import 'drawers.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -13,6 +14,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawers(),
       backgroundColor: Color(0xFFB2EBF2),
       appBar: AppBar(
         title: Text(

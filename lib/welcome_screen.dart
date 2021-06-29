@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
 import 'signup.dart';
+import 'drawers.dart';
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -21,6 +22,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawers(),
       appBar: AppBar(
         title: Center(
             child: Text(

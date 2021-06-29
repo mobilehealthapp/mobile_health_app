@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/loginpage.dart';
-import 'camera_input.dart';
 import 'package:camera/camera.dart';
-import 'dart:async';
-import 'package:mobile_health_app/drawers.dart';
-import 'package:mobile_health_app/drawers.dart';
+import 'package:mobile_health_app/welcome_screen.dart';
 import 'settings.dart';
-import 'profile_tab.dart';
-import 'profile_edit.dart';
 
 late List<CameraDescription> cameras;
 
@@ -18,7 +12,7 @@ late List<CameraDescription> cameras;
 //   runApp(MyApp());
 // }
 
-void main(){
+void main() {
   runApp(MyApp());
 }
 
@@ -37,6 +31,6 @@ class MyApp extends StatelessWidget {
             displayColor: Color(0xFF757575),
           ),
         ),
-        home: SettingsPage());
+        home: WelcomeScreen());
   }
 }

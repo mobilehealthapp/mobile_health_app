@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Profile.dart';
 import 'main.dart';
+import 'settings.dart';
 
 class Drawers extends StatelessWidget {
   const Drawers({Key? key}) : super(key: key);
@@ -88,7 +89,7 @@ class Drawers extends StatelessWidget {
         break;
       case 2:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile_Page()));
+            .push(MaterialPageRoute(builder: (context) => SettingsPage()));
         break;
       case 3:
         Navigator.of(context)
