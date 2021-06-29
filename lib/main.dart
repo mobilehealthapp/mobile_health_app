@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/drawers.dart';
 import 'settings.dart';
 import 'profile_tab.dart';
 import 'profile_edit.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: MyApp(),
+      drawer: Drawers(),
     );
   }
 }
