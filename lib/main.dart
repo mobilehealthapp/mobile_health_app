@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'login.dart';
+import 'signup.dart';
 
 void main() {
   runApp(MyApp());
@@ -9,65 +11,111 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Mobile Health App',
+      title: 'Welcome',
       theme: ThemeData(
-        primaryColor: Color(0xFF00BCD4),
-        primaryColorDark: Color(0xFF0097A7),
-        primaryColorLight: Color(0xFFB2EBF2),
-        accentColor: Color(0xFF607D8B),
-        textTheme: TextTheme().apply(
-            bodyColor: Color(0xFF212121),
-            displayColor: Color(0xFF757575),
-        )
+        scaffoldBackgroundColor: Colors.blue[300],
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: WelcomeScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
+class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title, style: TextStyle(color: Colors.white),),
+        title: Center(
+            child: Text(
+          'Welcome',
+          style: TextStyle(
+            fontSize: 34,
+          ),
+        )),
+        backgroundColor: Colors.blue[300],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+      body: SafeArea(
+        child: Container(
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height,
+          padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 27.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                children: [
+                  Text(
+                    'Providing families with faster and safer treatment',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                height: MediaQuery.of(context).size.height / 2,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('image/image2.png'),
+                  ),
+                ),
+              ),
+              Column(
+                children: [
+                  MaterialButton(
+                    color: Colors.white,
+                    height: 50.0,
+                    minWidth: 300,
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => LoginPage()));
+                    },
+                    shape: RoundedRectangleBorder(
+                      // side: BorderSide(
+                      //   color: Colors.black,
+                      // ),
+                      borderRadius: BorderRadius.circular(50.0),
+                    ),
+                    child: Text(
+                      'Login',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 18.0,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20.0),
+                  MaterialButton(
+                    color: Colors.blue,
+                    height: 50.0,
+                    minWidth: 300.0,
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SignupPage()));
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                    ),
+                    child: Text(
+                      'Signup',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 18.0,
+                          color: Colors.white),
+                    ),
+                  )
+                ],
+              )
+            ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
