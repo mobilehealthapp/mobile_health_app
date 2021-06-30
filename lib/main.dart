@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:mobile_health_app/welcome_screen.dart';
-import 'settings.dart';
 
 late List<CameraDescription> cameras;
-
 // Future<void> main() async {
 //   WidgetsFlutterBinding.ensureInitialized();
 //
 //   cameras = await availableCameras();
 //   runApp(MyApp());
 // }
-
 void main() {
   runApp(MyApp());
 }

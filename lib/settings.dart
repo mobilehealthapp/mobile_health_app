@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'settings_card.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'profile_edit.dart';
+
 import 'profile_tab.dart';
 import 'drawers.dart';
 
