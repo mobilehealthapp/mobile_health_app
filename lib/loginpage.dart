@@ -33,11 +33,11 @@ class _LoginPageState extends State<LoginPage> {
                   width: 200.0,
                   height: 200.0,
                   alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage('images/logo-1-removebg-preview.png'),
-                        fit: BoxFit.fill),
-                  ),
+                  // decoration: BoxDecoration(
+                  //   image: DecorationImage(
+                  //       image: AssetImage('images/logo-1-removebg-preview.png'),
+                  //       fit: BoxFit.fill),
+                  // ),
                 ),
                 SizedBox(
                   height: 15,

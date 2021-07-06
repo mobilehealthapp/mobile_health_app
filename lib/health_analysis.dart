@@ -17,7 +17,10 @@ class HealthAnalysis extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Expanded(
-              child: Card(math: 'Median'),
+              child: Container(
+                child: Card(math: 'Median'),
+                padding: EdgeInsets.only(bottom: 20.0),
+              ),
             ),
             Expanded(
               child: Card(math: 'Variance'),

@@ -58,7 +58,7 @@ class WelcomeScreen extends StatelessWidget {
                 height: MediaQuery.of(context).size.height / 2,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage('image/image2.png'),
+                    image: AssetImage('images/logo-1-removebg-preview.png'),
                   ),
                 ),
               ),
