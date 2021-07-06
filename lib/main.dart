@@ -1,24 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:mobile_health_app/loginpage.dart';
-import 'camera_input.dart';
 import 'package:camera/camera.dart';
-import 'dart:async';
-import 'package:mobile_health_app/drawers.dart';
-import 'package:mobile_health_app/drawers.dart';
-import 'settings.dart';
-import 'profile_tab.dart';
-import 'profile_edit.dart';
+import 'package:flutter/material.dart';
+import 'package:mobile_health_app/Camera/data_input_page.dart';
+import 'package:mobile_health_app/welcome_screen.dart';
 
-late List<CameraDescription> cameras;
+import 'Camera/camera_input.dart';
 
- Future<void> main() async {
-   WidgetsFlutterBinding.ensureInitialized();
+// Future<void> main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//
+//   cameras = await availableCameras();
+//   runApp(MyApp());
+// }
 
-   cameras = await availableCameras();
-   runApp(MyApp());
- }
-
-void main(){
+void main() {
   runApp(MyApp());
 }
 
@@ -37,6 +31,7 @@ class MyApp extends StatelessWidget {
             displayColor: Color(0xFF757575),
           ),
         ),
-        home: SettingsPage());
+        routes: {'/camera': (context) => CameraApp()},
+        home: WelcomeScreen());
   }
 }

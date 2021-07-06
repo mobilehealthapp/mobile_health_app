@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'login.dart';
+import 'package:mobile_health_app/Camera/data_input_page.dart';
+
 import 'signup.dart';
 
 class MyApp extends StatelessWidget {
@@ -68,7 +69,7 @@ class WelcomeScreen extends StatelessWidget {
                     minWidth: 300,
                     onPressed: () {
                       Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => LoginPage()));
+                          MaterialPageRoute(builder: (context) => DataInput()));
                     },
                     shape: RoundedRectangleBorder(
                       // side: BorderSide(

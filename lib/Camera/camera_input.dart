@@ -1,6 +1,7 @@
-import 'main.dart';
-import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
+
+late List<CameraDescription> cameras;
 
 class CameraApp extends StatefulWidget {
   @override
@@ -42,12 +43,14 @@ class _CameraAppState extends State<CameraApp> {
         body: CameraPreview(controller),
         bottomNavigationBar: BottomNavigationBar(
           items: [
-            BottomNavigationBarItem(icon: Icon(Icons.arrow_back_ios), label: 'back'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.arrow_back_ios), label: 'back'),
             BottomNavigationBarItem(
               icon: Icon(Icons.settings_overscan),
               label: 'Scan',
             ),
-            BottomNavigationBarItem(icon: Icon(Icons.crop_square), label: 'from photos')
+            BottomNavigationBarItem(
+                icon: Icon(Icons.crop_square), label: 'from photos')
           ],
         ),
         extendBody: true,
