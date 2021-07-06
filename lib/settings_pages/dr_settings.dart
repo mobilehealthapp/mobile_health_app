@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/settings_pages/dr_profile.dart';
+import 'package:mobile_health_app/settings_pages/my_doctors.dart';
+import 'package:mobile_health_app/settings_pages/privacy_policy.dart';
 import 'settings_card.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'profile_edit.dart';
 import 'profile_tab.dart';
 
-class SettingsPage extends StatefulWidget {
+class DrSettingsPage extends StatefulWidget {
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  _DrSettingsPageState createState() => _DrSettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class _DrSettingsPageState extends State<DrSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,14 +35,16 @@ class _SettingsPageState extends State<SettingsPage> {
           Expanded(
             child: GestureDetector(
               onTap: () {
-                setState(() {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ProfilePage(),
-                    ),
-                  );
-                });
+                setState(
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DrProfilePage(),
+                      ),
+                    );
+                  },
+                );
               },
               child: SettingsCard(
                 settingsTab: TabContent(label: 'My Profile'),
@@ -59,17 +64,16 @@ class _SettingsPageState extends State<SettingsPage> {
           Expanded(
             child: GestureDetector(
               onTap: () {
-                setState(() {});
-              },
-              child: SettingsCard(
-                settingsTab: TabContent(label: 'My Doctors'),
-              ),
-            ),
-          ),
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                setState(() {});
+                setState(
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PrivacyPolicy(),
+                      ),
+                    );
+                  },
+                );
               },
               child: SettingsCard(
                 settingsTab: TabContent(label: 'Privacy Policy'),
@@ -93,29 +97,6 @@ class _SettingsPageState extends State<SettingsPage> {
               },
               child: SettingsCard(
                 settingsTab: TabContent(label: 'Medical Disclaimer'),
-              ),
-            ),
-          ),
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                setState(
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Alert(
-                          alertBody: 'This will erase ALL of your data.',
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-              child: Container(
-                child: RedCard(
-                  deleteTab: TabContent2(label: 'Delete My Data'),
-                ),
               ),
             ),
           ),
@@ -179,9 +160,58 @@ class Alert extends StatelessWidget {
           ),
         ),
         TextButton(
-          onPressed: () => Navigator.pop(context, 'Confirm'),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Alert2(),
+            ),
+          ),
           child: const Text(
             'Confirm',
+            style: TextStyle(
+              fontSize: 16.0,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class Alert2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        'Please enter your password to complete this action.',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 20.0,
+        ),
+      ),
+      content: TextField(
+        decoration: InputDecoration(
+          hintText: 'Password',
+          hintStyle: TextStyle(
+            fontSize: 20.0,
+            color: Colors.black,
+          ),
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.of(context)..pop()..pop(),
+          child: const Text(
+            'Cancel',
+            style: TextStyle(
+              fontSize: 16.0,
+            ),
+          ),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context)..pop()..pop(),
+          child: const Text(
+            'Enter Password and Confirm',
             style: TextStyle(
               fontSize: 16.0,
             ),

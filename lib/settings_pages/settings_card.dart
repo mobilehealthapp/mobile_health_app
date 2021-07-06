@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-final labelStyle = GoogleFonts.rubik(
+final kLabelStyle = GoogleFonts.rubik(
   textStyle: TextStyle(
     fontSize: 20.0,
     color: Colors.white,
@@ -42,7 +42,7 @@ class TabContent extends StatelessWidget {
         ),
         Text(
           label,
-          style: labelStyle,
+          style: kLabelStyle,
         ),
         Icon(
           CupertinoIcons.chevron_forward,
@@ -86,7 +86,7 @@ class TabContent2 extends StatelessWidget {
         ),
         Text(
           label,
-          style: labelStyle,
+          style: kLabelStyle,
         ),
       ],
     );
@@ -94,10 +94,10 @@ class TabContent2 extends StatelessWidget {
 }
 
 class CustomField extends StatelessWidget {
-  CustomField({required this.hintLabel, required this.onChanged});
+  CustomField({required this.hintLabel, required this.onSubmitted});
 
   final String hintLabel;
-  final Function onChanged;
+  final Function onSubmitted;
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +112,8 @@ class CustomField extends StatelessWidget {
           ),
         ),
       ),
-      onChanged: onChanged(),
+      onChanged: (null),
+      onSubmitted: onSubmitted(),
     );
   }
 }
@@ -141,3 +142,61 @@ class ProfileTab extends StatelessWidget {
     );
   }
 }
+
+class ContactTab extends StatelessWidget {
+  ContactTab({required this.answer});
+
+  final String answer;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(10.0),
+      padding: EdgeInsets.all(50.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(
+          10.0,
+        ),
+        color: Color(0xFF757575),
+      ),
+      child: Center(
+        child: Text(
+          answer,
+          style: GoogleFonts.rubik(
+            textStyle: TextStyle(fontSize: 20.0, color: Colors.white),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ContactEditButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        child: Text(
+          'Edit',
+          style: GoogleFonts.rubik(
+            textStyle: TextStyle(color: Colors.white),
+          ),
+        ),
+        decoration: BoxDecoration(
+          color: Colors.red[900],
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+      ),
+    );
+  }
+}
+
+final kFieldDecoration = InputDecoration(
+  contentPadding: const EdgeInsets.all(10.0),
+  hintStyle: GoogleFonts.rubik(
+    textStyle: TextStyle(
+      fontSize: 20.0,
+      color: Colors.black,
+    ),
+  ),
+);

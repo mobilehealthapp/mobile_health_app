@@ -5,26 +5,24 @@ import 'settings_card.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cupertino_icons/cupertino_icons.dart';
 
-class ProfileEdit extends StatefulWidget {
+class DrProfileEdit extends StatefulWidget {
   @override
-  _ProfileEditState createState() => _ProfileEditState();
+  _DrProfileEditState createState() => _DrProfileEditState();
 }
 
-class _ProfileEditState extends State<ProfileEdit> {
-  String? sexChoose = 'M';
-
-  String first = 'First Name';
-  String last = 'Last Name';
-  String age = 'Age';
-  String dob = 'Date of Birth (DD-MM-YYYY)';
-  String meds = 'My Medications';
-  String conds = 'My Medical Conditions';
-  String wt = 'Weight';
-  String ht = 'Height';
+class _DrProfileEditState extends State<DrProfileEdit> {
+  String drFirst = 'First Name';
+  String drLast = 'Last Name';
+  String quali = 'My Qualifications';
+  String drTele = 'Telephone Number';
+  String drEmail = 'Email Address';
+  String drFax = 'Fax';
+  String clinicAdd = 'Clinic Address';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFB2EBF2),
       appBar: AppBar(
         title: Text(
           'Edit my Information',
@@ -48,78 +46,44 @@ class _ProfileEditState extends State<ProfileEdit> {
           ),
           Expanded(
             child: CustomField(
-              hintLabel: first,
-              onChanged: () {},
+              hintLabel: drFirst,
+              onSubmitted: () {},
             ),
           ),
           Expanded(
             child: CustomField(
-              hintLabel: last,
-              onChanged: () {},
+              hintLabel: drLast,
+              onSubmitted: () {},
             ),
           ),
           Expanded(
             child: CustomField(
-              hintLabel: age,
-              onChanged: () {},
+              hintLabel: quali,
+              onSubmitted: () {},
             ),
           ),
           Expanded(
             child: CustomField(
-              hintLabel: dob,
-              onChanged: () {},
-            ),
-          ),
-          DropdownButton<String>(
-            value: sexChoose,
-            items: [
-              DropdownMenuItem(
-                child: Text('--Sex--'),
-                value: '--Sex--',
-              ),
-              DropdownMenuItem(
-                child: Text('M'),
-                value: 'M',
-              ),
-              DropdownMenuItem(
-                child: Text('F'),
-                value: 'F',
-              ),
-              DropdownMenuItem(
-                child: Text('X'),
-                value: 'X',
-              ),
-            ],
-            onChanged: (value) {
-              setState(
-                () {
-                  sexChoose = value;
-                },
-              );
-            },
-          ),
-          Expanded(
-            child: CustomField(
-              hintLabel: ht,
-              onChanged: () {},
+              hintLabel: drTele,
+              onSubmitted: () {},
             ),
           ),
           Expanded(
             child: CustomField(
-              hintLabel: wt,
-              onChanged: () {},
+              hintLabel: drEmail,
+              onSubmitted: () {},
             ),
           ),
           Expanded(
             child: CustomField(
-              hintLabel: conds,
-              onChanged: () {},
+              hintLabel: drFax,
+              onSubmitted: () {},
             ),
           ),
           Expanded(
             child: CustomField(
-              hintLabel: meds,
-              onChanged: () {},
+              hintLabel: clinicAdd,
+              onSubmitted: () {},
             ),
           ),
           Row(
