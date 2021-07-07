@@ -2,19 +2,18 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Camera/data_input_page.dart';
 import 'package:mobile_health_app/welcome_screen.dart';
+import 'package:mobile_health_app/Camera/camera_input.dart';
 
-import 'Camera/camera_input.dart';
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-// Future<void> main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//
-//   cameras = await availableCameras();
-//   runApp(MyApp());
-// }
-
-void main() {
+  cameras = await availableCameras();
   runApp(MyApp());
 }
+
+// void main() {
+//   runApp(MyApp());
+// }
 
 class MyApp extends StatelessWidget {
   @override
@@ -31,7 +30,10 @@ class MyApp extends StatelessWidget {
             displayColor: Color(0xFF757575),
           ),
         ),
-        routes: {'/camera': (context) => CameraApp()},
+        routes: {
+          'camera': (context) => CameraApp(),
+          'data_input': (context) => DataInput()
+        },
         home: WelcomeScreen());
   }
 }

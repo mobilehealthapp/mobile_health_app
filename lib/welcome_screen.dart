@@ -67,10 +67,7 @@ class WelcomeScreen extends StatelessWidget {
                     color: Colors.white,
                     height: 50.0,
                     minWidth: 300,
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => DataInput()));
-                    },
+                    onPressed: () {},
                     shape: RoundedRectangleBorder(
                       // side: BorderSide(
                       //   color: Colors.black,

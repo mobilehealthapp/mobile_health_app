@@ -58,29 +58,36 @@ class _DataInputState extends State<DataInput> {
           FocusManager.instance.primaryFocus?.unfocus();
         }
       },
-      child: MaterialApp(
-        home: Scaffold(
-          appBar: AppBar(
-            title: Text('Record your measurement'),
-            backgroundColor: Colors.cyan,
-          ),
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text(
-                  'Data type:',
-                  style: kTextStyle,
-                ),
-                SizedBox(
-                  width: 15.0,
-                ),
-                androidDropdown(),
-              ]),
-              textFields,
-            ],
-          ),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Record your measurement'),
+          backgroundColor: Colors.cyan,
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Text(
+                'Data type:',
+                style: kTextStyle,
+              ),
+              SizedBox(
+                width: 15.0,
+              ),
+              androidDropdown(),
+            ]),
+            textFields,
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, 'camera');
+                },
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.cyan)),
+                child: Container(
+                  child: Text('Submit'),
+                ))
+          ],
         ),
       ),
     );

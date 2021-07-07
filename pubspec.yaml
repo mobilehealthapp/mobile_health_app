@@ -17,8 +17,10 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   google_fonts: ^2.1.0
-  #google_ml_kit: ^0.6.0 # google's ML kit - used for the text recognition
+  google_ml_kit: ^0.6.0 # google's ML kit - used for the text recognition
   camera: ^0.8.1+3 # camera package to be able to access the device's camera
+  path_provider: ^2.0.2 # path provider package to find local files/photos
+  path: ^1.8.0 # path package to generate paths
   font_awesome_flutter: ^9.1.0
 
 dev_dependencies:
