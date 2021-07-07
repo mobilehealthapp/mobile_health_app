@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/HomePage.dart';
 import 'package:mobile_health_app/Profile.dart';
 import 'package:mobile_health_app/physHome.dart';
 import 'main.dart';
@@ -89,7 +90,7 @@ class Drawers extends StatelessWidget {
     switch (i) {
       case 0:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => MyApp()));
+            .push(MaterialPageRoute(builder: (context) => HomePage()));
         break;
       case 1:
         Navigator.of(context)
