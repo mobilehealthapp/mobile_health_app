@@ -1,27 +1,23 @@
 import 'package:flutter/material.dart';
-
+import 'package:mobile_health_app/settings_pages/dr_profileEdit.dart';
+import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'settings_card.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'profile_edit.dart';
 
-class ProfilePage extends StatefulWidget {
+class DrProfilePage extends StatefulWidget {
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _DrProfilePageState createState() => _DrProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _DrProfilePageState extends State<DrProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFB2EBF2),
       appBar: AppBar(
         title: Text(
           'My Profile',
-          style: GoogleFonts.rubik(
-            textStyle: TextStyle(
-              color: Colors.white,
-              fontSize: 25.0,
-            ),
-          ),
+          style: kAppBarLabelStyle,
         ),
         centerTitle: true,
         backgroundColor: Color(0xFF00BCD4),
@@ -37,7 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               child: Center(
                 child: Text(
-                  'First and Last name',
+                  '(Dr.) First and Last name',
                   style: GoogleFonts.rubik(
                     textStyle: TextStyle(
                       color: Colors.white,
@@ -50,42 +46,40 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           Expanded(
             child: ProfileTab(
-              editAnswer: 'Age',
+              editAnswer: 'Qualifications',
             ),
           ),
           Expanded(
             child: ProfileTab(
-              editAnswer: 'Sex',
+              editAnswer: 'Telephone Number',
             ),
           ),
           Expanded(
             child: ProfileTab(
-              editAnswer: 'Date of birth',
+              editAnswer: 'Email Address',
             ),
           ),
           Expanded(
             child: ProfileTab(
-              editAnswer: 'My medical conditions',
+              editAnswer: 'Fax',
             ),
           ),
           Expanded(
             child: ProfileTab(
-              editAnswer: 'My medications',
+              editAnswer: 'Clinic Address',
             ),
           ),
           Expanded(
             child: GestureDetector(
               onTap: () {
-                setState(
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProfileEdit(),
-                      ),
-                    );
-                  },
-                );
+                setState(() {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DrProfileEdit(),
+                    ),
+                  );
+                });
               },
               child: SettingsCard(
                 settingsTab: TabContent(label: 'Edit my information'),
@@ -97,3 +91,13 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
+
+// void awaitDataReturn(BuildContext context) async {
+//   final result = await Navigator.push(
+//     context,
+//     MaterialPageRoute(builder: (context) => SecondScreen(),),
+//   );
+//   setState(() {
+//     text = result;
+//   },);
+// }
