@@ -48,7 +48,7 @@ class _CameraAppState extends State<CameraApp> {
         final textDetector = GoogleMlKit.vision.textDetector();
         final RecognisedText recognisedText =
             await textDetector.processImage(inputImage);
-        print(recognisedText);
+        print(recognisedText.text);
       } catch (e) {
         // If an error occurs, log the error to the console.
         print(e);
