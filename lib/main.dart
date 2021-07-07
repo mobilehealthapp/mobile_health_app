@@ -1,7 +1,9 @@
 import 'package:camera/camera.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/Camera/data_input_page.dart';
 import 'package:mobile_health_app/welcome_screen.dart';
+import 'package:mobile_health_app/Camera/camera_input.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 late List<CameraDescription> cameras;
 // Future<void> main() async {
@@ -16,6 +18,10 @@ Future<void> main() async {
   cameras = await availableCameras();
   runApp(MyApp());
 }
+
+// void main() {
+//   runApp(MyApp());
+// }
 
 class MyApp extends StatelessWidget {
   @override
