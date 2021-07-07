@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:image_picker/image_picker.dart';
 
 late List<CameraDescription> cameras;
 
@@ -43,12 +44,14 @@ class _CameraAppState extends State<CameraApp> {
 
         // Attempt to take a picture and then get the location
         // where the image file is saved.
+        // final picker = ImagePicker();
+        // final inputImage = await picker.getImage(source: ImageSource.camera);
         final image = await controller.takePicture();
         final inputImage = InputImage.fromFilePath(image.path);
         final textDetector = GoogleMlKit.vision.textDetector();
         final RecognisedText recognisedText =
             await textDetector.processImage(inputImage);
-        print(recognisedText.text);
+        debugPrint(recognisedText.text);
       } catch (e) {
         // If an error occurs, log the error to the console.
         print(e);
