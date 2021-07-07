@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile_health_app/settings_pages/settings_card.dart';
 
 class ContactInfo extends StatefulWidget {
   @override

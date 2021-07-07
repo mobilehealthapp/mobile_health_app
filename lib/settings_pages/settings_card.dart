@@ -1,13 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-final kLabelStyle = GoogleFonts.rubik(
-  textStyle: TextStyle(
-    fontSize: 20.0,
-    color: Colors.white,
-  ),
-);
+import 'settings_constants.dart';
 
 class SettingsCard extends StatelessWidget {
   SettingsCard({required this.settingsTab});
@@ -93,31 +87,6 @@ class TabContent2 extends StatelessWidget {
   }
 }
 
-class CustomField extends StatelessWidget {
-  CustomField({required this.hintLabel, required this.onSubmitted});
-
-  final String hintLabel;
-  final Function onSubmitted;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.all(10.0),
-        hintText: hintLabel,
-        hintStyle: GoogleFonts.rubik(
-          textStyle: TextStyle(
-            fontSize: 20.0,
-            color: Colors.black,
-          ),
-        ),
-      ),
-      onChanged: (null),
-      onSubmitted: onSubmitted(),
-    );
-  }
-}
-
 class ProfileTab extends StatelessWidget {
   ProfileTab({required this.editAnswer});
 
@@ -190,13 +159,3 @@ class ContactEditButton extends StatelessWidget {
     );
   }
 }
-
-final kFieldDecoration = InputDecoration(
-  contentPadding: const EdgeInsets.all(10.0),
-  hintStyle: GoogleFonts.rubik(
-    textStyle: TextStyle(
-      fontSize: 20.0,
-      color: Colors.black,
-    ),
-  ),
-);

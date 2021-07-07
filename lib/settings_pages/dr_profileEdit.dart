@@ -1,9 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'settings.dart';
-import 'settings_card.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:cupertino_icons/cupertino_icons.dart';
+import 'settings_constants.dart';
 
 class DrProfileEdit extends StatefulWidget {
   @override
@@ -19,6 +16,14 @@ class _DrProfileEditState extends State<DrProfileEdit> {
   String drFax = 'Fax';
   String clinicAdd = 'Clinic Address';
 
+  static TextEditingController drFirstTEC = TextEditingController();
+  static TextEditingController drLastTEC = TextEditingController();
+  static TextEditingController qualiTEC = TextEditingController();
+  static TextEditingController drTeleTEC = TextEditingController();
+  static TextEditingController drEmailTEC = TextEditingController();
+  static TextEditingController drFaxTEC = TextEditingController();
+  static TextEditingController clinicAddTEC = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,12 +31,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
       appBar: AppBar(
         title: Text(
           'Edit my Information',
-          style: GoogleFonts.rubik(
-            textStyle: TextStyle(
-              color: Colors.white,
-              fontSize: 25.0,
-            ),
-          ),
+          style: kAppBarLabelStyle,
         ),
         centerTitle: true,
         backgroundColor: Color(0xFF00BCD4),
@@ -45,45 +45,59 @@ class _DrProfileEditState extends State<DrProfileEdit> {
             ),
           ),
           Expanded(
-            child: CustomField(
-              hintLabel: drFirst,
-              onSubmitted: () {},
+            child: TextField(
+              controller: drFirstTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: drFirst,
+              ),
             ),
           ),
           Expanded(
-            child: CustomField(
-              hintLabel: drLast,
-              onSubmitted: () {},
+            child: TextField(
+              controller: drLastTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: drLast,
+              ),
             ),
           ),
           Expanded(
-            child: CustomField(
-              hintLabel: quali,
-              onSubmitted: () {},
+            child: TextField(
+              controller: qualiTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: quali,
+              ),
             ),
           ),
           Expanded(
-            child: CustomField(
-              hintLabel: drTele,
-              onSubmitted: () {},
+            child: TextField(
+              controller: drTeleTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: drTele,
+              ),
             ),
           ),
           Expanded(
-            child: CustomField(
-              hintLabel: drEmail,
-              onSubmitted: () {},
+            child: TextField(
+              controller: drEmailTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: drEmail,
+              ),
             ),
           ),
           Expanded(
-            child: CustomField(
-              hintLabel: drFax,
-              onSubmitted: () {},
+            child: TextField(
+              controller: drFaxTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: drFax,
+              ),
             ),
           ),
           Expanded(
-            child: CustomField(
-              hintLabel: clinicAdd,
-              onSubmitted: () {},
+            child: TextField(
+              controller: clinicAddTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: clinicAdd,
+              ),
             ),
           ),
           Row(

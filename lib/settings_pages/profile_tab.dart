@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/settings_pages/contact_info.dart';
+import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'settings_card.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'profile_edit.dart';
@@ -17,12 +18,7 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         title: Text(
           'My Profile',
-          style: GoogleFonts.rubik(
-            textStyle: TextStyle(
-              color: Colors.white,
-              fontSize: 25.0,
-            ),
-          ),
+          style: kAppBarLabelStyle,
         ),
         centerTitle: true,
         backgroundColor: Color(0xFF00BCD4),
@@ -109,7 +105,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   MaterialPageRoute(
                     builder: (context) => ProfileEdit(),
                   ),
-                ).then((value) => ProfileEdit.updateProfile());
+                ).then(
+                  (value) => ProfileEdit.updateProfile(),
+                );
               },
               child: SettingsCard(
                 settingsTab: TabContent(label: 'Edit my information'),

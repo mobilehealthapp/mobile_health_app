@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'settings.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'settings_constants.dart';
 
 class PrivacyPolicy extends StatefulWidget {
   @override
@@ -14,12 +14,7 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
       appBar: AppBar(
         title: Text(
           'Privacy Policy',
-          style: GoogleFonts.rubik(
-            textStyle: TextStyle(
-              color: Colors.white,
-              fontSize: 25.0,
-            ),
-          ),
+          style: kAppBarLabelStyle,
         ),
         centerTitle: true,
         backgroundColor: Color(0xFF00BCD4),

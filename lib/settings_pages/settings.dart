@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/settings_pages/my_doctors.dart';
 import 'package:mobile_health_app/settings_pages/privacy_policy.dart';
+import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'settings_card.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'profile_tab.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -18,12 +18,7 @@ class _SettingsPageState extends State<SettingsPage> {
       appBar: AppBar(
         title: Text(
           'Settings',
-          style: GoogleFonts.rubik(
-            textStyle: TextStyle(
-              color: Colors.white,
-              fontSize: 25.0,
-            ),
-          ),
+          style: kAppBarLabelStyle,
         ),
         centerTitle: true,
         backgroundColor: Color(0xFF00BCD4),
