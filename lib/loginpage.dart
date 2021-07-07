@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mobile_health_app/HomePage.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -7,12 +9,17 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _auth = FirebaseAuth.instance;
+  var email;
+  var password;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
           leading: BackButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
           title: Text('Login',
               style: TextStyle(
@@ -33,11 +40,11 @@ class _LoginPageState extends State<LoginPage> {
                   width: 200.0,
                   height: 200.0,
                   alignment: Alignment.center,
-                  // decoration: BoxDecoration(
-                  //   image: DecorationImage(
-                  //       image: AssetImage('images/logo-1-removebg-preview.png'),
-                  //       fit: BoxFit.fill),
-                  // ),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage('images/logo-1-removebg-preview.png'),
+                        fit: BoxFit.fill),
+                  ),
                 ),
                 SizedBox(
                   height: 15,
@@ -45,6 +52,9 @@ class _LoginPageState extends State<LoginPage> {
                 Container(
                   padding: EdgeInsets.all(20.0),
                   child: TextField(
+                    onChanged: (value) {
+                      email = value;
+                    },
                     style: TextStyle(
                       color: Colors.black,
                     ),
@@ -55,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
                         FontAwesomeIcons.user,
                         color: Colors.black,
                       ),
-                      hintText: 'Enter Username',
+                      hintText: 'Enter Email',
                       hintStyle: TextStyle(fontSize: 20),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(
@@ -66,8 +76,11 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.all(20.0),
+                  padding: EdgeInsets.only(top: 20, left: 20, right: 20),
                   child: TextField(
+                    onChanged: (value) {
+                      password = value;
+                    },
                     style: TextStyle(
                       color: Colors.black,
                     ),
@@ -88,14 +101,40 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+                Container(
+                  padding: EdgeInsets.only(right: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      MaterialButton(
+                        child: Text(
+                          'Forgot Password?',
+                          style: TextStyle(color: Colors.lightBlue),
+                        ),
+                        onPressed: () {},
+                        padding: EdgeInsets.only(bottom: 20, top: 5),
+                      ),
+                    ],
+                  ),
+                ),
                 SizedBox(
-                  height: 30,
+                  height: 20,
                 ),
                 MaterialButton(
                   minWidth: 250,
                   color: Colors.blueGrey,
                   height: 50.0,
-                  onPressed: () {},
+                  onPressed: () async {
+                    try {
+                      await _auth.signInWithEmailAndPassword(
+                          email: email, password: password);
+                      //TODO: Handle case where account does not exist properly
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => HomePage()));
+                    } catch (signInError) {
+                      print(signInError);
+                    }
+                  },
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
                   ),

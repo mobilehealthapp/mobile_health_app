@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'login.dart';
-import 'signup.dart';
+
 import 'drawers.dart';
+import 'loginpage.dart';
+import 'signup.dart';
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -28,10 +29,10 @@ class WelcomeScreen extends StatelessWidget {
             child: Text(
           'Welcome',
           style: TextStyle(
+            color: Colors.white,
             fontSize: 34,
           ),
         )),
-        backgroundColor: Colors.blue[300],
       ),
       body: SafeArea(
         child: Container(
@@ -49,7 +50,7 @@ class WelcomeScreen extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20.0,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                 ],

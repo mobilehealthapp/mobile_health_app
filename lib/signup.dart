@@ -1,5 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // ignore: unused_import
+import 'package:mobile_health_app/HomePage.dart';
+import 'package:wc_form_validators/wc_form_validators.dart';
 
 // class SignupPage extends StatefulWidget {
 //   @override
@@ -13,14 +17,28 @@ import 'package:flutter/material.dart';
 //   }
 // }
 
-class SignupPage extends StatelessWidget {
+class SignupPage extends StatefulWidget {
+  @override
+  _SignupPageState createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
+  final formKey = GlobalKey<FormState>();
+  final _auth = FirebaseAuth.instance;
+  var firstName;
+  var lastName;
+  var email;
+  var password;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        title: Text(
+          'Welcome',
+          style: TextStyle(color: Colors.white),
+        ),
         elevation: 0,
-        backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -59,13 +77,62 @@ class SignupPage extends StatelessWidget {
                   )
                 ],
               ),
-              Column(
-                children: [
-                  inputFile(label: 'Full Name'),
-                  inputFile(label: 'Email'),
-                  inputFile(label: 'Password'),
-                  inputFile(label: 'Confirm Password', obsureText: true),
-                ],
+              Form(
+                key: formKey,
+                child: Column(
+                  children: [
+                    inputFile(
+                      label: 'First Name',
+                      onChangedFunction: (value) {
+                        firstName = value;
+                      },
+                      validation: Validators.required('First name is required'),
+                    ),
+                    inputFile(
+                      label: 'Last Name',
+                      onChangedFunction: (value) {
+                        lastName = value;
+                      },
+                      validation: Validators.required('Last name is required'),
+                    ),
+                    inputFile(
+                      label: 'Email',
+                      onChangedFunction: (value) {
+                        email = value;
+                      },
+                      validation: Validators.compose([
+                        Validators.required('Email is required'),
+                        Validators.email('Invalid email address'),
+                      ]),
+                    ),
+                    inputFile(
+                        label: 'Password',
+                        obscureTextState: true,
+                        onChangedFunction: (value) {
+                          password = value;
+                        },
+                        validation: Validators.compose([
+                          Validators.required('Password is required'),
+                          Validators.minLength(
+                              6, 'Password must be at least 6 characters'),
+                        ])),
+                    inputFile(
+                      label: 'Confirm Password',
+                      obscureTextState: true,
+                      onChangedFunction: (value) {},
+                      validation: Validators.compose([
+                        Validators.required('Please confirm password'),
+                        (value) {
+                          if (value != password) {
+                            return "Passwords must match";
+                          } else {
+                            return null;
+                          }
+                        }
+                      ]),
+                    )
+                  ],
+                ),
               ),
               Container(
                 // padding: EdgeInsets.only(top: 3, left: 3),
@@ -83,7 +150,30 @@ class SignupPage extends StatelessWidget {
                   color: Colors.blue,
                   height: 60.0,
                   minWidth: 300,
-                  onPressed: () {},
+                  onPressed: () async {
+                    var areCredsValid = formKey.currentState?.validate();
+                    if (areCredsValid == true) {
+                      try {
+                        await _auth.createUserWithEmailAndPassword(
+                            email: email, password: password);
+                        //TODO: Handle case where account already exists properly
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => HomePage()));
+                      } catch (signUpError) {
+                        print(signUpError);
+                      }
+                    }
+                  },
+                  //   if (password == confirmPassword) {
+                  //     if (password.length() >= 6) {
+                  //       final newUser = await _auth
+                  //           .createUserWithEmailAndPassword(
+                  //           email: email, password: password);
+                  //     } else
+                  //   } else
+                  // },
                   shape: RoundedRectangleBorder(
                     side: BorderSide(color: Colors.white),
                     borderRadius: BorderRadius.circular(50.0),
@@ -106,7 +196,8 @@ class SignupPage extends StatelessWidget {
   }
 }
 
-Widget inputFile({label, obsureText = false}) {
+Widget inputFile(
+    {label, obscureTextState = false, onChangedFunction, validation}) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -116,11 +207,17 @@ Widget inputFile({label, obsureText = false}) {
               fontWeight: FontWeight.w400,
               color: Colors.black)),
       SizedBox(height: 5.0),
-      TextField(
-        obscureText: obsureText,
+      TextFormField(
+        validator: validation,
+        onChanged: onChangedFunction,
+        obscureText: obscureTextState,
         decoration: InputDecoration(
             contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             enabledBorder:
+                OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+            focusedBorder:
+                OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+            border:
                 OutlineInputBorder(borderSide: BorderSide(color: Colors.grey))),
       ),
       SizedBox(
