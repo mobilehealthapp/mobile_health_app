@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/HomePage.dart';
 import 'package:mobile_health_app/Profile.dart';
 import 'package:mobile_health_app/physHome.dart';
-import 'main.dart';
-import 'settings.dart';
-import 'health_analysis.dart';
+import 'package:mobile_health_app/welcome_screen.dart';
 
-class Drawers extends StatelessWidget {
-  const Drawers({Key? key}) : super(key: key);
+class PhysDrawers extends StatelessWidget {
+  const PhysDrawers({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -19,12 +16,12 @@ class Drawers extends StatelessWidget {
               SizedBox(height: 100),
               SizedBox(height: 10),
               addItem(
-                text: 'Home',
+                text: 'PhysHome',
                 icon: Icons.home,
                 onClicked: () => select(context, 0),
               ),
               addItem(
-                text: 'Profile',
+                text: 'My Patients',
                 icon: Icons.perm_identity,
                 onClicked: () => select(context, 1),
               ),
@@ -48,7 +45,7 @@ class Drawers extends StatelessWidget {
               ),
               SizedBox(height: 10),
               addItem(
-                text: 'Contact',
+                text: 'Contact Patient',
                 icon: Icons.contacts,
                 onClicked: () => select(context, 5),
               ),
@@ -57,12 +54,6 @@ class Drawers extends StatelessWidget {
                 text: 'Logout ',
                 icon: Icons.logout,
                 onClicked: () => select(context, 5),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Physician Side ',
-                icon: Icons.logout,
-                onClicked: () => select(context, 6),
               ),
 
               // SizedBox
@@ -90,7 +81,7 @@ class Drawers extends StatelessWidget {
     switch (i) {
       case 0:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => HomePage()));
+            .push(MaterialPageRoute(builder: (context) => PhysHome()));
         break;
       case 1:
         Navigator.of(context)
@@ -98,23 +89,15 @@ class Drawers extends StatelessWidget {
         break;
       case 2:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => SettingsPage()));
+            .push(MaterialPageRoute(builder: (context) => PhysHome()));
         break;
       case 3:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => HealthAnalysis()));
+            .push(MaterialPageRoute(builder: (context) => PhysHome()));
         break;
       case 4:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile_Page()));
-        break;
-      case 5:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile_Page()));
-        break;
-      case 6:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => PhysHome()));
+            .push(MaterialPageRoute(builder: (context) => WelcomeScreen()));
         break;
     }
   }

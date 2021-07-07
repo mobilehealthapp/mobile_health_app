@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "487588536226",
+    "project_id": "mobile-health-app-5717b",
+    "storage_bucket": "mobile-health-app-5717b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:487588536226:android:c75d6717663770f21cdcfb",
+        "android_client_info": {
+          "package_name": "ca.healthcaresystems.mobile_health_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "487588536226-092t2m6vhi3dlqip1v5unaqhi3tnvlte.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbdhB6WbxIqMeKEEeHmn3lSLWEJtvmTAo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "487588536226-092t2m6vhi3dlqip1v5unaqhi3tnvlte.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

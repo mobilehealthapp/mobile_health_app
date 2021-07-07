@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/settings_pages/my_doctors.dart';
+import 'package:mobile_health_app/settings_pages/privacy_policy.dart';
+import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'settings_card.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'profile_edit.dart';
 import 'profile_tab.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -17,12 +18,7 @@ class _SettingsPageState extends State<SettingsPage> {
       appBar: AppBar(
         title: Text(
           'Settings',
-          style: GoogleFonts.rubik(
-            textStyle: TextStyle(
-              color: Colors.white,
-              fontSize: 25.0,
-            ),
-          ),
+          style: kAppBarLabelStyle,
         ),
         centerTitle: true,
         backgroundColor: Color(0xFF00BCD4),
@@ -32,14 +28,16 @@ class _SettingsPageState extends State<SettingsPage> {
           Expanded(
             child: GestureDetector(
               onTap: () {
-                setState(() {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ProfilePage(),
-                    ),
-                  );
-                });
+                setState(
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfilePage(),
+                      ),
+                    );
+                  },
+                );
               },
               child: SettingsCard(
                 settingsTab: TabContent(label: 'My Profile'),
@@ -59,7 +57,16 @@ class _SettingsPageState extends State<SettingsPage> {
           Expanded(
             child: GestureDetector(
               onTap: () {
-                setState(() {});
+                setState(
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MyDoctors(),
+                      ),
+                    );
+                  },
+                );
               },
               child: SettingsCard(
                 settingsTab: TabContent(label: 'My Doctors'),
@@ -69,7 +76,16 @@ class _SettingsPageState extends State<SettingsPage> {
           Expanded(
             child: GestureDetector(
               onTap: () {
-                setState(() {});
+                setState(
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PrivacyPolicy(),
+                      ),
+                    );
+                  },
+                );
               },
               child: SettingsCard(
                 settingsTab: TabContent(label: 'Privacy Policy'),
@@ -179,9 +195,58 @@ class Alert extends StatelessWidget {
           ),
         ),
         TextButton(
-          onPressed: () => Navigator.pop(context, 'Confirm'),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Alert2(),
+            ),
+          ),
           child: const Text(
             'Confirm',
+            style: TextStyle(
+              fontSize: 16.0,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class Alert2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        'Please enter your password to complete this action.',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 20.0,
+        ),
+      ),
+      content: TextField(
+        decoration: InputDecoration(
+          hintText: 'Password',
+          hintStyle: TextStyle(
+            fontSize: 20.0,
+            color: Colors.black,
+          ),
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.of(context)..pop()..pop(),
+          child: const Text(
+            'Cancel',
+            style: TextStyle(
+              fontSize: 16.0,
+            ),
+          ),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context)..pop()..pop(),
+          child: const Text(
+            'Enter Password and Confirm',
             style: TextStyle(
               fontSize: 16.0,
             ),

@@ -1,37 +1,37 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'settings.dart';
-import 'settings_card.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:cupertino_icons/cupertino_icons.dart';
+import 'settings_constants.dart';
 
-class ProfileEdit extends StatefulWidget {
+class DrProfileEdit extends StatefulWidget {
   @override
-  _ProfileEditState createState() => _ProfileEditState();
+  _DrProfileEditState createState() => _DrProfileEditState();
 }
 
-class _ProfileEditState extends State<ProfileEdit> {
-  String? sexChoose = 'M';
+class _DrProfileEditState extends State<DrProfileEdit> {
+  String drFirst = 'First Name';
+  String drLast = 'Last Name';
+  String quali = 'My Qualifications';
+  String drTele = 'Telephone Number';
+  String drEmail = 'Email Address';
+  String drFax = 'Fax';
+  String clinicAdd = 'Clinic Address';
 
-  String first = 'First Name';
-  String last = 'Last Name';
-  String age = 'Age';
-  String dob = 'Date of Birth (DD-MM-YYYY)';
-  String meds = 'My Medications';
-  String conds = 'My Medical Conditions';
+  static TextEditingController drFirstTEC = TextEditingController();
+  static TextEditingController drLastTEC = TextEditingController();
+  static TextEditingController qualiTEC = TextEditingController();
+  static TextEditingController drTeleTEC = TextEditingController();
+  static TextEditingController drEmailTEC = TextEditingController();
+  static TextEditingController drFaxTEC = TextEditingController();
+  static TextEditingController clinicAddTEC = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFB2EBF2),
       appBar: AppBar(
         title: Text(
           'Edit my Information',
-          style: GoogleFonts.rubik(
-            textStyle: TextStyle(
-              color: Colors.white,
-              fontSize: 25.0,
-            ),
-          ),
+          style: kAppBarLabelStyle,
         ),
         centerTitle: true,
         backgroundColor: Color(0xFF00BCD4),
@@ -45,67 +45,59 @@ class _ProfileEditState extends State<ProfileEdit> {
             ),
           ),
           Expanded(
-            child: CustomField(
-              hintLabel: first,
-              onChanged: () {},
-            ),
-          ),
-          Expanded(
-            child: CustomField(
-              hintLabel: last,
-              onChanged: () {},
-            ),
-          ),
-          Expanded(
-            child: CustomField(
-              hintLabel: age,
-              onChanged: () {},
-            ),
-          ),
-          DropdownButton<String>(
-            value: sexChoose,
-            items: [
-              DropdownMenuItem(
-                child: Text('--Sex--'),
-                value: '--Sex--',
+            child: TextField(
+              controller: drFirstTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: drFirst,
               ),
-              DropdownMenuItem(
-                child: Text('M'),
-                value: 'M',
-              ),
-              DropdownMenuItem(
-                child: Text('F'),
-                value: 'F',
-              ),
-              DropdownMenuItem(
-                child: Text('X'),
-                value: 'X',
-              ),
-            ],
-            onChanged: (value) {
-              setState(
-                () {
-                  sexChoose = value;
-                },
-              );
-            },
-          ),
-          Expanded(
-            child: CustomField(
-              hintLabel: dob,
-              onChanged: () {},
             ),
           ),
           Expanded(
-            child: CustomField(
-              hintLabel: conds,
-              onChanged: () {},
+            child: TextField(
+              controller: drLastTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: drLast,
+              ),
             ),
           ),
           Expanded(
-            child: CustomField(
-              hintLabel: meds,
-              onChanged: () {},
+            child: TextField(
+              controller: qualiTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: quali,
+              ),
+            ),
+          ),
+          Expanded(
+            child: TextField(
+              controller: drTeleTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: drTele,
+              ),
+            ),
+          ),
+          Expanded(
+            child: TextField(
+              controller: drEmailTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: drEmail,
+              ),
+            ),
+          ),
+          Expanded(
+            child: TextField(
+              controller: drFaxTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: drFax,
+              ),
+            ),
+          ),
+          Expanded(
+            child: TextField(
+              controller: clinicAddTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: clinicAdd,
+              ),
             ),
           ),
           Row(

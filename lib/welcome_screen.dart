@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/Camera/data_input_page.dart';
-
+import 'drawers.dart';
 import 'signup.dart';
 
 class MyApp extends StatelessWidget {
@@ -22,15 +21,16 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawers(),
       appBar: AppBar(
         title: Center(
             child: Text(
           'Welcome',
           style: TextStyle(
+            color: Colors.white,
             fontSize: 34,
           ),
         )),
-        backgroundColor: Colors.blue[300],
       ),
       body: SafeArea(
         child: Container(
@@ -48,7 +48,7 @@ class WelcomeScreen extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20.0,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                 ],
@@ -57,7 +57,7 @@ class WelcomeScreen extends StatelessWidget {
                 height: MediaQuery.of(context).size.height / 2,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage('image/image2.png'),
+                    image: AssetImage('images/logo-1-removebg-preview.png'),
                   ),
                 ),
               ),
