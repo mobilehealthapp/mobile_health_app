@@ -10,7 +10,6 @@ class DataInput extends StatefulWidget {
 }
 
 class _DataInputState extends State<DataInput> {
-  String _value = '';
   bool first = true;
 
   String? selectedDataType = dataTypes[0];

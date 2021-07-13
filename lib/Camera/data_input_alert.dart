@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'data_input_page.dart';
 
 class DataInputAlert {
   DataInputAlert({
