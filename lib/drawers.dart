@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:mobile_health_app/HomePage.dart';
 import 'package:mobile_health_app/Profile.dart';
 import 'package:mobile_health_app/physHome.dart';
+import 'package:mobile_health_app/signup.dart';
+import 'package:mobile_health_app/welcome_screen.dart';
 import 'main.dart';
-import 'settings.dart';
+import 'package:mobile_health_app/settings_pages/settings.dart';
 import 'health_analysis.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Drawers extends StatelessWidget {
-  const Drawers({Key? key}) : super(key: key);
+  final _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -53,11 +57,14 @@ class Drawers extends StatelessWidget {
                 onClicked: () => select(context, 5),
               ),
               SizedBox(height: 10),
-              addItem(
-                text: 'Logout ',
-                icon: Icons.logout,
-                onClicked: () => select(context, 5),
-              ),
+              ListTile(
+                  onTap: () {
+                    _auth.signOut();
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => WelcomeScreen()));
+                  },
+                  leading: Icon(Icons.logout),
+                  title: Text('Log out')),
               SizedBox(height: 10),
               addItem(
                 text: 'Physician Side ',
@@ -94,7 +101,7 @@ class Drawers extends StatelessWidget {
         break;
       case 1:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile_Page()));
+            .push(MaterialPageRoute(builder: (context) => WelcomeScreen()));
         break;
       case 2:
         Navigator.of(context)
@@ -113,8 +120,11 @@ class Drawers extends StatelessWidget {
             .push(MaterialPageRoute(builder: (context) => Profile_Page()));
         break;
       case 6:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => PhysHome()));
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => PhysHome(
+                  name: '',
+                  email: '',
+                )));
         break;
     }
   }

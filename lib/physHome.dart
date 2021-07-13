@@ -5,6 +5,9 @@ import 'package:mobile_health_app/Constants.dart';
 import 'input_file.dart';
 
 class PhysHome extends StatefulWidget {
+  String name = '';
+  String email = '';
+  PhysHome({required this.name, required this.email});
   @override
   _PhysHomeState createState() => _PhysHomeState();
 }
@@ -33,8 +36,8 @@ class _PhysHomeState extends State<PhysHome> {
         child: Column(
           children: <Widget>[
             PatientCard(
-              name: 'Rahat',
-              email: 'Email',
+              name: "${widget.name}",
+              email: "${widget.email}",
             ),
           ],
         ),

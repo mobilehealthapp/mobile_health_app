@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/physHome.dart';
 
 class InputFile extends StatefulWidget {
   @override
@@ -6,8 +7,8 @@ class InputFile extends StatefulWidget {
 }
 
 class _InputFileState extends State<InputFile> {
-  TextEditingController _email = TextEditingController();
-  TextEditingController _name = TextEditingController();
+  var nameController = TextEditingController();
+  var emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class _InputFileState extends State<InputFile> {
           child: Column(
             children: <Widget>[
               TextField(
-                controller: _name,
+                controller: nameController,
                 decoration: InputDecoration(
                     hintText: "Your Name",
                     labelText: "Name",
@@ -29,7 +30,7 @@ class _InputFileState extends State<InputFile> {
               ),
               SizedBox(height: 20.0),
               TextField(
-                controller: _email,
+                controller: emailController,
                 decoration: InputDecoration(
                   hintText: "Your Email",
                   labelText: "Email",
@@ -38,9 +39,13 @@ class _InputFileState extends State<InputFile> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(
-                    context,
-                  );
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PhysHome(
+                                name: nameController.text,
+                                email: emailController.text,
+                              )));
                 },
                 child: Text('Submit'),
               )

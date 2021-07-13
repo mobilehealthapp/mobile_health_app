@@ -80,8 +80,11 @@ class PhysDrawers extends StatelessWidget {
     Navigator.of(context).pop();
     switch (i) {
       case 0:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => PhysHome()));
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => PhysHome(
+                  name: '',
+                  email: '',
+                )));
         break;
       case 1:
         Navigator.of(context)
@@ -89,11 +92,11 @@ class PhysDrawers extends StatelessWidget {
         break;
       case 2:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => PhysHome()));
+            .push(MaterialPageRoute(builder: (context) => Profile_Page()));
         break;
       case 3:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => PhysHome()));
+            .push(MaterialPageRoute(builder: (context) => Profile_Page()));
         break;
       case 4:
         Navigator.of(context)
