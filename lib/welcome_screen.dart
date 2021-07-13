@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'drawers.dart';
 import 'signup.dart';
+import 'loginpage.dart';
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -67,7 +68,10 @@ class WelcomeScreen extends StatelessWidget {
                     color: Colors.white,
                     height: 50.0,
                     minWidth: 300,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => LoginPage()));
+                    },
                     shape: RoundedRectangleBorder(
                       // side: BorderSide(
                       //   color: Colors.black,

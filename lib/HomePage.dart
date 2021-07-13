@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/Camera/data_input_page.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'package:mobile_health_app/camera_input.dart';
+import 'package:mobile_health_app/Camera/camera_input.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -41,7 +42,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => CameraApp()));
+              .push(MaterialPageRoute(builder: (context) => DataInput()));
         },
         child: Icon(
           Icons.camera_alt_rounded,

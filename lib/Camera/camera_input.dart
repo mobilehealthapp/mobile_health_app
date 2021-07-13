@@ -2,9 +2,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:image_picker/image_picker.dart';
-
-late List<CameraDescription> cameras;
+import 'package:mobile_health_app/main.dart';
+import 'dart:io';
 
 class CameraApp extends StatefulWidget {
   @override
@@ -14,6 +13,10 @@ class CameraApp extends StatefulWidget {
 class _CameraAppState extends State<CameraApp> {
   late CameraController controller;
   late Future<void> _initializeControllerFuture;
+  final textDetector = GoogleMlKit.vision.textDetector();
+  bool showImage = false;
+  bool isBusy = false;
+  String pathToImage = '';
 
   @override
   void initState() {
@@ -31,10 +34,20 @@ class _CameraAppState extends State<CameraApp> {
   @override
   void dispose() {
     controller.dispose();
+    textDetector.close();
     super.dispose();
   }
 
-  void _onItemTapped(int index) async {
+  Future<void> processImage(InputImage inputImage) async {
+    if (isBusy) return;
+    isBusy = true;
+    final recognisedText = await textDetector.processImage(inputImage);
+    print('Found ${recognisedText.blocks.length} textBlocks');
+    print(recognisedText.text);
+    isBusy = false;
+  }
+
+  Future<void> _onItemTapped(int index) async {
     _selectedIndex = index;
     if (_selectedIndex == 0) {
       Navigator.pop(context);
@@ -48,10 +61,18 @@ class _CameraAppState extends State<CameraApp> {
         // final inputImage = await picker.getImage(source: ImageSource.camera);
         final image = await controller.takePicture();
         final inputImage = InputImage.fromFilePath(image.path);
-        final textDetector = GoogleMlKit.vision.textDetector();
-        final RecognisedText recognisedText =
-            await textDetector.processImage(inputImage);
-        debugPrint(recognisedText.text);
+        setState(() {
+          if (showImage) {
+            showImage = false;
+          } else {
+            showImage = true;
+          }
+        });
+        // final RecognisedText recognisedText =
+        //     await textDetector.processImage(inputImage);
+        // debugPrint(recognisedText.text);
+        pathToImage = image.path;
+        await processImage(inputImage);
       } catch (e) {
         // If an error occurs, log the error to the console.
         print(e);
@@ -73,7 +94,8 @@ class _CameraAppState extends State<CameraApp> {
         title: Text('Take an image'),
         backgroundColor: Colors.cyan,
       ),
-      body: CameraPreview(controller),
+      body:
+          showImage ? Image.file(File(pathToImage)) : CameraPreview(controller),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.cyan,
         items: [
