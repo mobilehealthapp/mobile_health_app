@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_health_app/authentication_button.dart';
-import 'package:mobile_health_app/settings_pages/dr_settings.dart';
 
 class ResetScreen extends StatefulWidget {
   @override
@@ -129,16 +128,4 @@ class _ResetScreenState extends State<ResetScreen> {
       ),
     );
   }
-}
-
-void confirmationDialog(BuildContext context) {
-  var alertDialog = Alert(
-    alertBody: 'Please check your  inbox for password reset instructions',
-  );
-
-  showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alertDialog;
-      });
 }
