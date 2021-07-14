@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mobile_health_app/HomePage.dart';
 import 'package:mobile_health_app/Profile.dart';
 import 'package:mobile_health_app/physHome.dart';
-import 'main.dart';
-import 'settings.dart';
+
 import 'health_analysis.dart';
+import 'settings_pages/settings.dart';
 
 class Drawers extends StatelessWidget {
   const Drawers({Key? key}) : super(key: key);

@@ -2,7 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // ignore: unused_import
-import 'package:mobile_health_app/HomePage.dart';
+import 'package:mobile_health_app/authentication_button.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/loginpage.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/verify.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
 
 // class SignupPage extends StatefulWidget {
@@ -29,13 +31,16 @@ class _SignupPageState extends State<SignupPage> {
   var lastName;
   var email;
   var password;
+  var accountType;
+  var _chosenValue;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.cyan,
         title: Text(
-          'Welcome',
+          'Sign up',
           style: TextStyle(color: Colors.white),
         ),
         elevation: 0,
@@ -60,13 +65,6 @@ class _SignupPageState extends State<SignupPage> {
             children: [
               Column(
                 children: [
-                  Text(
-                    'Sign up',
-                    style: TextStyle(
-                      fontSize: 30.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                   SizedBox(height: 20.0),
                   Text(
                     'Create an account. It\'s free!',
@@ -130,6 +128,36 @@ class _SignupPageState extends State<SignupPage> {
                           }
                         }
                       ]),
+                    ),
+                    DropdownButton<String>(
+                      value: _chosenValue,
+                      focusColor: Colors.white,
+                      elevation: 5,
+                      items: <String>[
+                        'Patient account',
+                        'Physician account',
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(
+                            value,
+                            style: TextStyle(color: Colors.black, fontSize: 18),
+                          ),
+                        );
+                      }).toList(),
+                      style: TextStyle(color: Colors.black),
+                      iconEnabledColor: Colors.black,
+                      hint: Text(
+                        'Account Type',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                      onChanged: (String? value) {
+                        setState(() {
+                          _chosenValue = value;
+                          accountType = value;
+                        });
+                      },
                     )
                   ],
                 ),
@@ -146,48 +174,43 @@ class _SignupPageState extends State<SignupPage> {
                 //     right: BorderSide(color: Colors.white),
                 //   ),
                 // ),
-                child: MaterialButton(
-                  color: Colors.blue,
-                  height: 60.0,
-                  minWidth: 300,
-                  onPressed: () async {
-                    var areCredsValid = formKey.currentState?.validate();
-                    if (areCredsValid == true) {
-                      try {
-                        await _auth.createUserWithEmailAndPassword(
-                            email: email, password: password);
-                        //TODO: Handle case where account already exists properly
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => HomePage()));
-                      } catch (signUpError) {
-                        print(signUpError);
-                      }
+                child: AuthenticationButton('Sign up', () async {
+                  var areCredsValid = formKey.currentState?.validate();
+                  if (areCredsValid == true) {
+                    try {
+                      await _auth.createUserWithEmailAndPassword(
+                          email: email, password: password);
+                      
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EmailVerificationScreen()));
+                    } catch (signUpError) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: Duration(seconds: 10),
+                          backgroundColor: Colors.red,
+                          content: Text(
+                            signUpError.toString().split('] ')[1],
+                            style: TextStyle(fontSize: 20.0),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
                     }
-                  },
-                  //   if (password == confirmPassword) {
-                  //     if (password.length() >= 6) {
-                  //       final newUser = await _auth
-                  //           .createUserWithEmailAndPassword(
-                  //           email: email, password: password);
-                  //     } else
-                  //   } else
-                  // },
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(50.0),
-                  ),
-                  child: Text(
-                    'Sign up',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 18.0,
-                      color: Colors.white,
-                    ),
-                  ),
+                  }
+                }, Colors.cyan),
+              ),
+              TextButton(
+                child: Text(
+                  'Already registered? Log in!',
+                  style: TextStyle(fontSize: 20),
                 ),
-              )
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => LoginPage()));
+                },
+              ),
             ],
           ),
         ),
