@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Profile.dart';
 import 'package:mobile_health_app/physHome.dart';
-import 'package:mobile_health_app/welcome_screen.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
 
 class PhysDrawers extends StatelessWidget {
   const PhysDrawers({Key? key}) : super(key: key);
