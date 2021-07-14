@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Mobile Health App',
+        title: 'Mobile Health App', //comment
         theme: ThemeData(
           primaryColor: Color(0xFF00BCD4),
           primaryColorDark: Color(0xFF0097A7),
