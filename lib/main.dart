@@ -1,6 +1,10 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Camera/data_input_page.dart';
+import 'package:mobile_health_app/drawers.dart';
+import 'package:mobile_health_app/settings_pages/dr_settings.dart';
+import 'package:mobile_health_app/settings_pages/profile_tab.dart';
+import 'package:mobile_health_app/settings_pages/settings.dart';
 import 'package:mobile_health_app/welcome_screen.dart';
 import 'package:mobile_health_app/Camera/camera_input.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,10 +22,6 @@ Future<void> main() async {
   cameras = await availableCameras();
   runApp(MyApp());
 }
-
-// void main() {
-//   runApp(MyApp());
-// }
 
 class MyApp extends StatelessWidget {
   @override
