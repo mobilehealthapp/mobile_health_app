@@ -130,15 +130,15 @@ class _ResetScreenState extends State<ResetScreen> {
     );
   }
 }
-
-void confirmationDialog(BuildContext context) {
-  var alertDialog = Alert(
-    alertBody: 'Please check your  inbox for password reset instructions',
-  );
-
-  showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alertDialog;
-      });
-}
+//
+// void confirmationDialog(BuildContext context) {
+//   var alertDialog = Alert(
+//     alertBody: 'Please check your  inbox for password reset instructions',
+//   );
+//
+//   showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return alertDialog;
+//       });
+// }
