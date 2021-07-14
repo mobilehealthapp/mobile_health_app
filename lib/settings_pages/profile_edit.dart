@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/settings_pages/settings_card.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileEdit extends StatefulWidget {
   static String? sexChoose = '--Sex--';
@@ -12,6 +15,9 @@ class ProfileEdit extends StatefulWidget {
   static String conds = 'My Medical Conditions';
   static String wt = 'Weight';
   static String ht = 'Height';
+  static String tele = 'Telephone Number';
+  static String email = 'Email Address';
+  static String adr = 'Home Address';
 
   static TextEditingController firstTEC = TextEditingController();
   static TextEditingController lastTEC = TextEditingController();
@@ -21,6 +27,9 @@ class ProfileEdit extends StatefulWidget {
   static TextEditingController condsTEC = TextEditingController();
   static TextEditingController wtTEC = TextEditingController();
   static TextEditingController htTEC = TextEditingController();
+  static TextEditingController teleTEC = TextEditingController();
+  static TextEditingController emailTEC = TextEditingController();
+  static TextEditingController adrTEC = TextEditingController();
 
   static void updateProfile() {
     if (firstTEC.text == '') {
@@ -62,6 +71,21 @@ class ProfileEdit extends StatefulWidget {
       ProfileEdit.ht = ProfileEdit.ht;
     } else
       ProfileEdit.ht = htTEC.text;
+
+    if (teleTEC.text == '') {
+      ProfileEdit.tele = ProfileEdit.tele;
+    } else
+      ProfileEdit.tele = teleTEC.text;
+
+    if (emailTEC.text == '') {
+      ProfileEdit.email = ProfileEdit.email;
+    } else
+      ProfileEdit.email = emailTEC.text;
+
+    if (adrTEC.text == '') {
+      ProfileEdit.adr = ProfileEdit.adr;
+    } else
+      ProfileEdit.adr = adrTEC.text;
   }
 
   @override
@@ -69,6 +93,29 @@ class ProfileEdit extends StatefulWidget {
 }
 
 class _ProfileEditState extends State<ProfileEdit> {
+  final _firestore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
+  late User loggedInUser;
+
+  @override
+  void initState() {
+    super.initState();
+
+    getUser();
+  }
+
+  void getUser() async {
+    try {
+      final user = await _auth.currentUser;
+      if (user != null) {
+        loggedInUser = user;
+        print(loggedInUser.email);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,130 +129,158 @@ class _ProfileEditState extends State<ProfileEdit> {
         backgroundColor: Color(0xFF00BCD4),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        padding: EdgeInsets.all(10.0),
+        child: ListView(
           children: <Widget>[
             Padding(
               padding: EdgeInsets.all(10.0),
             ),
-            Expanded(
-              child: TextField(
-                controller: ProfileEdit.firstTEC,
-                decoration: kTextFieldDecoration.copyWith(
-                  hintText: ProfileEdit.first,
-                ),
+            TextField(
+              controller: ProfileEdit.firstTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: ProfileEdit.first,
               ),
             ),
-            Expanded(
-              child: TextField(
-                controller: ProfileEdit.lastTEC,
-                decoration: kTextFieldDecoration.copyWith(
-                  hintText: ProfileEdit.last,
-                ),
+            SizedBox(
+              height: 10.0,
+            ),
+            TextField(
+              controller: ProfileEdit.lastTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: ProfileEdit.last,
               ),
             ),
-            Expanded(
-              child: TextField(
-                controller: ProfileEdit.ageTEC,
-                decoration: kTextFieldDecoration.copyWith(
-                  hintText: ProfileEdit.age,
-                ),
+            SizedBox(
+              height: 10.0,
+            ),
+            TextField(
+              controller: ProfileEdit.ageTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: ProfileEdit.age,
               ),
             ),
-            Expanded(
-              child: TextField(
-                controller: ProfileEdit.dobTEC,
-                decoration: kTextFieldDecoration.copyWith(
-                  hintText: ProfileEdit.dob,
-                ),
+            SizedBox(
+              height: 10.0,
+            ),
+            TextField(
+              controller: ProfileEdit.dobTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: ProfileEdit.dob,
               ),
             ),
-            DropdownButton<String>(
-              value: ProfileEdit.sexChoose,
-              style: TextStyle(
-                fontSize: 20.0,
-                color: Colors.black,
-              ),
-              items: [
-                DropdownMenuItem(
-                  child: Text('--Sex--'),
-                  value: '--Sex--',
-                ),
-                DropdownMenuItem(
-                  child: Text('M'),
-                  value: 'M',
-                ),
-                DropdownMenuItem(
-                  child: Text('F'),
-                  value: 'F',
-                ),
-                DropdownMenuItem(
-                  child: Text('X'),
-                  value: 'X',
+            SizedBox(
+              height: 10.0,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                DropdownButton<String>(
+                  value: ProfileEdit.sexChoose,
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.black,
+                  ),
+                  items: [
+                    DropdownMenuItem(
+                      child: Text('--Sex--'),
+                      value: '--Sex--',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('M'),
+                      value: 'Male',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('F'),
+                      value: 'Female',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('X'),
+                      value: 'X',
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(
+                      () {
+                        ProfileEdit.sexChoose = value.toString();
+                      },
+                    );
+                  },
                 ),
               ],
-              onChanged: (value) {
-                setState(
-                  () {
-                    ProfileEdit.sexChoose = value.toString();
-                  },
-                );
-              },
             ),
-            Expanded(
-              child: TextField(
-                controller: ProfileEdit.htTEC,
-                decoration: kTextFieldDecoration.copyWith(
-                  hintText: ProfileEdit.ht,
-                ),
+            SizedBox(
+              height: 10.0,
+            ),
+            TextField(
+              controller: ProfileEdit.htTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: ProfileEdit.ht,
               ),
             ),
-            Expanded(
-              child: TextField(
-                controller: ProfileEdit.wtTEC,
-                decoration: kTextFieldDecoration.copyWith(
-                  hintText: ProfileEdit.wt,
-                ),
+            SizedBox(
+              height: 10.0,
+            ),
+            TextField(
+              controller: ProfileEdit.wtTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: ProfileEdit.wt,
               ),
             ),
-            Expanded(
-              child: TextField(
-                controller: ProfileEdit.condsTEC,
-                decoration: kTextFieldDecoration.copyWith(
-                  hintText: ProfileEdit.conds,
-                ),
+            SizedBox(
+              height: 10.0,
+            ),
+            TextField(
+              controller: ProfileEdit.condsTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: ProfileEdit.conds,
               ),
             ),
-            Expanded(
-              child: TextField(
-                controller: ProfileEdit.medsTEC,
-                decoration: kTextFieldDecoration.copyWith(
-                  hintText: ProfileEdit.meds,
-                ),
+            SizedBox(
+              height: 10.0,
+            ),
+            TextField(
+              controller: ProfileEdit.medsTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: ProfileEdit.meds,
               ),
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
+            TextField(
+              controller: ProfileEdit.teleTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: ProfileEdit.tele,
+              ),
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
+            TextField(
+              controller: ProfileEdit.emailTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: ProfileEdit.email,
+              ),
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
+            TextField(
+              controller: ProfileEdit.adrTEC,
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: ProfileEdit.adr,
+              ),
+            ),
+            SizedBox(
+              height: 10.0,
             ),
             Row(
               children: <Widget>[
                 Expanded(
                   child: GestureDetector(
-                    child: Container(
-                      margin: EdgeInsets.only(bottom: 10.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0),
-                        color: Colors.red[900],
-                      ),
-                      height: 40.0,
-                      child: Center(
-                        child: Text(
-                          'Cancel',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 25.0,
-                          ),
-                        ),
-                      ),
+                    child: CancelOrConfirm(
+                      whichOne: 'Cancel',
+                      colour: Colors.red[900],
                     ),
                     onTap: () {
                       setState(
@@ -218,58 +293,61 @@ class _ProfileEditState extends State<ProfileEdit> {
                           ProfileEdit.conds = ProfileEdit.conds;
                           ProfileEdit.wt = ProfileEdit.wt;
                           ProfileEdit.ht = ProfileEdit.ht;
+                          ProfileEdit.tele = ProfileEdit.tele;
+                          ProfileEdit.email = ProfileEdit.email;
+                          ProfileEdit.adr = ProfileEdit.adr;
                           Navigator.pop(context);
                         },
                       );
                     },
                   ),
                 ),
+                SizedBox(
+                  width: 10.0,
+                ),
                 Expanded(
                   child: GestureDetector(
-                    child: Container(
-                      margin: EdgeInsets.only(bottom: 10.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0),
-                        color: Colors.green[300],
-                      ),
-                      height: 40.0,
-                      child: Center(
-                        child: Text(
-                          'Confirm',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 25.0,
-                          ),
-                        ),
-                      ),
+                    child: CancelOrConfirm(
+                      whichOne: 'Confirm',
+                      colour: Colors.green[400],
                     ),
                     onTap: () {
                       setState(
                         () {
                           ProfileEdit.updateProfile();
+                          _firestore.collection('patientprofile').add(
+                            {
+                              'first': ProfileEdit.first,
+                              'last': ProfileEdit.last,
+                              'age': ProfileEdit.age,
+                              'dob': ProfileEdit.dob,
+                              'sexChoose': ProfileEdit.sexChoose,
+                              'conds': ProfileEdit.conds,
+                              'meds': ProfileEdit.meds,
+                              'wt': ProfileEdit.wt,
+                              'ht': ProfileEdit.ht,
+                              'tele': ProfileEdit.tele,
+                              'email': ProfileEdit.email,
+                              'address': ProfileEdit.adr,
+                              'user': loggedInUser,
+                            },
+                          );
                           Navigator.pop(
                             context,
-                            {
-                              ProfileEdit.first,
-                              ProfileEdit.last,
-                              ProfileEdit.dob,
-                              ProfileEdit.age,
-                              ProfileEdit.sexChoose,
-                              ProfileEdit.conds,
-                              ProfileEdit.meds,
-                              ProfileEdit.wt,
-                              ProfileEdit.ht,
-                              print(ProfileEdit.first),
-                              print(ProfileEdit.last),
-                              print(ProfileEdit.dob),
-                              print(ProfileEdit.age),
-                              print(ProfileEdit.sexChoose),
-                              print(ProfileEdit.conds),
-                              print(ProfileEdit.meds),
-                              print(ProfileEdit.wt),
-                              print(ProfileEdit.ht),
-                            },
+                            // {
+                            //   ProfileEdit.first,
+                            //   ProfileEdit.last,
+                            //   ProfileEdit.dob,
+                            //   ProfileEdit.age,
+                            //   ProfileEdit.sexChoose,
+                            //   ProfileEdit.conds,
+                            //   ProfileEdit.meds,
+                            //   ProfileEdit.wt,
+                            //   ProfileEdit.ht,
+                            //   ProfileEdit.tele,
+                            //   ProfileEdit.email,
+                            //   ProfileEdit.adr,
+                            // },
                           );
                         },
                       );
