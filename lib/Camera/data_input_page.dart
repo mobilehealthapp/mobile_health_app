@@ -27,6 +27,8 @@ class _DataInputState extends State<DataInput> {
       dropdownItems.add(newItem);
     }
 
+    // Dropdown menu to select a data type
+    // once a type is selected, the corresponding text fields will appear
     return DropdownButton<String>(
       value: selectedDataType,
       items: dropdownItems,
@@ -34,6 +36,9 @@ class _DataInputState extends State<DataInput> {
         setState(() {
           systolic = null;
           diastolic = null;
+          glucoseLevel = null;
+          glucoseUnit = null;
+          bpm = null;
           selectedDataType = value;
           if (selectedDataType == 'Blood Pressure') {
             textFields = bloodPressureTF;
@@ -53,6 +58,8 @@ class _DataInputState extends State<DataInput> {
 
   @override
   Widget build(BuildContext context) {
+    // The below gesture detector dismisses any keyboard when the user
+    // taps anywhere on the page
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -81,11 +88,20 @@ class _DataInputState extends State<DataInput> {
               androidDropdown(),
             ]),
             textFields,
+            // Elevated button below: the submit button for this page
+            // when pressed, the app redirects to the camera page (see camera_input.dart)
+            // the app will only redirect if and only if there is a valid input
+            // the in put is valid if:
+            //      - a data type is selected
+            //      - values are specified for the chosen data type
+            //      - a unit is chosen if the data type = Blood Glucose
+            // if the input is not valid, a corresponding alert will pop up
             ElevatedButton(
                 onPressed: () async {
                   print(selectedDataType);
                   print(systolic);
                   print(diastolic);
+                  // first check: BP chosen AND systolic empty AND diastolic empty
                   if (selectedDataType == 'Blood Pressure' &&
                       systolic == null &&
                       diastolic == null) {
@@ -101,7 +117,8 @@ class _DataInputState extends State<DataInput> {
                                   alertTitle: 'Missing Blood Pressure Data')
                               .showAlert();
                         });
-                  } else if (selectedDataType == 'Blood Pressure' &&
+                  } // check: BP chosen AND (systolic empty OR diastolic empty)
+                  else if (selectedDataType == 'Blood Pressure' &&
                       (systolic == null || diastolic == null)) {
                     String type = (systolic == null ? 'systolic' : 'diastolic');
                     showDialog(
@@ -117,7 +134,58 @@ class _DataInputState extends State<DataInput> {
                                       'Missing ${type[0].toUpperCase()}${type.substring(1)} Blood Pressure')
                               .showAlert();
                         });
-                  } else if (selectedDataType == 'Select Data Type') {
+                  } // check: BG chosen AND glucose level empty AND glucose unit empty
+                  else if (selectedDataType == 'Blood Glucose' &&
+                      glucoseLevel == null &&
+                      glucoseUnit == null) {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return DataInputAlert(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  alertMessage:
+                                      'Please input values for your blood glucose',
+                                  alertTitle: 'Missing Blood Glucose data')
+                              .showAlert();
+                        });
+                  } // check: BG chosen AND (glucose level empty OR glucose unit empty)
+                  else if (selectedDataType == 'Blood Glucose' &&
+                      (glucoseLevel == null || glucoseUnit == null)) {
+                    String msg = (glucoseLevel == null
+                        ? 'input a value for your blood glucose level'
+                        : 'select a measurement unit');
+                    String title = (glucoseLevel == null
+                        ? 'Blood Glucose Level'
+                        : 'Blood Glucose Unit');
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return DataInputAlert(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  alertMessage: 'Please $msg',
+                                  alertTitle:
+                                      'Missing ${title[0].toUpperCase()}${title.substring(1)}')
+                              .showAlert();
+                        });
+                  } // check: BPM chosen AND bpm empty
+                  else if (selectedDataType == 'Heart Rate' && bpm == null) {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return DataInputAlert(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  alertMessage: 'Please input your heart rate',
+                                  alertTitle: 'Missing Heart Rate Data')
+                              .showAlert();
+                        });
+                  } // check: no data type was chosen
+                  else if (selectedDataType == 'Select Data Type') {
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -129,7 +197,8 @@ class _DataInputState extends State<DataInput> {
                                   alertTitle: 'Missing Data Type')
                               .showAlert();
                         });
-                  } else {
+                  } // All clear!
+                  else {
                     Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => CameraApp()));
                   }

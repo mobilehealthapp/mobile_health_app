@@ -9,6 +9,9 @@ const List dataTypes = [
 
 double? systolic;
 double? diastolic;
+double? glucoseLevel;
+String? glucoseUnit;
+double? bpm;
 
 Column bloodPressureTF = Column(
   children: [
@@ -98,10 +101,6 @@ class _BloodGlucoseTFState extends State<BloodGlucoseTF> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Text(
-        //   'Blood Glucose',
-        //   style: kTextStyle,
-        // ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: SizedBox(
@@ -115,7 +114,11 @@ class _BloodGlucoseTFState extends State<BloodGlucoseTF> {
                 border: OutlineInputBorder(),
               ),
               onChanged: (value) {
-                print(value);
+                if (value != '') {
+                  glucoseLevel = double.parse(value);
+                } else {
+                  glucoseLevel = null;
+                }
               },
             ),
           ),
@@ -137,15 +140,16 @@ class _BloodGlucoseTFState extends State<BloodGlucoseTF> {
             ),
           ],
           onChanged: (String? value) {
+            if (value != 'Select unit type') {
+              glucoseUnit = value;
+            } else {
+              glucoseUnit = null;
+            }
             setState(() {
               bloodGlucoseUnit = value;
             });
           },
         )
-        // Text(
-        //   'mmol/L',
-        //   style: kTextStyle,
-        // )
       ],
     );
   }
@@ -219,7 +223,11 @@ Row heartRateTF = Row(
             border: OutlineInputBorder(),
           ),
           onChanged: (value) {
-            print(value);
+            if (value != '') {
+              bpm = double.parse(value);
+            } else {
+              bpm = null;
+            }
           },
         ),
       ),

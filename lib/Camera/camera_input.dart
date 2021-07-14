@@ -1,11 +1,9 @@
 import 'dart:async';
-
+import 'package:mobile_health_app/main.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'dart:io';
-
-late List<CameraDescription> cameras;
 
 class CameraApp extends StatefulWidget {
   @override
@@ -56,7 +54,7 @@ class _CameraAppState extends State<CameraApp> {
     } else if (_selectedIndex == 1) {
       try {
         await _initializeControllerFuture;
-
+        // try this out
         // Attempt to take a picture and then get the location
         // where the image file is saved.
         // final picker = ImagePicker();
