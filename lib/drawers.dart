@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_health_app/HomePage.dart';
 import 'package:mobile_health_app/Profile.dart';
 import 'package:mobile_health_app/physHome.dart';
-import 'settings_pages/settings.dart';
+import 'package:mobile_health_app/settings_pages/settings.dart';
 import 'health_analysis.dart';
 
 class Drawers extends StatelessWidget {

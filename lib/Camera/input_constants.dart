@@ -7,6 +7,9 @@ const List dataTypes = [
   'Heart Rate',
 ];
 
+double? systolic;
+double? diastolic;
+
 Column bloodPressureTF = Column(
   children: [
     Row(
@@ -29,7 +32,11 @@ Column bloodPressureTF = Column(
                 border: OutlineInputBorder(),
               ),
               onChanged: (value) {
-                print(value);
+                if (value != '') {
+                  systolic = double.parse(value);
+                } else {
+                  systolic = null;
+                }
               },
             ),
           ),
@@ -60,7 +67,11 @@ Column bloodPressureTF = Column(
                 border: OutlineInputBorder(),
               ),
               onChanged: (value) {
-                print(value);
+                if (value != '') {
+                  diastolic = double.parse(value);
+                } else {
+                  diastolic = null;
+                }
               },
             ),
           ),
@@ -74,36 +85,120 @@ Column bloodPressureTF = Column(
   ],
 );
 
-Row bloodGlucoseTF = Row(
-  mainAxisAlignment: MainAxisAlignment.center,
-  children: [
-    Text(
-      'Blood Glucose',
-      style: kTextStyle,
-    ),
-    Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: SizedBox(
-        width: 200,
-        child: TextField(
-          keyboardType: TextInputType.numberWithOptions(decimal: true),
-          decoration: InputDecoration(
-            hintText: 'Enter measurement',
-            contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-            border: OutlineInputBorder(),
+String? bloodGlucoseUnit = 'Select unit type';
+
+class BloodGlucoseTF extends StatefulWidget {
+  @override
+  _BloodGlucoseTFState createState() => _BloodGlucoseTFState();
+}
+
+class _BloodGlucoseTFState extends State<BloodGlucoseTF> {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // Text(
+        //   'Blood Glucose',
+        //   style: kTextStyle,
+        // ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SizedBox(
+            width: 200,
+            child: TextField(
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(
+                hintText: 'Enter measurement',
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (value) {
+                print(value);
+              },
+            ),
           ),
-          onChanged: (value) {
-            print(value);
-          },
         ),
-      ),
-    ),
-    Text(
-      'mmol/L',
-      style: kTextStyle,
-    )
-  ],
-);
+        DropdownButton(
+          value: bloodGlucoseUnit,
+          items: [
+            DropdownMenuItem(
+              child: Text('Select unit type'),
+              value: 'Select unit type',
+            ),
+            DropdownMenuItem(
+              child: Text('mmol/L'),
+              value: 'mmol/L',
+            ),
+            DropdownMenuItem(
+              child: Text('mg/dL'),
+              value: 'mg/dL',
+            ),
+          ],
+          onChanged: (String? value) {
+            setState(() {
+              bloodGlucoseUnit = value;
+            });
+          },
+        )
+        // Text(
+        //   'mmol/L',
+        //   style: kTextStyle,
+        // )
+      ],
+    );
+  }
+}
+
+// Row bloodGlucoseTF = Row(
+//   mainAxisAlignment: MainAxisAlignment.center,
+//   children: [
+//     // Text(
+//     //   'Blood Glucose',
+//     //   style: kTextStyle,
+//     // ),
+//     Padding(
+//       padding: const EdgeInsets.all(8.0),
+//       child: SizedBox(
+//         width: 200,
+//         child: TextField(
+//           keyboardType: TextInputType.numberWithOptions(decimal: true),
+//           decoration: InputDecoration(
+//             hintText: 'Enter measurement',
+//             contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+//             border: OutlineInputBorder(),
+//           ),
+//           onChanged: (value) {
+//             print(value);
+//           },
+//         ),
+//       ),
+//     ),
+//     DropdownButton(
+//       value: bloodGlucoseUnit,
+//       items: [
+//         DropdownMenuItem(
+//           child: Text('mmol/L'),
+//           value: 'mmol/L',
+//         ),
+//         DropdownMenuItem(
+//           child: Text('mg/dL'),
+//           value: 'mg/dL',
+//         ),
+//       ],
+//       onChanged: (value) {
+//         setState(() {
+//           bloodGlucoseUnit = value;
+//         });
+//       },
+//     )
+//     // Text(
+//     //   'mmol/L',
+//     //   style: kTextStyle,
+//     // )
+//   ],
+// );
 
 Row heartRateTF = Row(
   mainAxisAlignment: MainAxisAlignment.center,
