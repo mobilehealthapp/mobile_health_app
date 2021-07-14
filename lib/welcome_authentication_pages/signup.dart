@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // ignore: unused_import
 import 'package:mobile_health_app/authentication_button.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/database.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/loginpage.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/verify.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
@@ -178,9 +179,17 @@ class _SignupPageState extends State<SignupPage> {
                   var areCredsValid = formKey.currentState?.validate();
                   if (areCredsValid == true) {
                     try {
-                      await _auth.createUserWithEmailAndPassword(
+                      var result = await _auth.createUserWithEmailAndPassword(
                           email: email, password: password);
-                      
+                      var user = result.user;
+                      if (accountType == 'Patient account') {
+                        await Database(uid: user!.uid).updatePatientData(
+                            firstName, lastName, email, accountType);
+                      } else if (accountType == 'Physician account') {
+                        await Database(uid: user!.uid).updateDoctorData(
+                            firstName, lastName, email, accountType);
+                      }
+
                       Navigator.push(
                           context,
                           MaterialPageRoute(
