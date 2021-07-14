@@ -56,7 +56,7 @@ class _CameraAppState extends State<CameraApp> {
     } else if (_selectedIndex == 1) {
       try {
         await _initializeControllerFuture;
-
+        // try this out
         // Attempt to take a picture and then get the location
         // where the image file is saved.
         // final picker = ImagePicker();
