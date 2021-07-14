@@ -12,6 +12,7 @@ class _LoginPageState extends State<LoginPage> {
   final _auth = FirebaseAuth.instance;
   var email;
   var password;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

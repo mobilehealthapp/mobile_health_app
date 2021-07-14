@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
@@ -17,6 +18,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _auth = FirebaseAuth.instance;
   var loggedInUser;
+
+  final String userId = '';
 
   void getCurrentUser() async {
     try {
@@ -54,7 +57,28 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Container(
         margin: EdgeInsets.all(20),
-        child: Text('Recent Analysis', style: kTextLabel1),
+        child: Column(
+          children: <Widget>[
+            // FutureBuilder(
+            //     future: FirebaseFirestore.instance
+            //         .collection('SignInInfo')
+            //         .doc(userId)
+            //         .get(),
+            //     builder: (context, snapshot) {
+            //       if (snapshot.connectionState == ConnectionState.waiting) {
+            //         return Text('Loading...');
+            //       }
+            //       return Row(
+            //         children: [
+            //           Text('Recent Analysis', style: kTextLabel1),
+            //           Text(
+            //             snapshot.data['fname'],
+            //           )
+            //         ],
+            //       );
+            //     }),
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavigationBar(items: [

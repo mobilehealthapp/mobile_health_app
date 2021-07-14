@@ -18,10 +18,11 @@ class HealthAnalysis extends StatelessWidget {
           children: <Widget>[
             Expanded(
               child: Container(
-                child: Card(math: 'Median'),
+                child: Card(math: 'Recent data'),
                 padding: EdgeInsets.only(bottom: 20.0),
               ),
             ),
+            // Expanded();
             Expanded(
               child: Card(math: 'Variance'),
             ),

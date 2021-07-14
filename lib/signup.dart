@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // ignore: unused_import
 import 'package:mobile_health_app/HomePage.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-// class SignupPage extends StatefulWidget {
+// class SignupPa`ge extends StatefulWidget {
 //   @override
 //   _SignupPageState createState() => _SignupPageState();
 // }
@@ -30,6 +31,7 @@ class _SignupPageState extends State<SignupPage> {
   var lastName;
   var email;
   var password;
+  FirebaseFirestore? fstore;
 
   @override
   Widget build(BuildContext context) {
@@ -158,6 +160,17 @@ class _SignupPageState extends State<SignupPage> {
                       try {
                         await _auth.createUserWithEmailAndPassword(
                             email: email, password: password);
+                        //
+                        await FirebaseFirestore.instance
+                            .collection('SignInInfo')
+                            .doc(_auth.currentUser!.uid)
+                            .set({
+                          'email': email,
+                          'fName': firstName,
+                          'lName': lastName,
+                        });
+
+                        //
                         //TODO: Handle case where account already exists properly
                         Navigator.push(
                             context,

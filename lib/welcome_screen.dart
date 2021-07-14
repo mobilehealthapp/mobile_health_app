@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'drawers.dart';
+import 'loginpage.dart';
 import 'signup.dart';
 
 class MyApp extends StatelessWidget {
@@ -21,17 +22,6 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawers(),
-      appBar: AppBar(
-        title: Center(
-            child: Text(
-          'Welcome',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 34,
-          ),
-        )),
-      ),
       body: SafeArea(
         child: Container(
           width: double.infinity,
@@ -67,7 +57,10 @@ class WelcomeScreen extends StatelessWidget {
                     color: Colors.white,
                     height: 50.0,
                     minWidth: 300,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => LoginPage()));
+                    },
                     shape: RoundedRectangleBorder(
                       // side: BorderSide(
                       //   color: Colors.black,
