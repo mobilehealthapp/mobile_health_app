@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Camera/data_input_page.dart';
 import 'package:mobile_health_app/Constants.dart';
+import 'package:mobile_health_app/drawers.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -39,6 +40,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.cyan,
         title: Text('HomePage'),
       ),
+      drawer: Drawers(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context)

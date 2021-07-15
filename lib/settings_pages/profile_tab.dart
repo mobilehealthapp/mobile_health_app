@@ -22,7 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: Color(0xFF00BCD4),
       ),
       body: SizedBox(
-        height: 700.0,
+        // height: 700.0,
         child: ListView(
           scrollDirection: Axis.vertical,
           padding: EdgeInsets.all(10.0),

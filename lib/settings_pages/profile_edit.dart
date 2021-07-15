@@ -4,6 +4,7 @@ import 'package:mobile_health_app/settings_pages/settings_card.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/database.dart';
 
 class ProfileEdit extends StatefulWidget {
   static String? sexChoose = '--Sex--';
@@ -109,7 +110,7 @@ class _ProfileEditState extends State<ProfileEdit> {
       final user = await _auth.currentUser;
       if (user != null) {
         loggedInUser = user;
-        print(loggedInUser.email);
+        print(loggedInUser.uid);
       }
     } catch (e) {
       print(e);
@@ -313,25 +314,39 @@ class _ProfileEditState extends State<ProfileEdit> {
                     ),
                     onTap: () {
                       setState(
-                        () {
+                        () async {
                           ProfileEdit.updateProfile();
-                          _firestore.collection('patientprofile').add(
-                            {
-                              'first': ProfileEdit.first,
-                              'last': ProfileEdit.last,
-                              'age': ProfileEdit.age,
-                              'dob': ProfileEdit.dob,
-                              'sexChoose': ProfileEdit.sexChoose,
-                              'conds': ProfileEdit.conds,
-                              'meds': ProfileEdit.meds,
-                              'wt': ProfileEdit.wt,
-                              'ht': ProfileEdit.ht,
-                              'tele': ProfileEdit.tele,
-                              'email': ProfileEdit.email,
-                              'address': ProfileEdit.adr,
-                              'user': loggedInUser,
-                            },
+                          await Database(uid: loggedInUser.uid)
+                              .updatePatientInfo(
+                            's',
+                            ProfileEdit.age,
+                            ProfileEdit.dob,
+                            ProfileEdit.meds,
+                            ProfileEdit.conds,
+                            ProfileEdit.wt,
+                            ProfileEdit.ht,
+                            ProfileEdit.tele,
+                            ProfileEdit.email,
+                            ProfileEdit.adr,
                           );
+
+                          // _firestore.collection('patientprofile').add(
+                          //   {
+                          //     'first': ProfileEdit.first,
+                          //     'last': ProfileEdit.last,
+                          //     'age': ProfileEdit.age,
+                          //     'dob': ProfileEdit.dob,
+                          //     'sexChoose': ProfileEdit.sexChoose,
+                          //     'conds': ProfileEdit.conds,
+                          //     'meds': ProfileEdit.meds,
+                          //     'wt': ProfileEdit.wt,
+                          //     'ht': ProfileEdit.ht,
+                          //     'tele': ProfileEdit.tele,
+                          //     'email': ProfileEdit.email,
+                          //     'address': ProfileEdit.adr,
+                          //     'user': loggedInUser,
+                          //   },
+                          // );
                           Navigator.pop(
                             context,
                             // {

@@ -189,7 +189,6 @@ class _SignupPageState extends State<SignupPage> {
                         await Database(uid: user!.uid).updateDoctorData(
                             firstName, lastName, email, accountType);
                       }
-
                       Navigator.push(
                           context,
                           MaterialPageRoute(

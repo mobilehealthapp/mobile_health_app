@@ -155,8 +155,7 @@ class _LoginPageState extends State<LoginPage> {
                                 email: email, password: password);
                             user = _auth.currentUser;
                             if (user.emailVerified) {
-                              Navigator.push(
-                                  context,
+                              Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
                                       builder: (context) => HomePage()));
                             } else {
