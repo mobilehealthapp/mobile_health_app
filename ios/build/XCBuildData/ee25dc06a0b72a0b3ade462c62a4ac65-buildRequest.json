@@ -1,0 +1,207 @@
+{
+  "buildCommand" : "prepareForIndexing",
+  "configuredTargets" : [
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cc184ad8b3c49a0c098ef639132f1afe4"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cd57b8bce60a0f11113f4cff532db68d3"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cb762d5de103fb6cfc7506aa6be1d4f33"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782ca408a4c1f668e62161cdeba76f57d50c"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cd367f2c9826e0c44989d081ca3d0f4ca"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cc075cc473fa5680b867d51f1363214ff"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c9da425bb6d6d5d8dbb95e4afffb82217"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cdd3a6a519ed4181bf31ea6bc1f18ebc5"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cd3c8dfff2c580c352f83d3850ad17775"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c32e568d1d64358cf46b257009674a4a8"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c96cd7ae8c7639d8f9257b5465384bf6b"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c718890dfdac589615663a02d43d9af3e"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cabf4362bb091559dc35dcdd3b7487a90"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c6a3314f48204dcd3250955aef3b5b25c"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cce8e18cb7dd8a33e75f807c37bedf494"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c6aa58d33b8894c02f49ea32c3da727fe"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c89407f53041142eaae1d1b95bf7530e4"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cc6d1d444ddcadd57f17ab82d7d733cd7"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c1bf3956e0b0b7dca1fc738f78ed406af"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c6f7d58eec4c0f792b1ff55ee57eea8f2"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cbb41957e73df17e1bbbdce1b01dac29f"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cf5c27a7e67c1d5b614b00827ec4a018b"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c8a7d664071b44f73cb182342c5c1ebdf"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c2dfd58002a3f3d9bbbb2f523d80b3159"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c2d0e61cbf0676d71b3c855d841851178"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cd4d54c561256419124df7595f34d2080"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cc4cfc37720fa615a9a741f191b2e24cf"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c76bc412566ed97a2d9179da0646e8751"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cf6e8577506bf3c32e7a056b1116a1fe3"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782ce5fbb111d5b2d40130e5c3601e74f720"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c4bba54feb42e8f238ff051d6386c7454"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c223abe9cf929af56bfb37765b8cf30f0"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c30aa2c47f93ae9bc6a8367fe6bb577b3"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782ccf304bc5c1177c586ccef8a07b393393"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c27091b2c975d303303c09b871c40bc4d"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c41a9e73b2585cb546680d93608f0e002"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c4a1f077e9f05c2a5ca636ea58eadd86c"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c4e08ec9088f450ab7ba86d3af7d1f6ab"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c5aeb068a3ab73ae62f9eaa3bd3b9e66e"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c312b4bc59bbbe2c06c205bf4da6737f5"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cf10882e1684b8a3dfdec597bc0a47af3"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cea730784e531c7b29a4d3807c4f260df"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c6f184aaa317f5985a6d0a56b4d2e0c13"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782ccb446d83a55866e5ca0338d00b7158fb"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782ce49342c138073362b0292529c5fa2a96"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c9840e8244cb75f43b3efe8cd6dec5ec5"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c3788d8769c821650606514be955fca93"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c7f74324bfc5c78140e34d510e26e00c1"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cd7de55694c750fe04d3bc1517f91a481"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cfdca3e568c0d4fe17f0e20bbe764df0d"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c6836e78755c7a49cbac94d6710bb39cc"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c2f4010ded3270ba8a1d157c3b2b3c207"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cbf764fd5de43d0e244cbe6e2f69c1731"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c812cb744006e837a06a1ec7fcf8ca389"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c0062393f91a1d2d94e3e5ed3a5aa5da9"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782cd6b4f9cd0664e4caf87e0ca8814c7d76"
+    },
+    {
+      "guid" : "8407adda155c690e02ce23a7f46b782c58e43d378bdedc3ceb60c1adb0f770ac"
+    }
+  ],
+  "continueBuildingAfterErrors" : true,
+  "enableIndexBuildArena" : false,
+  "hideShellScriptEnvironment" : false,
+  "parameters" : {
+    "action" : "build",
+    "arenaInfo" : {
+      "buildIntermediatesPath" : "",
+      "buildProductsPath" : "",
+      "derivedDataPath" : "/Users/oliviamasella/Library/Developer/Xcode/DerivedData",
+      "indexDataStoreFolderPath" : "/Users/oliviamasella/Library/Developer/Xcode/DerivedData/Pods-dvsbqocdbsfyssacdbxpoatihrmy/Index/DataStore",
+      "indexEnableDataStore" : true,
+      "indexPCHPath" : "/Users/oliviamasella/Library/Developer/Xcode/DerivedData/Pods-dvsbqocdbsfyssacdbxpoatihrmy/Index/PrecompiledHeaders",
+      "pchPath" : ""
+    },
+    "configurationName" : "Release",
+    "overrides" : {
+      "synthesized" : {
+        "table" : {
+          "ENABLE_PREVIEWS" : "NO"
+        }
+      }
+    }
+  },
+  "qos" : "default",
+  "schemeCommand" : "launch",
+  "shouldCollectMetrics" : false,
+  "showNonLoggedProgress" : true,
+  "useDryRun" : true,
+  "useImplicitDependencies" : false,
+  "useLegacyBuildLocations" : false,
+  "useParallelTargets" : false
+}

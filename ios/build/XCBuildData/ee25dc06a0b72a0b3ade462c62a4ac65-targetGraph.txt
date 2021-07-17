@@ -1,0 +1,209 @@
+Target dependency graph (57 targets)
+BoringSSL-GRPC in Pods
+PromisesObjC in Pods
+GoogleUtilities in Pods, depends on:
+PromisesObjC in Pods (explicit)
+nanopb in Pods
+GoogleDataTransport in Pods, depends on:
+GoogleUtilities in Pods (explicit)
+PromisesObjC in Pods (explicit)
+nanopb in Pods (explicit)
+FirebaseCoreDiagnostics in Pods, depends on:
+GoogleDataTransport in Pods (explicit)
+GoogleUtilities in Pods (explicit)
+nanopb in Pods (explicit)
+FirebaseCore in Pods, depends on:
+FirebaseCoreDiagnostics in Pods (explicit)
+GoogleUtilities in Pods (explicit)
+GTMSessionFetcher in Pods
+FirebaseAuth in Pods, depends on:
+FirebaseCore in Pods (explicit)
+GTMSessionFetcher in Pods (explicit)
+GoogleUtilities in Pods (explicit)
+abseil in Pods
+gRPC-C++-gRPCCertificates-Cpp in Pods
+gRPC-Core in Pods, depends on:
+BoringSSL-GRPC in Pods (explicit)
+abseil in Pods (explicit)
+gRPC-C++ in Pods, depends on:
+abseil in Pods (explicit)
+gRPC-C++-gRPCCertificates-Cpp in Pods (explicit)
+gRPC-Core in Pods (explicit)
+leveldb-library in Pods
+FirebaseFirestore in Pods, depends on:
+FirebaseCore in Pods (explicit)
+abseil in Pods (explicit)
+gRPC-C++ in Pods (explicit)
+leveldb-library in Pods (explicit)
+nanopb in Pods (explicit)
+Firebase in Pods, depends on:
+FirebaseAuth in Pods (explicit)
+FirebaseCore in Pods (explicit)
+FirebaseFirestore in Pods (explicit)
+Flutter in Pods
+GoogleToolboxForMac in Pods
+GoogleUtilitiesComponents in Pods, depends on:
+GoogleUtilities in Pods (explicit)
+Protobuf in Pods
+MLKitCommon in Pods, depends on:
+GoogleDataTransport in Pods (explicit)
+GoogleToolboxForMac in Pods (explicit)
+GoogleUtilities in Pods (explicit)
+GoogleUtilitiesComponents in Pods (explicit)
+GTMSessionFetcher in Pods (explicit)
+Protobuf in Pods (explicit)
+MLImage in Pods
+MLKitVision in Pods, depends on:
+GoogleToolboxForMac in Pods (explicit)
+GTMSessionFetcher in Pods (explicit)
+MLImage in Pods (explicit)
+MLKitCommon in Pods (explicit)
+Protobuf in Pods (explicit)
+MLKitBarcodeScanning in Pods, depends on:
+MLKitCommon in Pods (explicit)
+MLKitVision in Pods (explicit)
+MLKitDigitalInkRecognition-MLKitDigitalInkRecognition_resource in Pods
+MLKitMDD in Pods, depends on:
+MLKitCommon in Pods (explicit)
+SSZipArchive in Pods
+MLKitDigitalInkRecognition in Pods, depends on:
+MLKitCommon in Pods (explicit)
+MLKitDigitalInkRecognition-MLKitDigitalInkRecognition_resource in Pods (explicit)
+MLKitMDD in Pods (explicit)
+SSZipArchive in Pods (explicit)
+MLKitFaceDetection-GoogleMVFaceDetectorResources in Pods
+MLKitFaceDetection in Pods, depends on:
+MLKitCommon in Pods (explicit)
+MLKitFaceDetection-GoogleMVFaceDetectorResources in Pods (explicit)
+MLKitVision in Pods (explicit)
+MLKitImageLabeling-MLKitImageLabelingResources in Pods
+MLKitImageLabelingCommon in Pods, depends on:
+MLKitCommon in Pods (explicit)
+MLKitVision in Pods (explicit)
+MLKitObjectDetectionCommon-MLKitObjectDetectionCommonResources in Pods
+MLKitObjectDetectionCommon in Pods, depends on:
+MLKitCommon in Pods (explicit)
+MLKitObjectDetectionCommon-MLKitObjectDetectionCommonResources in Pods (explicit)
+MLKitVision in Pods (explicit)
+MLKitVisionKit in Pods, depends on:
+MLKitCommon in Pods (explicit)
+MLKitImageLabelingCommon in Pods (explicit)
+MLKitObjectDetectionCommon in Pods (explicit)
+MLKitVision in Pods (explicit)
+MLKitImageLabeling in Pods, depends on:
+MLKitCommon in Pods (explicit)
+MLKitImageLabeling-MLKitImageLabelingResources in Pods (explicit)
+MLKitImageLabelingCommon in Pods (explicit)
+MLKitVision in Pods (explicit)
+MLKitVisionKit in Pods (explicit)
+MLKitImageLabelingCustom in Pods, depends on:
+MLKitCommon in Pods (explicit)
+MLKitImageLabelingCommon in Pods (explicit)
+MLKitVision in Pods (explicit)
+MLKitVisionKit in Pods (explicit)
+MLKitPoseDetection-MLKitPoseDetectionFastResources in Pods
+MLKitPoseDetectionCommon-MLKitPoseDetectionCommonResources in Pods
+MLKitXenoCommon-MLKitXenoResources in Pods
+MLKitXenoCommon in Pods, depends on:
+MLKitCommon in Pods (explicit)
+MLKitVision in Pods (explicit)
+MLKitXenoCommon-MLKitXenoResources in Pods (explicit)
+MLKitPoseDetectionCommon in Pods, depends on:
+MLKitCommon in Pods (explicit)
+MLKitPoseDetectionCommon-MLKitPoseDetectionCommonResources in Pods (explicit)
+MLKitXenoCommon in Pods (explicit)
+MLKitPoseDetection in Pods, depends on:
+MLKitCommon in Pods (explicit)
+MLKitPoseDetection-MLKitPoseDetectionFastResources in Pods (explicit)
+MLKitPoseDetectionCommon in Pods (explicit)
+MLKitXenoCommon in Pods (explicit)
+MLKitPoseDetectionAccurate-MLKitPoseDetectionAccurateResources in Pods
+MLKitPoseDetectionAccurate in Pods, depends on:
+MLKitCommon in Pods (explicit)
+MLKitPoseDetectionAccurate-MLKitPoseDetectionAccurateResources in Pods (explicit)
+MLKitPoseDetectionCommon in Pods (explicit)
+MLKitXenoCommon in Pods (explicit)
+MLKitTextRecognition-GoogleMVTextDetectorResources in Pods
+MLKitTextRecognition in Pods, depends on:
+MLKitCommon in Pods (explicit)
+MLKitTextRecognition-GoogleMVTextDetectorResources in Pods (explicit)
+MLKitVision in Pods (explicit)
+GoogleMLKit in Pods, depends on:
+MLKitBarcodeScanning in Pods (explicit)
+MLKitCommon in Pods (explicit)
+MLKitDigitalInkRecognition in Pods (explicit)
+MLKitFaceDetection in Pods (explicit)
+MLKitImageLabeling in Pods (explicit)
+MLKitImageLabelingCustom in Pods (explicit)
+MLKitPoseDetection in Pods (explicit)
+MLKitPoseDetectionAccurate in Pods (explicit)
+MLKitTextRecognition in Pods (explicit)
+camera in Pods, depends on:
+Flutter in Pods (explicit)
+firebase_core in Pods, depends on:
+Firebase in Pods (explicit)
+Flutter in Pods (explicit)
+cloud_firestore in Pods, depends on:
+Firebase in Pods (explicit)
+Flutter in Pods (explicit)
+firebase_core in Pods (explicit)
+firebase_auth in Pods, depends on:
+Firebase in Pods (explicit)
+Flutter in Pods (explicit)
+firebase_core in Pods (explicit)
+google_ml_kit in Pods, depends on:
+Flutter in Pods (explicit)
+GoogleMLKit in Pods (explicit)
+image_picker in Pods, depends on:
+Flutter in Pods (explicit)
+path_provider in Pods, depends on:
+Flutter in Pods (explicit)
+shared_preferences in Pods, depends on:
+Flutter in Pods (explicit)
+Pods-Runner in Pods, depends on:
+BoringSSL-GRPC in Pods (explicit)
+Firebase in Pods (explicit)
+FirebaseAuth in Pods (explicit)
+FirebaseCore in Pods (explicit)
+FirebaseCoreDiagnostics in Pods (explicit)
+FirebaseFirestore in Pods (explicit)
+Flutter in Pods (explicit)
+GTMSessionFetcher in Pods (explicit)
+GoogleDataTransport in Pods (explicit)
+GoogleMLKit in Pods (explicit)
+GoogleToolboxForMac in Pods (explicit)
+GoogleUtilities in Pods (explicit)
+GoogleUtilitiesComponents in Pods (explicit)
+MLImage in Pods (explicit)
+MLKitBarcodeScanning in Pods (explicit)
+MLKitCommon in Pods (explicit)
+MLKitDigitalInkRecognition in Pods (explicit)
+MLKitFaceDetection in Pods (explicit)
+MLKitImageLabeling in Pods (explicit)
+MLKitImageLabelingCommon in Pods (explicit)
+MLKitImageLabelingCustom in Pods (explicit)
+MLKitMDD in Pods (explicit)
+MLKitObjectDetectionCommon in Pods (explicit)
+MLKitPoseDetection in Pods (explicit)
+MLKitPoseDetectionAccurate in Pods (explicit)
+MLKitPoseDetectionCommon in Pods (explicit)
+MLKitTextRecognition in Pods (explicit)
+MLKitVision in Pods (explicit)
+MLKitVisionKit in Pods (explicit)
+MLKitXenoCommon in Pods (explicit)
+PromisesObjC in Pods (explicit)
+Protobuf in Pods (explicit)
+SSZipArchive in Pods (explicit)
+abseil in Pods (explicit)
+camera in Pods (explicit)
+cloud_firestore in Pods (explicit)
+firebase_auth in Pods (explicit)
+firebase_core in Pods (explicit)
+gRPC-C++ in Pods (explicit)
+gRPC-Core in Pods (explicit)
+google_ml_kit in Pods (explicit)
+image_picker in Pods (explicit)
+leveldb-library in Pods (explicit)
+nanopb in Pods (explicit)
+path_provider in Pods (explicit)
+shared_preferences in Pods (explicit)

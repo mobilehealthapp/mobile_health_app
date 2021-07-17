@@ -117,7 +117,8 @@ class _DataInputState extends State<DataInput> {
                                   alertTitle: 'Missing Blood Pressure Data')
                               .showAlert();
                         });
-                  } // check: BP chosen AND (systolic empty OR diastolic empty)
+                  }
+                  // check: BP chosen AND (systolic empty OR diastolic empty)
                   else if (selectedDataType == 'Blood Pressure' &&
                       (systolic == null || diastolic == null)) {
                     String type = (systolic == null ? 'systolic' : 'diastolic');
@@ -134,7 +135,8 @@ class _DataInputState extends State<DataInput> {
                                       'Missing ${type[0].toUpperCase()}${type.substring(1)} Blood Pressure')
                               .showAlert();
                         });
-                  } // check: BG chosen AND glucose level empty AND glucose unit empty
+                  }
+                  // check: BG chosen AND glucose level empty AND glucose unit empty
                   else if (selectedDataType == 'Blood Glucose' &&
                       glucoseLevel == null &&
                       glucoseUnit == null) {
@@ -150,7 +152,8 @@ class _DataInputState extends State<DataInput> {
                                   alertTitle: 'Missing Blood Glucose data')
                               .showAlert();
                         });
-                  } // check: BG chosen AND (glucose level empty OR glucose unit empty)
+                  }
+                  // check: BG chosen AND (glucose level empty OR glucose unit empty)
                   else if (selectedDataType == 'Blood Glucose' &&
                       (glucoseLevel == null || glucoseUnit == null)) {
                     String msg = (glucoseLevel == null
@@ -171,7 +174,8 @@ class _DataInputState extends State<DataInput> {
                                       'Missing ${title[0].toUpperCase()}${title.substring(1)}')
                               .showAlert();
                         });
-                  } // check: BPM chosen AND bpm empty
+                  }
+                  // check: BPM chosen AND bpm empty
                   else if (selectedDataType == 'Heart Rate' && bpm == null) {
                     showDialog(
                         context: context,
@@ -184,7 +188,8 @@ class _DataInputState extends State<DataInput> {
                                   alertTitle: 'Missing Heart Rate Data')
                               .showAlert();
                         });
-                  } // check: no data type was chosen
+                  }
+                  // check: no data type was chosen
                   else if (selectedDataType == 'Select Data Type') {
                     showDialog(
                         context: context,
@@ -197,7 +202,8 @@ class _DataInputState extends State<DataInput> {
                                   alertTitle: 'Missing Data Type')
                               .showAlert();
                         });
-                  } // All clear!
+                  }
+                  // All clear!
                   else {
                     Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => CameraApp()));
