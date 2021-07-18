@@ -4,6 +4,8 @@ import 'package:mobile_health_app/settings_pages/settings_card.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/database.dart';
+import 'package:provider/provider.dart';
 
 class ProfileEdit extends StatefulWidget {
   static String? sexChoose = '--Sex--';
@@ -16,7 +18,7 @@ class ProfileEdit extends StatefulWidget {
   static String wt = 'Weight';
   static String ht = 'Height';
   static String tele = 'Telephone Number';
-  static String email = 'Email Address';
+  // static String email = 'Email Address';
   static String adr = 'Home Address';
 
   static TextEditingController firstTEC = TextEditingController();
@@ -28,7 +30,7 @@ class ProfileEdit extends StatefulWidget {
   static TextEditingController wtTEC = TextEditingController();
   static TextEditingController htTEC = TextEditingController();
   static TextEditingController teleTEC = TextEditingController();
-  static TextEditingController emailTEC = TextEditingController();
+  // static TextEditingController emailTEC = TextEditingController();
   static TextEditingController adrTEC = TextEditingController();
 
   static void updateProfile() {
@@ -76,11 +78,11 @@ class ProfileEdit extends StatefulWidget {
       ProfileEdit.tele = ProfileEdit.tele;
     } else
       ProfileEdit.tele = teleTEC.text;
-
-    if (emailTEC.text == '') {
-      ProfileEdit.email = ProfileEdit.email;
-    } else
-      ProfileEdit.email = emailTEC.text;
+    //
+    // if (emailTEC.text == '') {
+    //   ProfileEdit.email = ProfileEdit.email;
+    // } else
+    //   ProfileEdit.email = emailTEC.text;
 
     if (adrTEC.text == '') {
       ProfileEdit.adr = ProfileEdit.adr;
@@ -154,7 +156,9 @@ class _ProfileEditState extends State<ProfileEdit> {
               height: 10.0,
             ),
             TextField(
+              maxLength: 3,
               controller: ProfileEdit.ageTEC,
+              keyboardType: TextInputType.number,
               decoration: kTextFieldDecoration.copyWith(
                 hintText: ProfileEdit.age,
               ),
@@ -163,7 +167,9 @@ class _ProfileEditState extends State<ProfileEdit> {
               height: 10.0,
             ),
             TextField(
+              maxLength: 10,
               controller: ProfileEdit.dobTEC,
+              keyboardType: TextInputType.number,
               decoration: kTextFieldDecoration.copyWith(
                 hintText: ProfileEdit.dob,
               ),
@@ -187,11 +193,11 @@ class _ProfileEditState extends State<ProfileEdit> {
                     ),
                     DropdownMenuItem(
                       child: Text('M'),
-                      value: 'Male',
+                      value: 'M',
                     ),
                     DropdownMenuItem(
                       child: Text('F'),
-                      value: 'Female',
+                      value: 'F',
                     ),
                     DropdownMenuItem(
                       child: Text('X'),
@@ -253,15 +259,15 @@ class _ProfileEditState extends State<ProfileEdit> {
                 hintText: ProfileEdit.tele,
               ),
             ),
-            SizedBox(
-              height: 10.0,
-            ),
-            TextField(
-              controller: ProfileEdit.emailTEC,
-              decoration: kTextFieldDecoration.copyWith(
-                hintText: ProfileEdit.email,
-              ),
-            ),
+            // SizedBox(
+            //   height: 10.0,
+            // ),
+            // TextField(
+            //   controller: ProfileEdit.emailTEC,
+            //   decoration: kTextFieldDecoration.copyWith(
+            //     hintText: ProfileEdit.email,
+            //   ),
+            // ),
             SizedBox(
               height: 10.0,
             ),
@@ -294,7 +300,6 @@ class _ProfileEditState extends State<ProfileEdit> {
                           ProfileEdit.wt = ProfileEdit.wt;
                           ProfileEdit.ht = ProfileEdit.ht;
                           ProfileEdit.tele = ProfileEdit.tele;
-                          ProfileEdit.email = ProfileEdit.email;
                           ProfileEdit.adr = ProfileEdit.adr;
                           Navigator.pop(context);
                         },
@@ -311,45 +316,22 @@ class _ProfileEditState extends State<ProfileEdit> {
                       whichOne: 'Confirm',
                       colour: Colors.green[400],
                     ),
-                    onTap: () {
-                      setState(
-                        () {
-                          ProfileEdit.updateProfile();
-                          _firestore.collection('patientprofile').add(
-                            {
-                              'first': ProfileEdit.first,
-                              'last': ProfileEdit.last,
-                              'age': ProfileEdit.age,
-                              'dob': ProfileEdit.dob,
-                              'sexChoose': ProfileEdit.sexChoose,
-                              'conds': ProfileEdit.conds,
-                              'meds': ProfileEdit.meds,
-                              'wt': ProfileEdit.wt,
-                              'ht': ProfileEdit.ht,
-                              'tele': ProfileEdit.tele,
-                              'email': ProfileEdit.email,
-                              'address': ProfileEdit.adr,
-                              'user': loggedInUser,
-                            },
-                          );
-                          Navigator.pop(
-                            context,
-                            // {
-                            //   ProfileEdit.first,
-                            //   ProfileEdit.last,
-                            //   ProfileEdit.dob,
-                            //   ProfileEdit.age,
-                            //   ProfileEdit.sexChoose,
-                            //   ProfileEdit.conds,
-                            //   ProfileEdit.meds,
-                            //   ProfileEdit.wt,
-                            //   ProfileEdit.ht,
-                            //   ProfileEdit.tele,
-                            //   ProfileEdit.email,
-                            //   ProfileEdit.adr,
-                            // },
-                          );
-                        },
+                    onTap: () async {
+                      ProfileEdit.updateProfile();
+                      await Database(uid: loggedInUser.uid).updatePatientInfo(
+                          ProfileEdit.first,
+                          ProfileEdit.last,
+                          ProfileEdit.age,
+                          ProfileEdit.dob,
+                          ProfileEdit.sexChoose.toString(),
+                          ProfileEdit.ht,
+                          ProfileEdit.wt,
+                          ProfileEdit.conds,
+                          ProfileEdit.meds,
+                          ProfileEdit.tele,
+                          ProfileEdit.adr);
+                      Navigator.pop(
+                        context,
                       );
                     },
                   ),

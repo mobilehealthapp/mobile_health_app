@@ -3,10 +3,14 @@ import 'package:mobile_health_app/HomePage.dart';
 import 'package:mobile_health_app/Profile.dart';
 import 'package:mobile_health_app/physHome.dart';
 import 'package:mobile_health_app/settings_pages/settings.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
 import 'health_analysis.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Drawers extends StatelessWidget {
-  const Drawers({Key? key}) : super(key: key);
+  final _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -52,10 +56,14 @@ class Drawers extends StatelessWidget {
                 onClicked: () => select(context, 5),
               ),
               SizedBox(height: 10),
-              addItem(
-                text: 'Logout ',
-                icon: Icons.logout,
-                onClicked: () => select(context, 5),
+              ListTile(
+                onTap: () {
+                  _auth.signOut();
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => WelcomeScreen()));
+                },
+                leading: Icon(Icons.logout),
+                title: Text('Logout'),
               ),
               SizedBox(height: 10),
               addItem(

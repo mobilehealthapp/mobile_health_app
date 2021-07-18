@@ -4,6 +4,7 @@ import 'package:mobile_health_app/settings_pages/privacy_policy.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'settings_card.dart';
 import 'profile_tab.dart';
+import 'package:mobile_health_app/drawers.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -23,6 +24,7 @@ class _SettingsPageState extends State<SettingsPage> {
         centerTitle: true,
         backgroundColor: Color(0xFF00BCD4),
       ),
+      drawer: Drawers(),
       body: ListView(
         children: <Widget>[
           GestureDetector(

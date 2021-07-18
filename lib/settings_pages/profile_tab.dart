@@ -1,7 +1,35 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'settings_card.dart';
 import 'profile_edit.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+// class Patient {
+//   late String first;
+//   late String last;
+//   late String age;
+//   late String dob;
+//   late String meds;
+//   late String conds;
+//   late String ht;
+//   late String wt;
+//   late String tele;
+//   late String adr;
+//
+//   Patient.fromMap(Map<String, dynamic> data) {
+//     first = data['first name'];
+//     last = data['last name'];
+//     age = data['age'];
+//     dob = data['dob'];
+//     meds = data['meds'];
+//     conds = data['conds'];
+//     ht = data['ht'];
+//     wt = data['wt'];
+//     tele = data['tele'];
+//     adr = data['address'];
+//   }
+// }
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -9,6 +37,9 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,42 +54,45 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       body: SizedBox(
         height: 700.0,
+        // child: StreamBuilder<QuerySnapshot>(
+        //     // stream: _firestore.collection('patientprofile').snapshots(),
+        //     // builder: (context, snapshot) {
+        //     //   if (snapshot.hasData) {
+        //     //     var doc = snapshot.data!.docs;
         child: ListView(
           scrollDirection: Axis.vertical,
           padding: EdgeInsets.all(10.0),
           children: <Widget>[
             ProfileTab(
-              editAnswer: '${ProfileEdit.first} ${ProfileEdit.last}',
+              editAnswer:
+                  '${getPatientInfo('first name')} ${getPatientInfo('last name')}',
             ),
             ProfileTab(
-              editAnswer: '${ProfileEdit.age}',
+              editAnswer: '${getPatientInfo('age')}',
             ),
             ProfileTab(
-              editAnswer: '${ProfileEdit.dob}',
+              editAnswer: '${getPatientInfo('dob')}',
             ),
             ProfileTab(
-              editAnswer: '${ProfileEdit.sexChoose}',
+              editAnswer: '${getPatientInfo('sex')}',
             ),
             ProfileTab(
-              editAnswer: '${ProfileEdit.ht}',
+              editAnswer: '${getPatientInfo('ht')}',
             ),
             ProfileTab(
-              editAnswer: '${ProfileEdit.wt}',
+              editAnswer: '${getPatientInfo('wt')}',
             ),
             ProfileTab(
-              editAnswer: '${ProfileEdit.conds}',
+              editAnswer: '${getPatientInfo('conds')}',
             ),
             ProfileTab(
-              editAnswer: '${ProfileEdit.meds}',
+              editAnswer: '${getPatientInfo('meds')}',
             ),
             ProfileTab(
-              editAnswer: '${ProfileEdit.tele}',
+              editAnswer: '${getPatientInfo('tele')}',
             ),
             ProfileTab(
-              editAnswer: '${ProfileEdit.email}',
-            ),
-            ProfileTab(
-              editAnswer: '${ProfileEdit.adr}',
+              editAnswer: '${getPatientInfo('address')}',
             ),
             GestureDetector(
               onTap: () async {
@@ -79,5 +113,25 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
     );
+  }
+
+  Future<String> getCurrentUID() async {
+    return (_firebaseAuth.currentUser)!.uid;
+  }
+
+  var collection = FirebaseFirestore.instance.collection('patientprofile');
+
+  getPatientInfo(String field) {
+    collection
+        .doc(getCurrentUID().toString())
+        .snapshots()
+        .listen((docSnapshot) {
+      Map<String, dynamic>? data = docSnapshot.data();
+      if (docSnapshot.exists) {
+        Map<String, dynamic>? data = docSnapshot.data();
+
+        var value = data?[field];
+      }
+    });
   }
 }
