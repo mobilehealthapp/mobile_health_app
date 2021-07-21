@@ -41,19 +41,23 @@ class _DrProfilePageState extends State<DrProfilePage> {
           ProfileTab(
             editAnswer: '${DrProfileEdit.clinicAdd}',
           ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DrProfileEdit(),
-                  ),
+          Padding(
+            padding: EdgeInsets.all(10.0),
+            child: ElevatedButton(
+              onPressed: () {
+                setState(
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DrProfileEdit(),
+                      ),
+                    );
+                  },
                 );
-              });
-            },
-            child: SettingsCard(
-              settingsTab: TabContent(label: 'Edit my information'),
+              },
+              child: TabContent(label: 'Edit My Information'),
+              style: kSettingsCardStyle,
             ),
           ),
         ],

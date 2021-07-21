@@ -1,12 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/HomePage.dart';
-import 'package:mobile_health_app/Profile.dart';
 import 'package:mobile_health_app/output_sample.dart';
 import 'package:mobile_health_app/physHome.dart';
 import 'package:mobile_health_app/settings_pages/privacy_policy.dart';
 import 'package:mobile_health_app/settings_pages/settings.dart';
-
 import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
 import 'health_analysis.dart';
 
@@ -28,28 +26,12 @@ class Drawers extends StatelessWidget {
                 icon: Icons.home,
                 onClicked: () => select(context, 0),
               ),
-              addItem(
-                text: 'Profile',
-                icon: Icons.perm_identity,
-                onClicked: () => select(context, 1),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Setting',
-                icon: Icons.settings,
-                onClicked: () => select(context, 2),
-              ),
+
               SizedBox(height: 10),
               addItem(
                 text: 'Health Analysis',
                 icon: Icons.health_and_safety,
-                onClicked: () => select(context, 3),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Privacy Policy',
-                icon: Icons.info,
-                onClicked: () => select(context, 4),
+                onClicked: () => select(context, 2),
               ),
               SizedBox(height: 10),
               addItem(
@@ -58,19 +40,26 @@ class Drawers extends StatelessWidget {
                 onClicked: () => select(context, 5),
               ),
               SizedBox(height: 10),
+              addItem(
+                text: 'Settings',
+                icon: Icons.settings,
+                onClicked: () => select(context, 1),
+              ),
+              SizedBox(height: 10),
               ListTile(
-                  onTap: () {
-                    _auth.signOut();
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => WelcomeScreen()));
-                  },
-                  leading: Icon(Icons.logout),
-                  title: Text('Log out')),
+                onTap: () {
+                  _auth.signOut();
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => WelcomeScreen()));
+                },
+                leading: Icon(Icons.logout),
+                title: Text('Logout'),
+              ),
               SizedBox(height: 10),
               addItem(
                 text: 'Physician Side ',
                 icon: Icons.logout,
-                onClicked: () => select(context, 6),
+                onClicked: () => select(context, 5),
               ),
 
               // SizedBox
@@ -102,11 +91,11 @@ class Drawers extends StatelessWidget {
         break;
       case 1:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => OutputData()));
+            .push(MaterialPageRoute(builder: (context) => SettingsPage()));
         break;
       case 2:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => SettingsPage()));
+            .push(MaterialPageRoute(builder: (context) => HealthAnalysis()));
         break;
       case 3:
         Navigator.of(context)
@@ -114,13 +103,9 @@ class Drawers extends StatelessWidget {
         break;
       case 4:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => PrivacyPolicy()));
+            .push(MaterialPageRoute(builder: (context) => PhysHome()));
         break;
       case 5:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile()));
-        break;
-      case 6:
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => PhysHome()));
         break;

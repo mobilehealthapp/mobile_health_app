@@ -47,24 +47,6 @@ class TabContent extends StatelessWidget {
   }
 }
 
-class RedCard extends StatelessWidget {
-  RedCard({required this.deleteTab});
-
-  final Widget deleteTab;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: deleteTab,
-      margin: EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
-        color: Colors.red[900],
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-    );
-  }
-}
-
 class TabContent2 extends StatelessWidget {
   TabContent2({required this.label});
 
@@ -113,38 +95,11 @@ class ProfileTab extends StatelessWidget {
   }
 }
 
-class ContactTab extends StatelessWidget {
-  ContactTab({required this.answer});
-
-  final String answer;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(10.0),
-      padding: EdgeInsets.all(50.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(
-          10.0,
-        ),
-        color: Color(0xFF757575),
-      ),
-      child: Center(
-        child: Text(
-          answer,
-          style: GoogleFonts.rubik(
-            textStyle: TextStyle(fontSize: 20.0, color: Colors.white),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class Alert extends StatelessWidget {
   Alert({required this.alertBody});
 
   final String alertBody;
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -165,10 +120,11 @@ class Alert extends StatelessWidget {
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.pop(context, 'Cancel'),
-          child: const Text(
+          child: Text(
             'Cancel',
             style: TextStyle(
               fontSize: 16.0,
+              color: Color(0xFF0097A7),
             ),
           ),
         ),
@@ -179,10 +135,11 @@ class Alert extends StatelessWidget {
               builder: (context) => Alert2(),
             ),
           ),
-          child: const Text(
+          child: Text(
             'Confirm',
             style: TextStyle(
               fontSize: 16.0,
+              color: Color(0xFF0097A7),
             ),
           ),
         ),
@@ -214,91 +171,21 @@ class Alert2 extends StatelessWidget {
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.of(context)..pop()..pop(),
-          child: const Text(
+          child: Text(
             'Cancel',
             style: TextStyle(
               fontSize: 16.0,
+              color: Color(0xFF0097A7),
             ),
           ),
         ),
         TextButton(
           onPressed: () => Navigator.of(context)..pop()..pop(),
-          child: const Text(
+          child: Text(
             'Enter Password and Confirm',
             style: TextStyle(
               fontSize: 16.0,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class ContactEditButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(10.0),
-      padding: EdgeInsets.all(15.0),
-      decoration: BoxDecoration(
-        color: Colors.red[900],
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: Text(
-        'Edit',
-        style: GoogleFonts.rubik(
-          textStyle: TextStyle(
-            color: Colors.white,
-            fontSize: 15.0,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class EditContactInfo extends StatelessWidget {
-  EditContactInfo({required this.info, required this.infoHint});
-
-  final String info;
-  final String infoHint;
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        info,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 20.0,
-        ),
-      ),
-      content: TextField(
-        decoration: InputDecoration(
-          hintText: infoHint,
-          hintStyle: TextStyle(
-            fontSize: 20.0,
-            color: Colors.black,
-          ),
-        ),
-      ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text(
-            'Cancel',
-            style: TextStyle(
-              fontSize: 16.0,
-            ),
-          ),
-        ),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text(
-            'Confirm',
-            style: TextStyle(
-              fontSize: 16.0,
+              color: Color(0xFF0097A7),
             ),
           ),
         ),
@@ -334,3 +221,60 @@ class CancelOrConfirm extends StatelessWidget {
     );
   }
 }
+
+class Alert3 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        'When signing up, your physician was assigned a 12-digit code that is unique to them. Please contact your physician for this code if you have not yet received it.',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 20.0,
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.pop(context, 'Okay'),
+          child: Text(
+            'Okay',
+            style: TextStyle(
+              fontSize: 16.0,
+              color: Color(0xFF0097A7),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class Alert4 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        'This label is to help you remember your doctor\'s specialization. You can specify if they are your family physician, a specialist, or whichever label you would like!',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 20.0,
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.pop(context, 'Okay'),
+          child: Text(
+            'Okay',
+            style: TextStyle(
+              fontSize: 16.0,
+              color: Color(0xFF0097A7),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
+
