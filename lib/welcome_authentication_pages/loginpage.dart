@@ -17,6 +17,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final formKey = GlobalKey<FormState>();
   final _auth = FirebaseAuth.instance;
+  bool showSpinner = false;
   var user;
   var email;
   var password;
@@ -148,6 +149,9 @@ class _LoginPageState extends State<LoginPage> {
                         height: 20,
                       ),
                       AuthenticationButton('Patient Log in', () async {
+                        setState(() {
+                          showSpinner = true;
+                        });
                         var areCredsValid = formKey.currentState?.validate();
                         if (areCredsValid == true) {
                           try {
@@ -155,8 +159,7 @@ class _LoginPageState extends State<LoginPage> {
                                 email: email, password: password);
                             user = _auth.currentUser;
                             if (user.emailVerified) {
-                              Navigator.push(
-                                  context,
+                              Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
                                       builder: (context) => HomePage()));
                             } else {
@@ -166,6 +169,9 @@ class _LoginPageState extends State<LoginPage> {
                                       builder: (context) =>
                                           EmailVerificationScreen()));
                             }
+                            setState(() {
+                              showSpinner = false;
+                            });
                           } catch (signInError) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(

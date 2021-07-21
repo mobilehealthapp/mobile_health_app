@@ -16,7 +16,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   final auth = FirebaseAuth.instance;
   var user;
   var timer;
-
+  bool showSpinner = false;
   @override
   void initState() {
     user = auth.currentUser;
@@ -37,9 +37,14 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Text(
-            'An email has been sent to ${user.email}, please follow steps in email to verify and access full app functionality'),
+      body: Container(
+        padding: EdgeInsets.all(20.0),
+        child: Center(
+          child: Text(
+            'An email has been sent to ${user.email}, please follow steps in email to verify and access full app functionality',
+            style: TextStyle(fontSize: 20.0),
+          ),
+        ),
       ),
     );
   }
@@ -47,10 +52,16 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   Future<void> checkEmailVerify() async {
     user = auth.currentUser;
     await user.reload();
+    setState(() {
+      showSpinner = true;
+    });
     if (user.emailVerified) {
       timer.cancel();
       Navigator.of(context)
           .pushReplacement(MaterialPageRoute(builder: (context) => HomePage()));
+      setState(() {
+        showSpinner = false;
+      });
     }
   }
 }
