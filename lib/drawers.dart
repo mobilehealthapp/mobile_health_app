@@ -1,10 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/HomePage.dart';
+import 'package:mobile_health_app/output_sample.dart';
 import 'package:mobile_health_app/physHome.dart';
+import 'package:mobile_health_app/settings_pages/privacy_policy.dart';
 import 'package:mobile_health_app/settings_pages/settings.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
 import 'health_analysis.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class Drawers extends StatelessWidget {
   final _auth = FirebaseAuth.instance;
@@ -30,12 +32,6 @@ class Drawers extends StatelessWidget {
                 text: 'Health Analysis',
                 icon: Icons.health_and_safety,
                 onClicked: () => select(context, 2),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'More Information',
-                icon: Icons.info,
-                onClicked: () => select(context, 4),
               ),
               SizedBox(height: 10),
               addItem(

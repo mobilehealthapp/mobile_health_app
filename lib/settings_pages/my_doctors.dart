@@ -50,8 +50,8 @@ class _MyDoctorsState extends State<MyDoctors> {
   }
 }
 
-
-class DoctorCard extends StatelessWidget { //Card which will display information of doctor once patient adds one
+class DoctorCard extends StatelessWidget {
+  //Card which will display information of doctor once patient adds one
   const DoctorCard({Key? key}) : super(key: key);
 
   @override
@@ -65,13 +65,13 @@ class DoctorCard extends StatelessWidget { //Card which will display information
           Padding(
             padding: EdgeInsets.all(3.0),
             child: Text(
-                'Doctor\'s Label',
-                style: kLabelStyle,
+              'Doctor\'s Label',
+              style: kLabelStyle,
               textAlign: TextAlign.center,
             ),
           ),
           Padding(
-            padding:  EdgeInsets.all(3.0),
+            padding: EdgeInsets.all(3.0),
             child: Row(
               children: [
                 Expanded(
@@ -91,12 +91,11 @@ class DoctorCard extends StatelessWidget { //Card which will display information
               ],
             ),
           ),
-          
           Padding(
-            padding:  EdgeInsets.all(3.0),
+            padding: EdgeInsets.all(3.0),
             child: Text(
-                'Email',
-                style: kLabelStyle,
+              'Email',
+              style: kLabelStyle,
               textAlign: TextAlign.start,
             ),
           ),

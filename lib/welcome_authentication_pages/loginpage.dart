@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_health_app/HomePage.dart';
 import 'package:mobile_health_app/authentication_button.dart';
+import 'package:mobile_health_app/physHome.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/passwordreset..dart';
 import 'package:mobile_health_app/welcome_authentication_pages/verify.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
 
+import 'accountcheck.dart';
 import 'signup.dart';
 
 class LoginPage extends StatefulWidget {
@@ -17,6 +19,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final formKey = GlobalKey<FormState>();
   final _auth = FirebaseAuth.instance;
+  bool showSpinner = false;
   var user;
   var email;
   var password;
@@ -70,6 +73,7 @@ class _LoginPageState extends State<LoginPage> {
                         padding: EdgeInsets.all(20.0),
                         child: TextFormField(
                           validator: Validators.required('Email is required'),
+                          keyboardType: TextInputType.emailAddress,
                           onChanged: (value) {
                             email = value;
                           },
@@ -81,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                             filled: true,
                             fillColor: Colors.white,
                             icon: Icon(
-                              FontAwesomeIcons.user,
+                              FontAwesomeIcons.envelope,
                               color: Colors.black,
                             ),
                             hintText: 'Enter Email',
@@ -163,7 +167,7 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(
                         height: 20,
                       ),
-                      AuthenticationButton('Patient Log in', () async {
+                      AuthenticationButton('Log in', () async {
                         var areCredsValid = formKey.currentState?.validate();
                         if (areCredsValid == true) {
                           try {
@@ -171,10 +175,18 @@ class _LoginPageState extends State<LoginPage> {
                                 email: email, password: password);
                             user = _auth.currentUser;
                             if (user.emailVerified) {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => HomePage()));
+                              var uid = user!.uid;
+                              bool isPatient = await patientAccountCheck(uid);
+                              bool isDoctor = await doctorAccountCheck(uid);
+                              if (isPatient) {
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) => HomePage()));
+                              } else if (isDoctor) {
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) => PhysHome()));
+                              }
                             } else {
                               Navigator.push(
                                   context,
@@ -182,6 +194,9 @@ class _LoginPageState extends State<LoginPage> {
                                       builder: (context) =>
                                           EmailVerificationScreen()));
                             }
+                            setState(() {
+                              showSpinner = false;
+                            });
                           } catch (signInError) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -199,11 +214,6 @@ class _LoginPageState extends State<LoginPage> {
                       }, Colors.blueGrey),
                       SizedBox(
                         height: 30,
-                      ),
-                      AuthenticationButton(
-                          'Physician Log in', () {}, Colors.blueGrey),
-                      SizedBox(
-                        height: 15,
                       ),
                       TextButton(
                         child: Text(

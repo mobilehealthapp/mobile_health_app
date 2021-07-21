@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/settings_pages/settings_card.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -31,6 +30,7 @@ class _ProfileEditState extends State<ProfileEdit> {
   final _auth = FirebaseAuth.instance;
   var loggedInUser;
   var uid;
+  bool showSpinner = false;
 
   TextEditingController firstTEC = TextEditingController();
   TextEditingController lastTEC = TextEditingController();
@@ -85,7 +85,6 @@ class _ProfileEditState extends State<ProfileEdit> {
           ht = ht;
         } else
           ht = htTEC.text;
-
         if (teleTEC.text == '') {
           tele = tele;
         } else
@@ -104,7 +103,7 @@ class _ProfileEditState extends State<ProfileEdit> {
       if (user != null) {
         loggedInUser = user;
         print(loggedInUser.email);
-        uid = user.uid.toString(); //convert uid to String
+        uid = user.uid.toString();
       }
     } catch (e) {
       print(e);
@@ -329,7 +328,8 @@ class _ProfileEditState extends State<ProfileEdit> {
                     style: kConfirm,
                     onPressed: () async {
                       setState(
-                            () {
+                        () {
+                          showSpinner = true;
                           updateProfile();
                           Database(uid: loggedInUser.uid).updatePatientInfo(
                               first,
@@ -346,15 +346,18 @@ class _ProfileEditState extends State<ProfileEdit> {
                           Navigator.pop(
                             context,
                           );
+                          setState(() {
+                            showSpinner = false;
+                          });
                         },
                       );
                     },
                     child: Text(
                       'Confirm',
                       style: kAppBarLabelStyle,
-                      ),
                     ),
                   ),
+                ),
               ],
             ),
           ],
