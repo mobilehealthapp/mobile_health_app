@@ -13,6 +13,9 @@ double? glucoseLevel;
 String? glucoseUnit;
 double? bpm;
 
+// To convert mg/dL to mmol/L
+double glucoseConversion = 18.0182;
+
 Column bloodPressureTF = Column(
   children: [
     Row(
@@ -114,95 +117,47 @@ class _BloodGlucoseTFState extends State<BloodGlucoseTF> {
                 border: OutlineInputBorder(),
               ),
               onChanged: (value) {
-                if (value != '') {
-                  glucoseLevel = double.parse(value);
-                } else {
-                  glucoseLevel = null;
-                }
+                setState(() {
+                  if (value != '') {
+                    glucoseLevel = double.parse(value);
+                  } else {
+                    glucoseLevel = null;
+                  }
+                });
               },
             ),
           ),
         ),
         DropdownButton(
-          value: bloodGlucoseUnit,
-          items: [
-            DropdownMenuItem(
-              child: Text('Select unit type'),
-              value: 'Select unit type',
-            ),
-            DropdownMenuItem(
-              child: Text('mmol/L'),
-              value: 'mmol/L',
-            ),
-            DropdownMenuItem(
-              child: Text('mg/dL'),
-              value: 'mg/dL',
-            ),
-          ],
-          onChanged: (String? value) {
-            if (value != 'Select unit type') {
-              glucoseUnit = value;
-            } else {
-              glucoseUnit = null;
-            }
-            setState(() {
-              bloodGlucoseUnit = value;
-            });
-          },
-        )
+            value: bloodGlucoseUnit,
+            items: [
+              DropdownMenuItem(
+                child: Text('Select unit type'),
+                value: 'Select unit type',
+              ),
+              DropdownMenuItem(
+                child: Text('mmol/L'),
+                value: 'mmol/L',
+              ),
+              DropdownMenuItem(
+                child: Text('mg/dL'),
+                value: 'mg/dL',
+              ),
+            ],
+            onChanged: (String? value) {
+              if (value != 'Select unit type') {
+                glucoseUnit = value;
+              } else {
+                glucoseUnit = null;
+              }
+              setState(() {
+                bloodGlucoseUnit = value;
+              });
+            }),
       ],
     );
   }
 }
-
-// Row bloodGlucoseTF = Row(
-//   mainAxisAlignment: MainAxisAlignment.center,
-//   children: [
-//     // Text(
-//     //   'Blood Glucose',
-//     //   style: kTextStyle,
-//     // ),
-//     Padding(
-//       padding: const EdgeInsets.all(8.0),
-//       child: SizedBox(
-//         width: 200,
-//         child: TextField(
-//           keyboardType: TextInputType.numberWithOptions(decimal: true),
-//           decoration: InputDecoration(
-//             hintText: 'Enter measurement',
-//             contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-//             border: OutlineInputBorder(),
-//           ),
-//           onChanged: (value) {
-//             print(value);
-//           },
-//         ),
-//       ),
-//     ),
-//     DropdownButton(
-//       value: bloodGlucoseUnit,
-//       items: [
-//         DropdownMenuItem(
-//           child: Text('mmol/L'),
-//           value: 'mmol/L',
-//         ),
-//         DropdownMenuItem(
-//           child: Text('mg/dL'),
-//           value: 'mg/dL',
-//         ),
-//       ],
-//       onChanged: (value) {
-//         setState(() {
-//           bloodGlucoseUnit = value;
-//         });
-//       },
-//     )
-//     // Text(
-//     //   'mmol/L',
-//     //   style: kTextStyle,
-//     // )
-//   ],
-// );
 
 Row heartRateTF = Row(
   mainAxisAlignment: MainAxisAlignment.center,

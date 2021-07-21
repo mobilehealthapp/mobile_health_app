@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Camera/data_input_page.dart';
 import 'package:mobile_health_app/Constants.dart';
+import 'drawers.dart';
 import 'package:mobile_health_app/drawers.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
 
