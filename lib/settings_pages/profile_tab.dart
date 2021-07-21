@@ -5,40 +5,70 @@ import 'settings_card.dart';
 import 'profile_edit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-// class Patient {
-//   late String first;
-//   late String last;
-//   late String age;
-//   late String dob;
-//   late String meds;
-//   late String conds;
-//   late String ht;
-//   late String wt;
-//   late String tele;
-//   late String adr;
-//
-//   Patient.fromMap(Map<String, dynamic> data) {
-//     first = data['first name'];
-//     last = data['last name'];
-//     age = data['age'];
-//     dob = data['dob'];
-//     meds = data['meds'];
-//     conds = data['conds'];
-//     ht = data['ht'];
-//     wt = data['wt'];
-//     tele = data['tele'];
-//     adr = data['address'];
-//   }
-// }
+final patientRef = FirebaseFirestore.instance
+    .collection('patientprofile'); // create this as global variable
+var first;
+var last;
+var adr;
+var age;
+var dob;
+var wt;
+var ht;
+var meds;
+var conds;
+var tele;
+var sex;
 
 class ProfilePage extends StatefulWidget {
+  const ProfilePage({Key? key}) : super(key: key);
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final _firestore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
+  var loggedInUser;
+  var uid;
+
+  void getCurrentUser() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        loggedInUser = user;
+        print(loggedInUser.email);
+        uid = user.uid.toString(); //convert uid to String
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  getUserData(uid) async {
+    final DocumentSnapshot patientInfo = await patientRef.doc(uid).get();
+    setState(
+      () {
+        first = patientInfo.get('first name');
+        last = patientInfo.get('last name');
+        adr = patientInfo.get('address');
+        age = patientInfo.get('age');
+        dob = patientInfo.get('dob');
+        wt = patientInfo.get('wt');
+        ht = patientInfo.get('ht');
+        meds = patientInfo.get('meds');
+        conds = patientInfo.get('conds');
+        tele = patientInfo.get('tele');
+        sex = patientInfo.get('sex');
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    getCurrentUser();
+    getUserData(uid);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,86 +82,55 @@ class _ProfilePageState extends State<ProfilePage> {
         centerTitle: true,
         backgroundColor: Color(0xFF00BCD4),
       ),
-      body: SizedBox(
-        height: 700.0,
-        // child: StreamBuilder<QuerySnapshot>(
-        //     // stream: _firestore.collection('patientprofile').snapshots(),
-        //     // builder: (context, snapshot) {
-        //     //   if (snapshot.hasData) {
-        //     //     var doc = snapshot.data!.docs;
-        child: ListView(
-          scrollDirection: Axis.vertical,
-          padding: EdgeInsets.all(10.0),
-          children: <Widget>[
-            ProfileTab(
-              editAnswer:
-                  '${getPatientInfo('first name')} ${getPatientInfo('last name')}',
-            ),
-            ProfileTab(
-              editAnswer: '${getPatientInfo('age')}',
-            ),
-            ProfileTab(
-              editAnswer: '${getPatientInfo('dob')}',
-            ),
-            ProfileTab(
-              editAnswer: '${getPatientInfo('sex')}',
-            ),
-            ProfileTab(
-              editAnswer: '${getPatientInfo('ht')}',
-            ),
-            ProfileTab(
-              editAnswer: '${getPatientInfo('wt')}',
-            ),
-            ProfileTab(
-              editAnswer: '${getPatientInfo('conds')}',
-            ),
-            ProfileTab(
-              editAnswer: '${getPatientInfo('meds')}',
-            ),
-            ProfileTab(
-              editAnswer: '${getPatientInfo('tele')}',
-            ),
-            ProfileTab(
-              editAnswer: '${getPatientInfo('address')}',
-            ),
-            GestureDetector(
-              onTap: () async {
+      body: ListView(
+        children: [
+          ProfileTab(
+            editAnswer: 'Name: $first $last',
+          ),
+          ProfileTab(
+            editAnswer: 'Age: $age',
+          ),
+          ProfileTab(
+            editAnswer: 'Date of Birth: $dob',
+          ),
+          ProfileTab(
+            editAnswer: 'Sex: $sex',
+          ),
+          ProfileTab(
+            editAnswer: 'Height: $ht',
+          ),
+          ProfileTab(
+            editAnswer: 'Weight: $wt',
+          ),
+          ProfileTab(
+            editAnswer: 'Medical Conditions: $conds',
+          ),
+          ProfileTab(
+            editAnswer: 'Medications: $meds',
+          ),
+          ProfileTab(
+            editAnswer: 'Telephone Number: $tele',
+          ),
+          ProfileTab(
+            editAnswer: 'Home Address: $adr',
+          ),
+          Padding(
+            padding: EdgeInsets.all(10.0),
+            child: ElevatedButton(
+              onPressed: () async {
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => ProfileEdit(),
                   ),
-                ).then(
-                  (value) => ProfileEdit.updateProfile(),
-                );
+                ).then((value) => getUserData(uid));
               },
-              child: SettingsCard(
-                settingsTab: TabContent(label: 'Edit my information'),
-              ),
+              child: TabContent(label: 'Edit My Information'),
+              style: kSettingsCardStyle,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
-  }
-
-  Future<String> getCurrentUID() async {
-    return (_firebaseAuth.currentUser)!.uid;
-  }
-
-  var collection = FirebaseFirestore.instance.collection('patientprofile');
-
-  getPatientInfo(String field) {
-    collection
-        .doc(getCurrentUID().toString())
-        .snapshots()
-        .listen((docSnapshot) {
-      Map<String, dynamic>? data = docSnapshot.data();
-      if (docSnapshot.exists) {
-        Map<String, dynamic>? data = docSnapshot.data();
-
-        var value = data?[field];
-      }
-    });
   }
 }

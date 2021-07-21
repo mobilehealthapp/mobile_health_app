@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/HomePage.dart';
-import 'package:mobile_health_app/Profile.dart';
 import 'package:mobile_health_app/physHome.dart';
 import 'package:mobile_health_app/settings_pages/settings.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
 import 'health_analysis.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Drawers extends StatelessWidget {
@@ -26,22 +24,12 @@ class Drawers extends StatelessWidget {
                 icon: Icons.home,
                 onClicked: () => select(context, 0),
               ),
-              addItem(
-                text: 'Profile',
-                icon: Icons.perm_identity,
-                onClicked: () => select(context, 1),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Setting',
-                icon: Icons.settings,
-                onClicked: () => select(context, 2),
-              ),
+
               SizedBox(height: 10),
               addItem(
                 text: 'Health Analysis',
                 icon: Icons.health_and_safety,
-                onClicked: () => select(context, 3),
+                onClicked: () => select(context, 2),
               ),
               SizedBox(height: 10),
               addItem(
@@ -54,6 +42,12 @@ class Drawers extends StatelessWidget {
                 text: 'Contact',
                 icon: Icons.contacts,
                 onClicked: () => select(context, 5),
+              ),
+              SizedBox(height: 10),
+              addItem(
+                text: 'Settings',
+                icon: Icons.settings,
+                onClicked: () => select(context, 1),
               ),
               SizedBox(height: 10),
               ListTile(
@@ -69,7 +63,7 @@ class Drawers extends StatelessWidget {
               addItem(
                 text: 'Physician Side ',
                 icon: Icons.logout,
-                onClicked: () => select(context, 6),
+                onClicked: () => select(context, 5),
               ),
 
               // SizedBox
@@ -101,11 +95,11 @@ class Drawers extends StatelessWidget {
         break;
       case 1:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile_Page()));
+            .push(MaterialPageRoute(builder: (context) => SettingsPage()));
         break;
       case 2:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => SettingsPage()));
+            .push(MaterialPageRoute(builder: (context) => HealthAnalysis()));
         break;
       case 3:
         Navigator.of(context)
@@ -113,13 +107,9 @@ class Drawers extends StatelessWidget {
         break;
       case 4:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile_Page()));
+            .push(MaterialPageRoute(builder: (context) => PhysHome()));
         break;
       case 5:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile_Page()));
-        break;
-      case 6:
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => PhysHome()));
         break;

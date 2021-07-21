@@ -54,24 +54,6 @@ class _HomePageState extends State<HomePage> {
         margin: EdgeInsets.all(20),
         child: Text('Recent Analysis', style: kTextLabel1),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.home,
-                color: Colors.blue,
-              ),
-              label: 'home',
-              backgroundColor: Colors.white),
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.settings,
-                color: Colors.blue,
-              ),
-              label: 'setting'),
-        ],
-      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }

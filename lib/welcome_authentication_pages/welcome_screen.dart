@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/authentication_button.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/loginpage.dart';
-
-import '../drawers.dart';
 import 'signup.dart';
 
 class MyApp extends StatelessWidget {
@@ -24,17 +22,6 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawers(),
-      // appBar: AppBar(
-      //   title: Center(
-      //       child: Text(
-      //     'Welcome',
-      //     style: TextStyle(
-      //       color: Colors.white,
-      //       fontSize: 34,
-      //     ),
-      //   )),
-      // ),
       body: SafeArea(
         child: Container(
           width: double.infinity,
