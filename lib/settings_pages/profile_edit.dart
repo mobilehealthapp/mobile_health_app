@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mobile_health_app/welcome_authentication_pages/database.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/database_auth_services..dart';
 
 final patientRef = FirebaseFirestore.instance
     .collection('patientprofile'); // create this as global variable
@@ -331,21 +331,19 @@ class _ProfileEditState extends State<ProfileEdit> {
                         () {
                           showSpinner = true;
                           updateProfile();
-                          Database(uid: loggedInUser.uid).updatePatientInfo(
-                              first,
-                              last,
-                              age,
-                              dob,
-                              sex.toString(),
-                              ht,
-                              wt,
-                              conds,
-                              meds,
-                              tele,
-                              adr);
-                          Navigator.pop(
-                            context,
-                          );
+                          Navigator.pop(context, {
+                            first,
+                            last,
+                            age,
+                            dob,
+                            sex.toString(),
+                            ht,
+                            wt,
+                            conds,
+                            meds,
+                            tele,
+                            adr
+                          });
                           setState(() {
                             showSpinner = false;
                           });

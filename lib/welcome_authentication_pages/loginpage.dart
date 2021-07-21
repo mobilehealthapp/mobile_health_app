@@ -81,7 +81,6 @@ class _LoginPageState extends State<LoginPage> {
                             fontSize: 20,
                             color: Colors.black,
                           ),
-                          keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Colors.white,
@@ -97,12 +96,16 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF0097A7), width: 1.0),
-                              borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                              borderSide: BorderSide(
+                                  color: Color(0xFF0097A7), width: 1.0),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10.0)),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF0097A7), width: 2.0),
-                              borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                              borderSide: BorderSide(
+                                  color: Color(0xFF0097A7), width: 2.0),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10.0)),
                             ),
                           ),
                         ),
@@ -135,12 +138,16 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF0097A7), width: 1.0),
-                              borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                              borderSide: BorderSide(
+                                  color: Color(0xFF0097A7), width: 1.0),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10.0)),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF0097A7), width: 2.0),
-                              borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                              borderSide: BorderSide(
+                                  color: Color(0xFF0097A7), width: 2.0),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10.0)),
                             ),
                           ),
                         ),
