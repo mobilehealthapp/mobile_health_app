@@ -38,6 +38,7 @@ double translateY(
 }
 
 Stack? CameraOverlay(recognisedText, absoluteImageSize, rotation, size) {
+  Color _blockColour = Colors.blueGrey.withOpacity(0.75);
   print(size);
   List<Widget> boxes = [
     // Positioned.fromRect(
@@ -67,11 +68,16 @@ Stack? CameraOverlay(recognisedText, absoluteImageSize, rotation, size) {
               rect: Rect.fromLTRB(left, top, right, bottom),
               child: FittedBox(
                 fit: BoxFit.contain,
-                child: Container(
-                  color: Colors.cyan.withOpacity(0.5),
-                  child: Text(
-                    element.text,
-                    style: TextStyle(color: Colors.white, fontSize: 20),
+                child: GestureDetector(
+                  onTap: () {
+                    print("tapped on ${element.text}!");
+                  },
+                  child: Container(
+                    color: _blockColour,
+                    child: Text(
+                      element.text,
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
                   ),
                 ),
               ),
