@@ -52,8 +52,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
+    return Scaffold(
       drawer: Drawers(),
       appBar: AppBar(actions: [
         Padding(
@@ -95,6 +94,6 @@ class _HomePageState extends State<HomePage> {
             // bottomNavigationBar: btomNav(),
             ),
       ),
-    ));
+    );
   }
 }
