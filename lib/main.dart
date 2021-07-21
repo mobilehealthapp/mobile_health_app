@@ -4,12 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
 
 late List<CameraDescription> cameras;
-// Future<void> main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//
-//   cameras = await availableCameras();
-//   runApp(MyApp());
-// }
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   cameras = await availableCameras();

@@ -5,6 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'OCR_text_overlay.dart';
+import 'dart:ui';
+
+final windowSize =
+    Size(window.physicalSize.width / 2, window.physicalSize.height / 2);
 
 class CameraApp extends StatefulWidget {
   @override
@@ -21,6 +26,9 @@ class _CameraAppState extends State<CameraApp> {
   List<InputImage> lastImage = [];
   bool isStreamingImages = false;
   String alertText = 'Nothing Found!';
+  RecognisedText? ocrText;
+  Size? imageSize;
+  InputImageRotation imageRotation = InputImageRotation.Rotation_0deg;
 
   @override
   void initState() {
@@ -32,6 +40,7 @@ class _CameraAppState extends State<CameraApp> {
       if (!mounted) {
         return;
       }
+      print("size = $windowSize");
       setState(() {});
     });
     _initializeControllerFuture = controller.initialize();
@@ -49,13 +58,14 @@ class _CameraAppState extends State<CameraApp> {
     isBusy = true;
     final recognisedText = await textDetector.processImage(inputImage);
     print('Found ${recognisedText.blocks.length} textBlocks');
-    // final blocks = recognisedText.blocks;
-    // for (TextBlock textBlock in blocks) {
-    //   print(textBlock.text);
-    //   print(textBlock.cornerPoints);
-    // }
+
+    ocrText = recognisedText;
     alertText = recognisedText.text;
-    print(recognisedText.text);
+    if (inputImage.inputImageData?.size != null &&
+        inputImage.inputImageData?.imageRotation != null) {
+      imageSize = inputImage.inputImageData!.size;
+      imageRotation = inputImage.inputImageData!.imageRotation;
+    }
     isBusy = false;
   }
 
@@ -97,7 +107,6 @@ class _CameraAppState extends State<CameraApp> {
 
     final inputImage =
         InputImage.fromBytes(bytes: bytes, inputImageData: inputImageData);
-
     lastImage = [inputImage];
     // processImage(inputImage);
   }
@@ -105,7 +114,19 @@ class _CameraAppState extends State<CameraApp> {
   Future<void> _onItemTapped(int index) async {
     _selectedIndex = index;
     if (_selectedIndex == 0) {
-      Navigator.pop(context);
+      try {
+        await _initializeControllerFuture;
+        if (!isStreamingImages) {
+          await controller.startImageStream(_processCameraImage);
+          setState(() {
+            showImage = false;
+          });
+          isStreamingImages = true;
+        }
+      } catch (e) {
+        // If an error occurs, log the error to the console.
+        print(e);
+      }
     } else if (_selectedIndex == 1) {
       try {
         await _initializeControllerFuture;
@@ -164,14 +185,12 @@ class _CameraAppState extends State<CameraApp> {
         title: Text('Take an image'),
         backgroundColor: Colors.cyan,
       ),
-      body:
-          showImage ? Image.file(File(pathToImage)) : CameraPreview(controller),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.cyan,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.arrow_back_ios),
-            label: 'back',
+            icon: Icon(Icons.camera_alt_outlined),
+            label: 'Retake',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings_overscan),
@@ -186,6 +205,32 @@ class _CameraAppState extends State<CameraApp> {
         onTap: (index) {
           _onItemTapped(index);
         },
+      ),
+      body: ConstrainedBox(
+        constraints:
+            BoxConstraints.loose(Size(double.infinity, double.infinity)),
+        child: showImage
+            ? Stack(
+                clipBehavior: Clip.none,
+                fit: StackFit.loose,
+                children: [
+                  Image.file(File(pathToImage)),
+                  Container(
+                    child: CameraOverlay(
+                      ocrText,
+                      imageSize,
+                      imageRotation,
+                      Size(
+                          windowSize.width,
+                          windowSize.height -
+                              AppBar().preferredSize.height -
+                              MediaQuery.of(context).padding.top -
+                              kBottomNavigationBarHeight),
+                    ),
+                  ),
+                ],
+              )
+            : CameraPreview(controller),
       ),
       extendBody: true,
     );

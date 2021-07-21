@@ -77,6 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                             fontSize: 20,
                             color: Colors.black,
                           ),
+                          keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Colors.white,
