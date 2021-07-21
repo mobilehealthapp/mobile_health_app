@@ -1,7 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Camera/data_input_page.dart';
 import 'package:mobile_health_app/drawers.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
+
+final patientRef = FirebaseFirestore.instance
+    .collection('patientprofile'); //declare reference high up in file
+var name; //declare variable high up in file
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -13,6 +19,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _auth = FirebaseAuth.instance;
   var loggedInUser;
+  var uid; //declare below state
 
   void getCurrentUser() async {
     try {
@@ -20,26 +27,45 @@ class _HomePageState extends State<HomePage> {
       if (user != null) {
         loggedInUser = user;
         print(loggedInUser.email);
+        uid = user.uid.toString(); //convert to string in this method
       }
     } catch (e) {
       print(e);
     }
   }
 
+  getUserData(uid) async {
+    final DocumentSnapshot patientInfo = await patientRef.doc(uid).get();
+    setState(() {
+      name = patientInfo.get('first name');
+    });
+  }
+
   @override
   void initState() {
-    super.initState();
     getCurrentUser();
+    getUserData(uid);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.cyan,
-        title: Text('HomePage'),
-      ),
+    return SafeArea(
+        child: Scaffold(
       drawer: Drawers(),
+      appBar: AppBar(actions: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: GestureDetector(
+            child: Icon(Icons.logout),
+            onTap: () async {
+              FirebaseAuth.instance.signOut();
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => WelcomeScreen()));
+            },
+          ),
+        )
+      ], backgroundColor: Colors.cyan, title: Text('Hello, $name')),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context)
@@ -67,6 +93,6 @@ class _HomePageState extends State<HomePage> {
             // bottomNavigationBar: btomNav(),
             ),
       ),
-    );
+    ));
   }
 }
