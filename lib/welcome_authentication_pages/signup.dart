@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // ignore: unused_import
 import 'package:mobile_health_app/authentication_button.dart';
-import 'package:mobile_health_app/welcome_authentication_pages/database.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/database_auth_services..dart';
 import 'package:mobile_health_app/welcome_authentication_pages/loginpage.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/verify.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
@@ -130,86 +130,84 @@ class _SignupPageState extends State<SignupPage> {
                         }
                       ]),
                     ),
-                    DropdownButton<String>(
-                      value: _chosenValue,
-                      focusColor: Colors.white,
-                      elevation: 5,
-                      items: <String>[
-                        'Patient account',
-                        'Physician account',
-                      ].map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(
-                            value,
-                            style: TextStyle(color: Colors.black, fontSize: 18),
+                    Center(
+                      child: Container(
+                        height: 50,
+                        width: 250,
+                        child: DropdownButtonFormField<String>(
+                          isExpanded: true,
+                          validator: (value) => value == null
+                              ? 'Please select an account type'
+                              : null,
+                          value: _chosenValue,
+                          focusColor: Colors.white,
+                          elevation: 5,
+                          items: <String>[
+                            'Patient account',
+                            'Physician account',
+                          ].map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(
+                                value,
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 18),
+                              ),
+                            );
+                          }).toList(),
+                          style: TextStyle(color: Colors.black),
+                          iconEnabledColor: Colors.black,
+                          hint: Text(
+                            'Account Type',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18),
                           ),
-                        );
-                      }).toList(),
-                      style: TextStyle(color: Colors.black),
-                      iconEnabledColor: Colors.black,
-                      hint: Text(
-                        'Account Type',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18),
+                          onChanged: (String? value) {
+                            setState(() {
+                              _chosenValue = value;
+                              accountType = value;
+                            });
+                          },
+                        ),
                       ),
-                      onChanged: (String? value) {
-                        setState(() {
-                          _chosenValue = value;
-                          accountType = value;
-                        });
-                      },
                     )
                   ],
                 ),
               ),
-              Container(
-                // padding: EdgeInsets.only(top: 3, left: 3),
-                // decoration: BoxDecoration(
-                //   borderRadius: BorderRadius.circular(50),
-                //   border: Border(
-                //     BorderSide(color: Colors.white),
-                //     bottom: BorderSide(color: Colors.red),
-                //     top: BorderSide(color: Colors.red),
-                //     left: BorderSide(color: Colors.white),
-                //     right: BorderSide(color: Colors.white),
-                //   ),
-                // ),
-                child: AuthenticationButton('Sign up', () async {
-                  var areCredsValid = formKey.currentState?.validate();
-                  if (areCredsValid == true) {
-                    try {
-                      var result = await _auth.createUserWithEmailAndPassword(
-                          email: email, password: password);
-                      var user = result.user;
-                      if (accountType == 'Patient account') {
-                        await Database(uid: user!.uid).updatePatientData(
-                            firstName, lastName, email, accountType);
-                      } else if (accountType == 'Physician account') {
-                        await Database(uid: user!.uid).updateDoctorData(
-                            firstName, lastName, email, accountType);
-                      }
-
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EmailVerificationScreen()));
-                    } catch (signUpError) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          duration: Duration(seconds: 10),
-                          backgroundColor: Colors.red,
-                          content: Text(
-                            signUpError.toString().split('] ')[1],
-                            style: TextStyle(fontSize: 20.0),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      );
+              AuthenticationButton('Sign up', () async {
+                var areCredsValid = formKey.currentState?.validate();
+                if (areCredsValid == true) {
+                  try {
+                    var result = await _auth.createUserWithEmailAndPassword(
+                        email: email, password: password);
+                    var user = result.user;
+                    if (accountType == 'Patient account') {
+                      await DatabaseAuth(uid: user!.uid).setPatientData(
+                          firstName, lastName, email, accountType);
+                    } else if (accountType == 'Physician account') {
+                      await DatabaseAuth(uid: user!.uid).setDoctorData(
+                          firstName, lastName, email, accountType);
                     }
+
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => EmailVerificationScreen()));
+                  } catch (signUpError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: Duration(seconds: 10),
+                        backgroundColor: Colors.red,
+                        content: Text(
+                          signUpError.toString().split('] ')[1],
+                          style: TextStyle(fontSize: 20.0),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
                   }
-                }, Colors.cyan),
-              ),
+                }
+              }, Colors.cyan),
               TextButton(
                 child: Text(
                   'Already registered? Log in!',
