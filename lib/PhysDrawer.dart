@@ -85,7 +85,7 @@ class PhysDrawers extends StatelessWidget {
         break;
       case 1:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile()));
+            .push(MaterialPageRoute(builder: (context) => PhysHome()));
         break;
       case 2:
         Navigator.of(context)
