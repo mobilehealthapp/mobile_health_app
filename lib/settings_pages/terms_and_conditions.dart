@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'settings_constants.dart';
 
-class PrivacyPolicy extends StatefulWidget {
+class TermsAndConditions extends StatefulWidget {
+  const TermsAndConditions({Key? key}) : super(key: key);
+
   @override
-  _PrivacyPolicyState createState() => _PrivacyPolicyState();
+  _TermsAndConditionsState createState() => _TermsAndConditionsState();
 }
 
-class _PrivacyPolicyState extends State<PrivacyPolicy> {
+class _TermsAndConditionsState extends State<TermsAndConditions> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Privacy Policy',
+          'Terms and Conditions',
           style: kAppBarLabelStyle,
         ),
         centerTitle: true,

@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/settings_pages/settings_card.dart';
 import 'settings_constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -92,6 +91,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
     return Scaffold(
       backgroundColor: Color(0xFFB2EBF2),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           'Edit my Information',
           style: kAppBarLabelStyle,
@@ -103,6 +103,9 @@ class _DrProfileEditState extends State<DrProfileEdit> {
         padding: EdgeInsets.all(10.0),
         child: ListView(
           children: <Widget>[
+            SizedBox(
+              height: 20.0,
+            ),
             TextField(
               controller: DrProfileEdit.drFirstTEC,
               decoration: kTextFieldDecoration.copyWith(
@@ -110,7 +113,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
               ),
             ),
             SizedBox(
-              height: 10.0,
+              height: 20.0,
             ),
             TextField(
               controller: DrProfileEdit.drLastTEC,
@@ -119,7 +122,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
               ),
             ),
             SizedBox(
-              height: 10.0,
+              height: 20.0,
             ),
             TextField(
               controller: DrProfileEdit.qualiTEC,
@@ -128,7 +131,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
               ),
             ),
             SizedBox(
-              height: 10.0,
+              height: 20.0,
             ),
             TextField(
               controller: DrProfileEdit.drTeleTEC,
@@ -137,7 +140,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
               ),
             ),
             SizedBox(
-              height: 10.0,
+              height: 20.0,
             ),
             TextField(
               controller: DrProfileEdit.drEmailTEC,
@@ -146,7 +149,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
               ),
             ),
             SizedBox(
-              height: 10.0,
+              height: 20.0,
             ),
             TextField(
               controller: DrProfileEdit.drFaxTEC,
@@ -155,7 +158,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
               ),
             ),
             SizedBox(
-              height: 10.0,
+              height: 20.0,
             ),
             TextField(
               controller: DrProfileEdit.clinicAddTEC,
@@ -164,17 +167,14 @@ class _DrProfileEditState extends State<DrProfileEdit> {
               ),
             ),
             SizedBox(
-              height: 10.0,
+              height: 20.0,
             ),
             Row(
               children: <Widget>[
                 Expanded(
-                  child: GestureDetector(
-                    child: CancelOrConfirm(
-                      whichOne: 'Cancel',
-                      colour: Colors.red[900],
-                    ),
-                    onTap: () {
+                  child: ElevatedButton(
+                    style: kCancel,
+                    onPressed: () async {
                       setState(
                         () {
                           Navigator.pop(
@@ -192,18 +192,19 @@ class _DrProfileEditState extends State<DrProfileEdit> {
                         },
                       );
                     },
+                    child: Text(
+                      'Cancel',
+                      style: kAppBarLabelStyle,
+                    ),
                   ),
                 ),
                 SizedBox(
                   width: 10.0,
                 ),
                 Expanded(
-                  child: GestureDetector(
-                    child: CancelOrConfirm(
-                      whichOne: 'Confirm',
-                      colour: Colors.green[400],
-                    ),
-                    onTap: () {
+                  child: ElevatedButton(
+                    style: kConfirm,
+                    onPressed: () async {
                       setState(
                         () {
                           DrProfileEdit.drUpdateProfile();
@@ -220,19 +221,14 @@ class _DrProfileEditState extends State<DrProfileEdit> {
                           );
                           Navigator.pop(
                             context,
-                            // {
-                            //   DrProfileEdit.drFirst,
-                            //   DrProfileEdit.drLast,
-                            //   DrProfileEdit.quali,
-                            //   DrProfileEdit.drTele,
-                            //   DrProfileEdit.drEmail,
-                            //   DrProfileEdit.drFax,
-                            //   DrProfileEdit.clinicAdd,
-                            // },
                           );
                         },
                       );
                     },
+                    child: Text(
+                      'Confirm',
+                      style: kAppBarLabelStyle,
+                    ),
                   ),
                 ),
               ],

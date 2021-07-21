@@ -1,119 +1,139 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/settings_pages/settings_card.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/database.dart';
+
+final patientRef = FirebaseFirestore.instance
+    .collection('patientprofile'); // create this as global variable
+var first;
+var last;
+var adr;
+var age;
+var dob;
+var wt;
+var ht;
+var meds;
+var conds;
+var tele;
+var sex;
 
 class ProfileEdit extends StatefulWidget {
-  static String? sexChoose = '--Sex--';
-  static String first = 'First Name';
-  static String last = 'Last Name';
-  static String age = 'Age';
-  static String dob = 'Date of Birth (DD-MM-YYYY)';
-  static String meds = 'My Medications';
-  static String conds = 'My Medical Conditions';
-  static String wt = 'Weight';
-  static String ht = 'Height';
-  static String tele = 'Telephone Number';
-  static String email = 'Email Address';
-  static String adr = 'Home Address';
-
-  static TextEditingController firstTEC = TextEditingController();
-  static TextEditingController lastTEC = TextEditingController();
-  static TextEditingController ageTEC = TextEditingController();
-  static TextEditingController dobTEC = TextEditingController();
-  static TextEditingController medsTEC = TextEditingController();
-  static TextEditingController condsTEC = TextEditingController();
-  static TextEditingController wtTEC = TextEditingController();
-  static TextEditingController htTEC = TextEditingController();
-  static TextEditingController teleTEC = TextEditingController();
-  static TextEditingController emailTEC = TextEditingController();
-  static TextEditingController adrTEC = TextEditingController();
-
-  static void updateProfile() {
-    if (firstTEC.text == '') {
-      ProfileEdit.first = ProfileEdit.first;
-    } else
-      ProfileEdit.first = firstTEC.text;
-
-    if (lastTEC.text == '') {
-      ProfileEdit.last = ProfileEdit.last;
-    } else
-      ProfileEdit.last = lastTEC.text;
-
-    if (ageTEC.text == '') {
-      ProfileEdit.age = ProfileEdit.age;
-    } else
-      ProfileEdit.age = ageTEC.text;
-
-    if (dobTEC.text == '') {
-      ProfileEdit.dob = ProfileEdit.dob;
-    } else
-      ProfileEdit.dob = dobTEC.text;
-
-    if (medsTEC.text == '') {
-      ProfileEdit.meds = ProfileEdit.meds;
-    } else
-      ProfileEdit.meds = medsTEC.text;
-
-    if (condsTEC.text == '') {
-      ProfileEdit.conds = ProfileEdit.conds;
-    } else
-      ProfileEdit.conds = condsTEC.text;
-
-    if (wtTEC.text == '') {
-      ProfileEdit.wt = ProfileEdit.wt;
-    } else
-      ProfileEdit.wt = wtTEC.text;
-
-    if (htTEC.text == '') {
-      ProfileEdit.ht = ProfileEdit.ht;
-    } else
-      ProfileEdit.ht = htTEC.text;
-
-    if (teleTEC.text == '') {
-      ProfileEdit.tele = ProfileEdit.tele;
-    } else
-      ProfileEdit.tele = teleTEC.text;
-
-    if (emailTEC.text == '') {
-      ProfileEdit.email = ProfileEdit.email;
-    } else
-      ProfileEdit.email = emailTEC.text;
-
-    if (adrTEC.text == '') {
-      ProfileEdit.adr = ProfileEdit.adr;
-    } else
-      ProfileEdit.adr = adrTEC.text;
-  }
+  const ProfileEdit({Key? key}) : super(key: key);
 
   @override
   _ProfileEditState createState() => _ProfileEditState();
 }
 
 class _ProfileEditState extends State<ProfileEdit> {
-  final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
-  late User loggedInUser;
+  var loggedInUser;
+  var uid;
+  bool showSpinner = false;
 
-  @override
-  void initState() {
-    super.initState();
+  TextEditingController firstTEC = TextEditingController();
+  TextEditingController lastTEC = TextEditingController();
+  TextEditingController ageTEC = TextEditingController();
+  TextEditingController dobTEC = TextEditingController();
+  TextEditingController medsTEC = TextEditingController();
+  TextEditingController condsTEC = TextEditingController();
+  TextEditingController wtTEC = TextEditingController();
+  TextEditingController htTEC = TextEditingController();
+  TextEditingController teleTEC = TextEditingController();
+  TextEditingController adrTEC = TextEditingController();
 
-    getUser();
+  void updateProfile() {
+    setState(
+      () {
+        if (firstTEC.text == '') {
+          first = first;
+        } else
+          first = firstTEC.text;
+
+        if (lastTEC.text == '') {
+          last = last;
+        } else
+          last = lastTEC.text;
+
+        if (ageTEC.text == '') {
+          age = age;
+        } else
+          age = ageTEC.text;
+
+        if (dobTEC.text == '') {
+          dob = dob;
+        } else
+          dob = dobTEC.text;
+
+        if (medsTEC.text == '') {
+          meds = meds;
+        } else
+          meds = medsTEC.text;
+
+        if (condsTEC.text == '') {
+          conds = conds;
+        } else
+          conds = condsTEC.text;
+
+        if (wtTEC.text == '') {
+          wt = wt;
+        } else
+          wt = wtTEC.text;
+
+        if (htTEC.text == '') {
+          ht = ht;
+        } else
+          ht = htTEC.text;
+        if (teleTEC.text == '') {
+          tele = tele;
+        } else
+          tele = teleTEC.text;
+        if (adrTEC.text == '') {
+          adr = adr;
+        } else
+          adr = adrTEC.text;
+      },
+    );
   }
 
-  void getUser() async {
+  void getCurrentUser() async {
     try {
-      final user = await _auth.currentUser;
+      final user = _auth.currentUser;
       if (user != null) {
         loggedInUser = user;
         print(loggedInUser.email);
+        uid = user.uid.toString();
       }
     } catch (e) {
       print(e);
     }
+  }
+
+  getUserData(uid) async {
+    final DocumentSnapshot patientInfo = await patientRef.doc(uid).get();
+    setState(
+      () {
+        first = patientInfo.get('first name');
+        last = patientInfo.get('last name');
+        adr = patientInfo.get('address');
+        age = patientInfo.get('age');
+        dob = patientInfo.get('dob');
+        wt = patientInfo.get('wt');
+        ht = patientInfo.get('ht');
+        meds = patientInfo.get('meds');
+        conds = patientInfo.get('conds');
+        tele = patientInfo.get('tele');
+        sex = patientInfo.get('sex');
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    getCurrentUser();
+    getUserData(uid);
+    super.initState();
   }
 
   @override
@@ -121,6 +141,7 @@ class _ProfileEditState extends State<ProfileEdit> {
     return Scaffold(
       backgroundColor: Color(0xFFB2EBF2),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           'Edit my Information',
           style: kAppBarLabelStyle,
@@ -135,37 +156,43 @@ class _ProfileEditState extends State<ProfileEdit> {
             Padding(
               padding: EdgeInsets.all(10.0),
             ),
-            TextField(
-              controller: ProfileEdit.firstTEC,
+            TextFormField(
+              controller: firstTEC,
               decoration: kTextFieldDecoration.copyWith(
-                hintText: ProfileEdit.first,
+                hintText: first,
               ),
             ),
             SizedBox(
               height: 10.0,
             ),
-            TextField(
-              controller: ProfileEdit.lastTEC,
+            TextFormField(
+              controller: lastTEC,
               decoration: kTextFieldDecoration.copyWith(
-                hintText: ProfileEdit.last,
+                hintText: last,
               ),
             ),
             SizedBox(
               height: 10.0,
             ),
-            TextField(
-              controller: ProfileEdit.ageTEC,
+            TextFormField(
+              maxLength: 3,
+              controller: ageTEC,
+              keyboardType: TextInputType.number,
               decoration: kTextFieldDecoration.copyWith(
-                hintText: ProfileEdit.age,
+                counterText: '',
+                hintText: age,
               ),
             ),
             SizedBox(
               height: 10.0,
             ),
-            TextField(
-              controller: ProfileEdit.dobTEC,
+            TextFormField(
+              maxLength: 10,
+              controller: dobTEC,
+              keyboardType: TextInputType.number,
               decoration: kTextFieldDecoration.copyWith(
-                hintText: ProfileEdit.dob,
+                counterText: '',
+                hintText: dob,
               ),
             ),
             SizedBox(
@@ -175,7 +202,7 @@ class _ProfileEditState extends State<ProfileEdit> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 DropdownButton<String>(
-                  value: ProfileEdit.sexChoose,
+                  value: sex,
                   style: TextStyle(
                     fontSize: 20.0,
                     color: Colors.black,
@@ -187,11 +214,11 @@ class _ProfileEditState extends State<ProfileEdit> {
                     ),
                     DropdownMenuItem(
                       child: Text('M'),
-                      value: 'Male',
+                      value: 'M',
                     ),
                     DropdownMenuItem(
                       child: Text('F'),
-                      value: 'Female',
+                      value: 'F',
                     ),
                     DropdownMenuItem(
                       child: Text('X'),
@@ -201,7 +228,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                   onChanged: (value) {
                     setState(
                       () {
-                        ProfileEdit.sexChoose = value.toString();
+                        sex = value.toString();
                       },
                     );
                   },
@@ -211,64 +238,55 @@ class _ProfileEditState extends State<ProfileEdit> {
             SizedBox(
               height: 10.0,
             ),
-            TextField(
-              controller: ProfileEdit.htTEC,
+            TextFormField(
+              controller: htTEC,
               decoration: kTextFieldDecoration.copyWith(
-                hintText: ProfileEdit.ht,
+                hintText: ht,
               ),
             ),
             SizedBox(
               height: 10.0,
             ),
-            TextField(
-              controller: ProfileEdit.wtTEC,
+            TextFormField(
+              controller: wtTEC,
               decoration: kTextFieldDecoration.copyWith(
-                hintText: ProfileEdit.wt,
+                hintText: wt,
               ),
             ),
             SizedBox(
               height: 10.0,
             ),
-            TextField(
-              controller: ProfileEdit.condsTEC,
+            TextFormField(
+              controller: condsTEC,
               decoration: kTextFieldDecoration.copyWith(
-                hintText: ProfileEdit.conds,
+                hintText: conds,
               ),
             ),
             SizedBox(
               height: 10.0,
             ),
-            TextField(
-              controller: ProfileEdit.medsTEC,
+            TextFormField(
+              controller: medsTEC,
               decoration: kTextFieldDecoration.copyWith(
-                hintText: ProfileEdit.meds,
+                hintText: meds,
               ),
             ),
             SizedBox(
               height: 10.0,
             ),
-            TextField(
-              controller: ProfileEdit.teleTEC,
+            TextFormField(
+              controller: teleTEC,
               decoration: kTextFieldDecoration.copyWith(
-                hintText: ProfileEdit.tele,
+                hintText: tele,
               ),
             ),
             SizedBox(
               height: 10.0,
             ),
-            TextField(
-              controller: ProfileEdit.emailTEC,
+            TextFormField(
+              controller: adrTEC,
               decoration: kTextFieldDecoration.copyWith(
-                hintText: ProfileEdit.email,
-              ),
-            ),
-            SizedBox(
-              height: 10.0,
-            ),
-            TextField(
-              controller: ProfileEdit.adrTEC,
-              decoration: kTextFieldDecoration.copyWith(
-                hintText: ProfileEdit.adr,
+                hintText: adr,
               ),
             ),
             SizedBox(
@@ -277,81 +295,67 @@ class _ProfileEditState extends State<ProfileEdit> {
             Row(
               children: <Widget>[
                 Expanded(
-                  child: GestureDetector(
-                    child: CancelOrConfirm(
-                      whichOne: 'Cancel',
-                      colour: Colors.red[900],
-                    ),
-                    onTap: () {
+                  child: ElevatedButton(
+                    style: kCancel,
+                    onPressed: () async {
                       setState(
                         () {
-                          ProfileEdit.first = ProfileEdit.first;
-                          ProfileEdit.last = ProfileEdit.last;
-                          ProfileEdit.age = ProfileEdit.age;
-                          ProfileEdit.dob = ProfileEdit.dob;
-                          ProfileEdit.meds = ProfileEdit.meds;
-                          ProfileEdit.conds = ProfileEdit.conds;
-                          ProfileEdit.wt = ProfileEdit.wt;
-                          ProfileEdit.ht = ProfileEdit.ht;
-                          ProfileEdit.tele = ProfileEdit.tele;
-                          ProfileEdit.email = ProfileEdit.email;
-                          ProfileEdit.adr = ProfileEdit.adr;
+                          first = first;
+                          last = last;
+                          age = age;
+                          dob = dob;
+                          meds = meds;
+                          conds = conds;
+                          wt = wt;
+                          ht = ht;
+                          tele = tele;
+                          adr = adr;
                           Navigator.pop(context);
                         },
                       );
                     },
+                    child: Text(
+                      'Cancel',
+                      style: kAppBarLabelStyle,
+                    ),
                   ),
                 ),
                 SizedBox(
                   width: 10.0,
                 ),
                 Expanded(
-                  child: GestureDetector(
-                    child: CancelOrConfirm(
-                      whichOne: 'Confirm',
-                      colour: Colors.green[400],
-                    ),
-                    onTap: () {
+                  child: ElevatedButton(
+                    style: kConfirm,
+                    onPressed: () async {
                       setState(
                         () {
-                          ProfileEdit.updateProfile();
-                          _firestore.collection('patientprofile').add(
-                            {
-                              'first': ProfileEdit.first,
-                              'last': ProfileEdit.last,
-                              'age': ProfileEdit.age,
-                              'dob': ProfileEdit.dob,
-                              'sexChoose': ProfileEdit.sexChoose,
-                              'conds': ProfileEdit.conds,
-                              'meds': ProfileEdit.meds,
-                              'wt': ProfileEdit.wt,
-                              'ht': ProfileEdit.ht,
-                              'tele': ProfileEdit.tele,
-                              'email': ProfileEdit.email,
-                              'address': ProfileEdit.adr,
-                              'user': loggedInUser,
-                            },
-                          );
+                          showSpinner = true;
+                          updateProfile();
+                          Database(uid: loggedInUser.uid).updatePatientInfo(
+                              first,
+                              last,
+                              age,
+                              dob,
+                              sex.toString(),
+                              ht,
+                              wt,
+                              conds,
+                              meds,
+                              tele,
+                              adr);
                           Navigator.pop(
                             context,
-                            // {
-                            //   ProfileEdit.first,
-                            //   ProfileEdit.last,
-                            //   ProfileEdit.dob,
-                            //   ProfileEdit.age,
-                            //   ProfileEdit.sexChoose,
-                            //   ProfileEdit.conds,
-                            //   ProfileEdit.meds,
-                            //   ProfileEdit.wt,
-                            //   ProfileEdit.ht,
-                            //   ProfileEdit.tele,
-                            //   ProfileEdit.email,
-                            //   ProfileEdit.adr,
-                            // },
                           );
+                          setState(() {
+                            showSpinner = false;
+                          });
                         },
                       );
                     },
+                    child: Text(
+                      'Confirm',
+                      style: kAppBarLabelStyle,
+                    ),
                   ),
                 ),
               ],
