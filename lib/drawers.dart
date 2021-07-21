@@ -1,12 +1,18 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/HomePage.dart';
 import 'package:mobile_health_app/Profile.dart';
+import 'package:mobile_health_app/output_sample.dart';
 import 'package:mobile_health_app/physHome.dart';
+import 'package:mobile_health_app/settings_pages/privacy_policy.dart';
 import 'package:mobile_health_app/settings_pages/settings.dart';
+
+import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
 import 'health_analysis.dart';
 
 class Drawers extends StatelessWidget {
-  const Drawers({Key? key}) : super(key: key);
+  final _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -41,7 +47,7 @@ class Drawers extends StatelessWidget {
               ),
               SizedBox(height: 10),
               addItem(
-                text: 'More Information',
+                text: 'Privacy Policy',
                 icon: Icons.info,
                 onClicked: () => select(context, 4),
               ),
@@ -52,11 +58,14 @@ class Drawers extends StatelessWidget {
                 onClicked: () => select(context, 5),
               ),
               SizedBox(height: 10),
-              addItem(
-                text: 'Logout ',
-                icon: Icons.logout,
-                onClicked: () => select(context, 5),
-              ),
+              ListTile(
+                  onTap: () {
+                    _auth.signOut();
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => WelcomeScreen()));
+                  },
+                  leading: Icon(Icons.logout),
+                  title: Text('Log out')),
               SizedBox(height: 10),
               addItem(
                 text: 'Physician Side ',
@@ -93,7 +102,7 @@ class Drawers extends StatelessWidget {
         break;
       case 1:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile_Page()));
+            .push(MaterialPageRoute(builder: (context) => OutputData()));
         break;
       case 2:
         Navigator.of(context)
@@ -105,11 +114,11 @@ class Drawers extends StatelessWidget {
         break;
       case 4:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile_Page()));
+            .push(MaterialPageRoute(builder: (context) => PrivacyPolicy()));
         break;
       case 5:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile_Page()));
+            .push(MaterialPageRoute(builder: (context) => Profile()));
         break;
       case 6:
         Navigator.of(context)

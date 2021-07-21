@@ -19,6 +19,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final formKey = GlobalKey<FormState>();
   final _auth = FirebaseAuth.instance;
+  bool showSpinner = false;
   var user;
   var email;
   var password;
@@ -177,6 +178,9 @@ class _LoginPageState extends State<LoginPage> {
                                       builder: (context) =>
                                           EmailVerificationScreen()));
                             }
+                            setState(() {
+                              showSpinner = false;
+                            });
                           } catch (signInError) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(

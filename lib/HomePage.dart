@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Camera/data_input_page.dart';
-import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/drawers.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
 
@@ -52,54 +51,48 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        drawer: Drawers(),
-        appBar: AppBar(actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GestureDetector(
-              child: Icon(Icons.logout),
-              onTap: () async {
-                FirebaseAuth.instance.signOut();
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => WelcomeScreen()));
-              },
-            ),
-          )
-        ], backgroundColor: Colors.cyan, title: Text('Hello, $name')),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => DataInput()));
-          },
-          child: Icon(
-            Icons.camera_alt_rounded,
+        child: Scaffold(
+      drawer: Drawers(),
+      appBar: AppBar(actions: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: GestureDetector(
+            child: Icon(Icons.logout),
+            onTap: () async {
+              FirebaseAuth.instance.signOut();
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => WelcomeScreen()));
+            },
           ),
+        )
+      ], backgroundColor: Colors.cyan, title: Text('Hello, $name')),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => DataInput()));
+        },
+        child: Icon(
+          Icons.camera_alt_rounded,
         ),
-        body: Container(
-          margin: EdgeInsets.all(20),
-          child: Text('Recent Analysis', style: kTextLabel1),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.white,
-          items: [
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.home,
-                  color: Colors.blue,
-                ),
-                label: 'home',
-                backgroundColor: Colors.white),
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.settings,
-                  color: Colors.blue,
-                ),
-                label: 'setting'),
-          ],
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
-    );
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+            // mainAxisAlignment: MainAxisAlignment.spaceAround,
+            // crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                ' Recent Analysis',
+                style: TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 15,
+                ),
+              ),
+            ]
+            // bottomNavigationBar: btomNav(),
+            ),
+      ),
+    ));
   }
 }

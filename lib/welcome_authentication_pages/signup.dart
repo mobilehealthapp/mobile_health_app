@@ -7,6 +7,7 @@ import 'package:mobile_health_app/welcome_authentication_pages/database_auth_ser
 import 'package:mobile_health_app/welcome_authentication_pages/loginpage.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/verify.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 // class SignupPage extends StatefulWidget {
 //   @override
@@ -28,6 +29,7 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   final formKey = GlobalKey<FormState>();
   final _auth = FirebaseAuth.instance;
+  bool showSpinner = false;
   var firstName;
   var lastName;
   var email;
@@ -36,96 +38,101 @@ class _SignupPageState extends State<SignupPage> {
   var _chosenValue;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.cyan,
-        title: Text(
-          'Sign up',
-          style: TextStyle(color: Colors.white),
-        ),
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(
-            Icons.arrow_back_ios,
-            size: 20.0,
-            color: Colors.black,
+    return ModalProgressHUD(
+      inAsyncCall: showSpinner,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.cyan,
+          title: Text(
+            'Sign up',
+            style: TextStyle(color: Colors.white),
+          ),
+          elevation: 0,
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.arrow_back_ios,
+              size: 20.0,
+              color: Colors.black,
+            ),
           ),
         ),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 40.0),
-          height: MediaQuery.of(context).size.height - 50,
-          width: double.infinity,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Column(
-                children: [
-                  SizedBox(height: 20.0),
-                  Text(
-                    'Create an account. It\'s free!',
-                    style: TextStyle(
-                      fontSize: 15.0,
-                      color: Colors.grey[700],
-                    ),
-                  )
-                ],
-              ),
-              Form(
-                key: formKey,
-                child: Column(
+        body: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 40.0),
+            height: MediaQuery.of(context).size.height - 50,
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(
                   children: [
-                    inputFile(
-                      label: 'First Name',
-                      onChangedFunction: (value) {
-                        firstName = value;
-                      },
-                      validation: Validators.required('First name is required'),
-                    ),
-                    inputFile(
-                      label: 'Last Name',
-                      onChangedFunction: (value) {
-                        lastName = value;
-                      },
-                      validation: Validators.required('Last name is required'),
-                    ),
-                    inputFile(
-                      label: 'Email',
-                      onChangedFunction: (value) {
-                        email = value;
-                      },
-                      validation: Validators.compose([
-                        Validators.required('Email is required'),
-                        Validators.email('Invalid email address'),
-                      ]),
-                    ),
-                    inputFile(
-                        label: 'Password',
-                        obscureTextState: true,
+                    SizedBox(height: 20.0),
+                    Text(
+                      'Create an account. It\'s free!',
+                      style: TextStyle(
+                        fontSize: 15.0,
+                        color: Colors.grey[700],
+                      ),
+                    )
+                  ],
+                ),
+                Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      inputFile(
+                        label: 'First Name',
                         onChangedFunction: (value) {
-                          password = value;
+                          firstName = value;
+                        },
+                        validation:
+                            Validators.required('First name is required'),
+                      ),
+                      inputFile(
+                        label: 'Last Name',
+                        onChangedFunction: (value) {
+                          lastName = value;
+                        },
+                        validation:
+                            Validators.required('Last name is required'),
+                      ),
+                      inputFile(
+                        label: 'Email',
+                        onChangedFunction: (value) {
+                          email = value;
                         },
                         validation: Validators.compose([
-                          Validators.required('Password is required'),
-                          Validators.minLength(
-                              6, 'Password must be at least 6 characters'),
-                        ])),
-                    inputFile(
-                      label: 'Confirm Password',
-                      obscureTextState: true,
-                      onChangedFunction: (value) {},
-                      validation: Validators.compose([
-                        Validators.required('Please confirm password'),
-                        (value) {
-                          if (value != password) {
-                            return "Passwords must match";
-                          } else {
-                            return null;
+                          Validators.required('Email is required'),
+                          Validators.email('Invalid email address'),
+                        ]),
+                      ),
+                      inputFile(
+                          label: 'Password',
+                          obscureTextState: true,
+                          onChangedFunction: (value) {
+                            password = value;
+                          },
+                          validation: Validators.compose([
+                            Validators.required('Password is required'),
+                            Validators.minLength(
+                                6, 'Password must be at least 6 characters'),
+                          ])),
+                      inputFile(
+                        label: 'Confirm Password',
+                        obscureTextState: true,
+                        onChangedFunction: (value) {},
+                        validation: Validators.compose([
+                          Validators.required('Please confirm password'),
+                          (value) {
+                            if (value != password) {
+                              return "Passwords must match";
+                            } else {
+                              return null;
+                            }
                           }
                         }
                       ]),
@@ -175,6 +182,9 @@ class _SignupPageState extends State<SignupPage> {
                 ),
               ),
               AuthenticationButton('Sign up', () async {
+                setState(() {
+                  showSpinner = true;
+                });
                 var areCredsValid = formKey.currentState?.validate();
                 if (areCredsValid == true) {
                   try {
@@ -193,6 +203,9 @@ class _SignupPageState extends State<SignupPage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => EmailVerificationScreen()));
+                    setState(() {
+                      showSpinner = false;
+                    });
                   } catch (signUpError) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -213,12 +226,8 @@ class _SignupPageState extends State<SignupPage> {
                   'Already registered? Log in!',
                   style: TextStyle(fontSize: 20),
                 ),
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginPage()));
-                },
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
