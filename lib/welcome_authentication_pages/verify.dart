@@ -16,7 +16,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   final auth = FirebaseAuth.instance;
   var user;
   var timer;
-
+  bool showSpinner = false;
   @override
   void initState() {
     user = auth.currentUser;
@@ -52,10 +52,16 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   Future<void> checkEmailVerify() async {
     user = auth.currentUser;
     await user.reload();
+    setState(() {
+      showSpinner = true;
+    });
     if (user.emailVerified) {
       timer.cancel();
       Navigator.of(context)
           .pushReplacement(MaterialPageRoute(builder: (context) => HomePage()));
+      setState(() {
+        showSpinner = false;
+      });
     }
   }
 }

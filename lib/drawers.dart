@@ -6,7 +6,7 @@ import 'package:mobile_health_app/output_sample.dart';
 import 'package:mobile_health_app/physHome.dart';
 import 'package:mobile_health_app/settings_pages/privacy_policy.dart';
 import 'package:mobile_health_app/settings_pages/settings.dart';
-import 'package:mobile_health_app/welcome_authentication_pages/verify.dart';
+
 import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
 import 'health_analysis.dart';
 
@@ -118,7 +118,7 @@ class Drawers extends StatelessWidget {
         break;
       case 5:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile_Page()));
+            .push(MaterialPageRoute(builder: (context) => Profile()));
         break;
       case 6:
         Navigator.of(context)

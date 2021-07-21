@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/settings_pages/settings_card.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/database.dart';
 
@@ -94,9 +94,9 @@ class ProfileEdit extends StatefulWidget {
 }
 
 class _ProfileEditState extends State<ProfileEdit> {
-  final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
   late User loggedInUser;
+  bool showSpinner = false;
 
   @override
   void initState() {
@@ -315,6 +315,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                     onTap: () {
                       setState(
                         () async {
+                          showSpinner = true;
                           ProfileEdit.updateProfile();
                           await Database(uid: loggedInUser.uid)
                               .updatePatientInfo(
@@ -364,6 +365,9 @@ class _ProfileEditState extends State<ProfileEdit> {
                             //   ProfileEdit.adr,
                             // },
                           );
+                          setState(() {
+                            showSpinner = false;
+                          });
                         },
                       );
                     },

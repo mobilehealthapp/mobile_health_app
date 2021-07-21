@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Camera/data_input_page.dart';
-import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/drawers.dart';
 
 class HomePage extends StatefulWidget {
@@ -50,29 +49,24 @@ class _HomePageState extends State<HomePage> {
           Icons.camera_alt_rounded,
         ),
       ),
-      body: Container(
-        margin: EdgeInsets.all(20),
-        child: Text('Recent Analysis', style: kTextLabel1),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.home,
-                color: Colors.blue,
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+            // mainAxisAlignment: MainAxisAlignment.spaceAround,
+            // crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                ' Recent Analysis',
+                style: TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 15,
+                ),
               ),
-              label: 'home',
-              backgroundColor: Colors.white),
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.settings,
-                color: Colors.blue,
-              ),
-              label: 'setting'),
-        ],
+            ]
+            // bottomNavigationBar: btomNav(),
+            ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

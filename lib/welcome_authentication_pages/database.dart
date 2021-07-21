@@ -4,8 +4,13 @@ import 'package:mobile_health_app/User.dart';
 
 class Database {
   var uid;
+  final _auth = FirebaseAuth.instance;
 
   Database({this.uid});
+
+  Future<String> getCurrentUID() async {
+    return await (_auth.currentUser)!.uid;
+  }
 
   final CollectionReference patientProfileCollection =
       FirebaseFirestore.instance.collection('patientprofile');
@@ -20,15 +25,20 @@ class Database {
   //
   //
   //
-  List<UserAddress>? _userListFromSnapshots(QuerySnapshot snapshot) {
-    return snapshot.docs.map((doc) {
-      return UserAddress(address: doc.get('address'));
-    }).toList();
-  }
+  // List<UserAddress>? userListFromSnapshots(QuerySnapshot snapshot) {
+  //
+  //     return snapshot.docs.map((doc) {
+  //       return UserAddress(
+  //         address: doc['address'] ?? 'nothing yet',
+  //         email: doc['email'] ?? 'nothing yet',
+  //       );
+  //     }).toList();
+  //
+  // }
 
-  Stream<List<UserAddress>?> get users {
-    return patientProfileCollection.snapshots().map(_userListFromSnapshots);
-  }
+  // Stream<List<UserAddress>?> get users {
+  //   return patientProfileCollection.snapshots().map(userListFromSnapshots);
+  // }
 
   // Future getCurrentUserData() async {
   //   try {
@@ -57,15 +67,15 @@ class Database {
     return await patientProfileCollection.doc(uid).set(
       {
         'gender': gender,
-        'age:': age,
-        'date of birth ': dob,
-        'medecins:': meds,
-        'conditions: ': conds,
-        'weight: ': wt,
+        'age': age,
+        'date of birth': dob,
+        'medecins': meds,
+        'conditions ': conds,
+        'weight ': wt,
         'height': ht,
         'telephone': tele,
         'email': email,
-        'address: ': adr,
+        'address': adr,
       },
     );
   }
