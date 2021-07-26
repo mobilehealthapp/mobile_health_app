@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Camera/data_input_page.dart';
-import 'package:mobile_health_app/Constants.dart';
 import 'drawers.dart';
 import 'package:mobile_health_app/drawers.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
+import 'main.dart';
 
 final patientRef = FirebaseFirestore.instance
     .collection('patientprofile'); //declare reference high up in file
@@ -66,8 +66,9 @@ class _HomePageState extends State<HomePage> {
             },
           ),
         )
-      ], backgroundColor: Colors.cyan, title: Text('Hello, $name')),
+      ], backgroundColor: kPrimaryColour, title: Text('Hello, $name')),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: kPrimaryColour,
         onPressed: () {
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => DataInput()));
@@ -83,11 +84,11 @@ class _HomePageState extends State<HomePage> {
             // crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Text(
-                ' Recent Analysis',
+                'Recent Analysis',
                 style: TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 15,
+                  // letterSpacing: 15,
                 ),
               ),
             ]

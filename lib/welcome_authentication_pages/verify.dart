@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/HomePage.dart';
-import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'package:mobile_health_app/physHome.dart';
 
 import 'accountcheck.dart';
@@ -27,7 +26,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     user = auth.currentUser;
     user.sendEmailVerification();
 
-    timer = Timer.periodic(Duration(seconds: 5), (timer) {
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
       checkEmailVerify();
     });
     super.initState();
@@ -53,8 +52,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('images/logo-1-removebg-preview.png'),
-                    fit: BoxFit.fill),
+                    image: AssetImage('images/logo.png'), fit: BoxFit.fill),
               ),
             ),
             Container(

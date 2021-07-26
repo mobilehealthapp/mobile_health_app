@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/PhysDrawer.dart';
 import 'package:mobile_health_app/Constants.dart';
-
+import 'main.dart';
 import 'input_file.dart';
 
 class PhysHome extends StatefulWidget {
@@ -15,6 +15,7 @@ class _PhysHomeState extends State<PhysHome> {
     return Scaffold(
       drawer: PhysDrawers(),
       appBar: AppBar(
+        backgroundColor: kPrimaryColour,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),

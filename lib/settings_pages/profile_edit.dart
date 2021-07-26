@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mobile_health_app/welcome_authentication_pages/database_auth_services..dart';
 
 final patientRef = FirebaseFirestore.instance
     .collection('patientprofile'); // create this as global variable
@@ -139,7 +138,7 @@ class _ProfileEditState extends State<ProfileEdit> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFB2EBF2),
+      backgroundColor: kSecondaryColour,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
@@ -147,7 +146,7 @@ class _ProfileEditState extends State<ProfileEdit> {
           style: kAppBarLabelStyle,
         ),
         centerTitle: true,
-        backgroundColor: Color(0xFF00BCD4),
+        backgroundColor: kPrimaryColour,
       ),
       body: Padding(
         padding: EdgeInsets.all(10.0),

@@ -18,7 +18,7 @@ class _TermsAndConditionsState extends State<TermsAndConditions> {
           style: kAppBarLabelStyle,
         ),
         centerTitle: true,
-        backgroundColor: Color(0xFF00BCD4),
+        backgroundColor: kPrimaryColour,
       ),
     );
   }

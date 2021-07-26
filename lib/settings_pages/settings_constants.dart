@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+const kPrimaryColour = Color(0xFF1B4DA8);
+const kSecondaryColour = Color(0xFFDAE9F4);
+
 final kTextFieldDecoration = InputDecoration(
   hintText: 'Enter a Value',
   hintStyle: GoogleFonts.rubik(

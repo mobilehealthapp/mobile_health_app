@@ -6,6 +6,8 @@ import 'package:mobile_health_app/HomePage.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
 
 late List<CameraDescription> cameras;
+const kPrimaryColour = Color(0xFF1B4DA8);
+const kSecondaryColour = Color(0xFFDAE9F4);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

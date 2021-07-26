@@ -16,7 +16,7 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
           style: kAppBarLabelStyle,
         ),
         centerTitle: true,
-        backgroundColor: Color(0xFF00BCD4),
+        backgroundColor: kPrimaryColour,
       ),
     );
   }

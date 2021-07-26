@@ -12,14 +12,14 @@ class _MyDoctorsState extends State<MyDoctors> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFB2EBF2),
+      backgroundColor: kSecondaryColour,
       appBar: AppBar(
         title: Text(
           'My Doctors',
           style: kAppBarLabelStyle,
         ),
         centerTitle: true,
-        backgroundColor: Color(0xFF00BCD4),
+        backgroundColor: kPrimaryColour,
       ),
       body: ListView(
         scrollDirection: Axis.vertical,

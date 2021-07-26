@@ -16,14 +16,14 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: PhysDrawers(),
-      backgroundColor: Color(0xFFB2EBF2),
+      backgroundColor: kSecondaryColour,
       appBar: AppBar(
         title: Text(
           'Settings',
           style: kAppBarLabelStyle,
         ),
         centerTitle: true,
-        backgroundColor: Color(0xFF00BCD4),
+        backgroundColor: kPrimaryColour,
       ),
       body: ListView(
         children: <Widget>[
@@ -32,7 +32,7 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
             child: ElevatedButton(
               onPressed: () {
                 setState(
-                      () {
+                  () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -61,7 +61,7 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
             child: ElevatedButton(
               onPressed: () {
                 setState(
-                      () {
+                  () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -79,9 +79,16 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
             padding: EdgeInsets.all(10.0),
             child: ElevatedButton(
               onPressed: () {
-                setState(() {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => TermsAndConditions(),),);
-                },);
+                setState(
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TermsAndConditions(),
+                      ),
+                    );
+                  },
+                );
               },
               child: TabContent(label: 'Terms and Conditions'),
               style: kSettingsCardStyle,
@@ -98,12 +105,22 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
             ),
           ),
           Padding(
-            padding:  EdgeInsets.all(10.0),
+            padding: EdgeInsets.all(10.0),
             child: ElevatedButton(
               onPressed: () {
-                setState(() {
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> Alert(alertBody: 'This will completely delete your account.',),),);
-                },);
+                setState(
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Alert(
+                          alertBody:
+                              'This will completely delete your account.',
+                        ),
+                      ),
+                    );
+                  },
+                );
               },
               child: TabContent2(label: 'Delete My Account'),
               style: kRedButtonStyle,

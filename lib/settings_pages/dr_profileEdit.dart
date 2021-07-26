@@ -76,7 +76,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
 
   void getUser() async {
     try {
-      final user = await _auth.currentUser;
+      final user = _auth.currentUser;
       if (user != null) {
         loggedInUser = user;
         print(loggedInUser.email);
@@ -89,7 +89,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFB2EBF2),
+      backgroundColor: kSecondaryColour,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
@@ -97,7 +97,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
           style: kAppBarLabelStyle,
         ),
         centerTitle: true,
-        backgroundColor: Color(0xFF00BCD4),
+        backgroundColor: kPrimaryColour,
       ),
       body: Padding(
         padding: EdgeInsets.all(10.0),

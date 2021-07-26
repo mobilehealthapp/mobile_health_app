@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_health_app/authentication_button.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/loginpage.dart';
 import 'signup.dart';
+import 'package:mobile_health_app/main.dart';
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -47,8 +48,7 @@ class WelcomeScreen extends StatelessWidget {
                           width: 150,
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                                image: AssetImage(
-                                    'images/logo-1-removebg-preview.png'),
+                                image: AssetImage('images/logo.png'),
                                 fit: BoxFit.fill),
                           ),
                         ),
@@ -108,7 +108,7 @@ class WelcomeScreen extends StatelessWidget {
                   AuthenticationButton('Sign up', () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => SignupPage()));
-                  }, Colors.cyan)
+                  }, kPrimaryColour)
                   // MaterialButton(
                   //   color: Colors.blue,
                   //   height: 50.0,

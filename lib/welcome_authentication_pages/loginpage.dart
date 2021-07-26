@@ -7,7 +7,7 @@ import 'package:mobile_health_app/physHome.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/passwordreset..dart';
 import 'package:mobile_health_app/welcome_authentication_pages/verify.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
-
+import 'package:mobile_health_app/main.dart';
 import 'accountcheck.dart';
 import 'signup.dart';
 
@@ -27,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Colors.cyan,
+          backgroundColor: kPrimaryColour,
           leading: BackButton(
             onPressed: () {
               Navigator.pop(context);
@@ -60,8 +60,7 @@ class _LoginPageState extends State<LoginPage> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                                image: AssetImage(
-                                    'images/logo-1-removebg-preview.png'),
+                                image: AssetImage('images/logo.png'),
                                 fit: BoxFit.fill),
                           ),
                         ),
