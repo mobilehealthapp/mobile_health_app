@@ -6,6 +6,7 @@ import 'package:mobile_health_app/Constants.dart';
 import 'drawers.dart';
 import 'package:mobile_health_app/drawers.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 final patientRef = FirebaseFirestore.instance
     .collection('patientprofile'); //declare reference high up in file
@@ -77,24 +78,128 @@ class _HomePageState extends State<HomePage> {
           Icons.camera_alt_rounded,
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-            // mainAxisAlignment: MainAxisAlignment.spaceAround,
-            // crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                ' Recent Analysis',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 15,
+      body: ListView(
+        children: [
+          SizedBox(
+            height: 30.0,
+          ),
+          Text(
+            ' Recent Analysis',
+            style: TextStyle(
+              fontSize: 40,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 15,
+            ),
+          ),
+          SizedBox(
+            height: 30.0,
+          ),
+          Text(
+            'Blood pressure for this week',
+            textAlign: TextAlign.center,
+          ),
+          Container(
+            width: 300,
+            height: 400,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.0),
+              border: Border.all(color: Colors.black),
+            ),
+            child: Container(
+              margin: EdgeInsets.symmetric(vertical: 20, horizontal: 30.0),
+              width: 200,
+              height: 200,
+              // color: Colors.blue,
+              child: LineChart(
+                LineChartData(
+                  borderData: FlBorderData(
+                    show: true,
+                  ),
+                  maxX: 6,
+                  minX: 1,
+                  maxY: 180,
+                  minY: 50,
+
+                  // backgroundColor: Colors.green,
+                  lineBarsData: [
+                    LineChartBarData(
+                      isCurved: true,
+                      colors: [Colors.red],
+                      spots: [
+                        FlSpot(1, 88),
+                        FlSpot(2, 89),
+                        FlSpot(3, 78),
+                        FlSpot(4, 95),
+                        FlSpot(5, 92),
+                        FlSpot(6, 92),
+                      ],
+                    ),
+                    LineChartBarData(
+                      isCurved: true,
+                      colors: [Colors.black],
+                      // dotData: FlDotData( // removes dots
+                      //   show: false,
+                      // ),
+
+                      spots: [
+                        FlSpot(1, 148),
+                        FlSpot(2, 140),
+                        FlSpot(3, 141),
+                        FlSpot(4, 142),
+                        FlSpot(5, 150),
+                        FlSpot(6, 150),
+                      ],
+                    )
+                  ],
+                  // gridData: FlGridData(
+                  //   // removes grid
+                  //   show: false,
+                  // ),
+                  axisTitleData: FlAxisTitleData(
+                      leftTitle: AxisTitle(
+                        showTitle: true,
+                        titleText: 'Value(notation) ',
+                      ),
+                      bottomTitle: AxisTitle(
+                          showTitle: true,
+                          margin: 0,
+                          titleText: 'This week',
+                          textAlign: TextAlign.center)),
                 ),
               ),
-            ]
-            // bottomNavigationBar: btomNav(),
             ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Legend(
+                text: 'Systolic',
+                color: Colors.black,
+              ),
+              Legend(
+                text: 'Diastolic',
+                color: Colors.red,
+              ),
+            ],
+          ),
+        ],
       ),
     ));
+  }
+}
+
+class Legend extends StatelessWidget {
+  Legend({required this.text, required this.color});
+
+  final String text;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {},
+      child: Text(text),
+      style: ElevatedButton.styleFrom(primary: color),
+    );
   }
 }
