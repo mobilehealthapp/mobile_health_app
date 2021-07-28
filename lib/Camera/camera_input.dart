@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:mobile_health_app/Camera/data_input_page.dart';
 import 'data_transfer.dart';
-import 'package:mobile_health_app/main.dart';
+import 'package:mobile_health_app/main.dart' hide kPrimaryColour;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
@@ -9,6 +9,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'OCR_text_overlay.dart';
 import 'dart:ui';
+import 'input_constants.dart';
 
 final windowSize =
     Size(window.physicalSize.width / 2, window.physicalSize.height / 2);
@@ -42,7 +43,6 @@ class _CameraAppState extends State<CameraApp> {
       if (!mounted) {
         return;
       }
-      print("size = $windowSize");
       setState(() {});
     });
     _initializeControllerFuture = controller.initialize();
@@ -52,6 +52,8 @@ class _CameraAppState extends State<CameraApp> {
   void dispose() {
     controller.dispose();
     textDetector.close();
+    // File(pathToImage).delete();
+    imageCache!.clear();
     super.dispose();
   }
 
@@ -59,7 +61,7 @@ class _CameraAppState extends State<CameraApp> {
     if (isBusy) return;
     isBusy = true;
     final recognisedText = await textDetector.processImage(inputImage);
-    print('Found ${recognisedText.blocks.length} textBlocks');
+    // print('Found ${recognisedText.blocks.length} textBlocks');
 
     ocrText = recognisedText;
     alertText = recognisedText.text;
@@ -124,6 +126,7 @@ class _CameraAppState extends State<CameraApp> {
             setState(() {
               showImage = false;
             });
+            File(pathToImage).delete();
             isStreamingImages = true;
           }
         } catch (e) {
@@ -145,22 +148,22 @@ class _CameraAppState extends State<CameraApp> {
               showImage = true;
             });
             isStreamingImages = false;
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('OCR output'),
-                    content: Text(alertText),
-                    actions: [
-                      TextButton(
-                        child: Text("OK"),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      )
-                    ],
-                  );
-                });
+            // showDialog(
+            //     context: context,
+            //     builder: (BuildContext context) {
+            //       return AlertDialog(
+            //         title: Text('OCR output'),
+            //         content: Text(alertText),
+            //         actions: [
+            //           TextButton(
+            //             child: Text("OK"),
+            //             onPressed: () {
+            //               Navigator.pop(context);
+            //             },
+            //           )
+            //         ],
+            //       );
+            //     });
           } else {
             showDialog(
                 context: context,
@@ -169,8 +172,11 @@ class _CameraAppState extends State<CameraApp> {
                     title: Text('Selected value(s)'),
                     content: selected.isEmpty
                         ? Text('Please select a measurement')
-                        : Text(bpAlertText(dataType, selected[0],
-                            (selected.length == 2) ? selected[1] : null)),
+                        : Text((dataType == 'Blood Glucose')
+                            ? ocrAlertText(
+                                dataType, selected[0], bloodGlucoseUnit)
+                            : ocrAlertText(dataType, selected[0],
+                                (selected.length == 2) ? selected[1] : null)),
                     actions: [
                       TextButton(
                         child: Text(
@@ -180,6 +186,10 @@ class _CameraAppState extends State<CameraApp> {
                             processData(dataType, selected[0],
                                 (selected.length == 2) ? selected[1] : null);
                             Navigator.pop(context);
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            recalculateAverage(dataType);
+                            File(pathToImage).delete();
                           } else {
                             Navigator.pop(context);
                           }

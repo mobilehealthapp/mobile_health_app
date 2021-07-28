@@ -91,8 +91,6 @@ class _CameraOverlayState extends State<CameraOverlay> {
                           selected.add(element.text);
                         }
                       });
-                      print(count);
-                      print("tapped on ${element.text}!");
                     },
                     child: Container(
                       decoration: BoxDecoration(
