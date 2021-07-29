@@ -4,7 +4,8 @@ class AuthenticationButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
   final colour;
-  AuthenticationButton(this.label, this.onPressed, this.colour);
+  AuthenticationButton(
+      {required this.label, required this.onPressed, this.colour});
 
   @override
   Widget build(BuildContext context) {

@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/HomePage.dart';
+import 'package:mobile_health_app/physHome.dart';
+
+import 'health_analysis.dart';
 import 'package:mobile_health_app/buttontest.dart';
 import 'package:mobile_health_app/health_analysis.dart';
 import 'package:mobile_health_app/settings_pages/settings.dart';
