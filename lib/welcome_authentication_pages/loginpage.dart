@@ -1,15 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mobile_health_app/HomePage.dart';
 import 'package:mobile_health_app/authentication_button.dart';
-import 'package:mobile_health_app/physHome.dart';
-import 'package:mobile_health_app/welcome_authentication_pages/passwordreset..dart';
-import 'package:mobile_health_app/welcome_authentication_pages/verify.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
 import 'package:mobile_health_app/main.dart';
 import 'accountcheck.dart';
-import 'signup.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -162,10 +157,8 @@ class _LoginPageState extends State<LoginPage> {
                                 style: TextStyle(
                                     color: Colors.lightBlue, fontSize: 17),
                               ),
-                              onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ResetScreen())),
+                              onPressed: () =>
+                                  Navigator.of(context).pushNamed('/reset'),
                               padding: EdgeInsets.only(bottom: 20, top: 5),
                             ),
                           ],
@@ -174,51 +167,50 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(
                         height: 20,
                       ),
-                      AuthenticationButton('Log in', () async {
-                        var areCredsValid = formKey.currentState?.validate();
-                        if (areCredsValid == true) {
-                          try {
-                            await _auth.signInWithEmailAndPassword(
-                                email: email, password: password);
-                            user = _auth.currentUser;
-                            if (user.emailVerified) {
-                              var uid = user!.uid;
-                              bool isPatient = await patientAccountCheck(uid);
-                              bool isDoctor = await doctorAccountCheck(uid);
-                              if (isPatient) {
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) => HomePage()));
-                              } else if (isDoctor) {
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) => PhysHome()));
+                      AuthenticationButton(
+                          label: 'Log in',
+                          onPressed: () async {
+                            var areCredsValid =
+                                formKey.currentState?.validate();
+                            if (areCredsValid == true) {
+                              try {
+                                await _auth.signInWithEmailAndPassword(
+                                    email: email, password: password);
+                                user = _auth.currentUser;
+                                if (user.emailVerified) {
+                                  var uid = user!.uid;
+                                  bool isPatient =
+                                      await patientAccountCheck(uid);
+                                  bool isDoctor = await doctorAccountCheck(uid);
+                                  if (isPatient) {
+                                    Navigator.of(context)
+                                        .pushReplacementNamed('/home');
+                                  } else if (isDoctor) {
+                                    Navigator.of(context)
+                                        .pushReplacementNamed('/physHome');
+                                  }
+                                } else {
+                                  Navigator.of(context).pushNamed('/verify');
+                                  setState(() {
+                                    showSpinner = false;
+                                  });
+                                }
+                              } catch (signInError) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration: Duration(seconds: 10),
+                                    backgroundColor: Colors.red,
+                                    content: Text(
+                                      signInError.toString().split('] ')[1],
+                                      style: TextStyle(fontSize: 20.0),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                );
                               }
-                            } else {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          EmailVerificationScreen()));
                             }
-                            setState(() {
-                              showSpinner = false;
-                            });
-                          } catch (signInError) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                duration: Duration(seconds: 10),
-                                backgroundColor: Colors.red,
-                                content: Text(
-                                  signInError.toString().split('] ')[1],
-                                  style: TextStyle(fontSize: 20.0),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            );
-                          }
-                        }
-                      }, Colors.blueGrey),
+                          },
+                          colour: Colors.blueGrey),
                       SizedBox(
                         height: 30,
                       ),
@@ -228,10 +220,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(fontSize: 20),
                         ),
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SignupPage()));
+                          Navigator.of(context).pushReplacementNamed('/signup');
                         },
                       ),
                     ],

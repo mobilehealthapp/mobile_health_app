@@ -2,19 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'settings_constants.dart';
 
-class PrivacyPolicy extends StatefulWidget {
+class MedicalDisclaimer extends StatefulWidget {
+  const MedicalDisclaimer({Key? key}) : super(key: key);
+
   @override
-  _PrivacyPolicyState createState() => _PrivacyPolicyState();
+  _MedicalDisclaimerState createState() => _MedicalDisclaimerState();
 }
 
-class _PrivacyPolicyState extends State<PrivacyPolicy> {
+class _MedicalDisclaimerState extends State<MedicalDisclaimer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kSecondaryColour,
       appBar: AppBar(
         title: Text(
-          'Privacy Policy',
+          'Medical Disclaimer',
           style: kAppBarLabelStyle,
         ),
         centerTitle: true,

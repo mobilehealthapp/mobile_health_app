@@ -95,29 +95,32 @@ class _ResetScreenState extends State<ResetScreen> {
                   SizedBox(
                     height: 20,
                   ),
-                  AuthenticationButton('Send Request', () {
-                    _auth.sendPasswordResetEmail(email: email);
-                    showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Password Reset'),
-                            content: const Text(
-                                'Please check your inbox for password reset instructions'),
-                            actions: [
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context)..pop()..pop();
-                                  },
-                                  child: const Text('Dismiss'))
-                            ],
-                          );
-                        });
+                  AuthenticationButton(
+                      label: 'Send Request',
+                      onPressed: () {
+                        _auth.sendPasswordResetEmail(email: email);
+                        showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Password Reset'),
+                                content: const Text(
+                                    'Please check your inbox for password reset instructions'),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context)..pop()..pop();
+                                      },
+                                      child: const Text('Dismiss'))
+                                ],
+                              );
+                            });
 
-                    // showDialog(
-                    //     context: context,
-                    //     builder: (BuildContext context) =>
-                  }, Colors.blueGrey),
+                        // showDialog(
+                        //     context: context,
+                        //     builder: (BuildContext context) =>
+                      },
+                      colour: Colors.blueGrey),
                   SizedBox(
                     height: 30,
                   ),

@@ -1,15 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/Constants.dart';
 import 'settings_constants.dart';
 import 'settings_card.dart';
 
 class AddDoctors extends StatefulWidget {
-  const AddDoctors({Key? key}) : super(key: key);
   @override
   _AddDoctorsState createState() => _AddDoctorsState();
 }
 
 class _AddDoctorsState extends State<AddDoctors> {
+  var inputtedCode;
+  var firstName;
+  var lastName;
+  var label;
+  var email;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,6 +49,9 @@ class _AddDoctorsState extends State<AddDoctors> {
               child: TextFormField(
                 decoration:
                     kTextFieldDecoration.copyWith(hintText: 'First Name'),
+                onChanged: (value) {
+                  firstName = value;
+                },
               ),
             ),
             Padding(
@@ -49,6 +59,9 @@ class _AddDoctorsState extends State<AddDoctors> {
               child: TextFormField(
                 decoration:
                     kTextFieldDecoration.copyWith(hintText: 'Last Name'),
+                onChanged: (value) {
+                  lastName = value;
+                },
               ),
             ),
             Padding(
@@ -56,11 +69,17 @@ class _AddDoctorsState extends State<AddDoctors> {
               child: TextFormField(
                 decoration:
                     kTextFieldDecoration.copyWith(hintText: 'Email Address'),
+                onChanged: (value) {
+                  email = value;
+                },
               ),
             ),
             Padding(
               padding: EdgeInsets.only(top: 20.0, bottom: 5.0),
               child: TextFormField(
+                onChanged: (value) {
+                  inputtedCode = value;
+                },
                 decoration: kTextFieldDecoration.copyWith(
                     hintText: 'Doctor\'s Numerical Code'),
               ),
@@ -91,6 +110,9 @@ class _AddDoctorsState extends State<AddDoctors> {
               child: TextFormField(
                 decoration:
                     kTextFieldDecoration.copyWith(hintText: 'Doctor\'s Label'),
+                onChanged: (value) {
+                  label = value;
+                },
               ),
             ),
             Container(
@@ -117,12 +139,65 @@ class _AddDoctorsState extends State<AddDoctors> {
             Padding(
               padding: EdgeInsets.all(10.0),
               child: ElevatedButton(
-                onPressed: () {
-                  setState(
-                    () {
+                onPressed: () async {
+                  String uid = FirebaseAuth.instance.currentUser!.uid;
+                  await FirebaseFirestore.instance
+                      .collection('doctorprofile')
+                      .where('access code', isEqualTo: inputtedCode)
+                      .get()
+                      .then((QuerySnapshot querySnapshot) {
+                    if (querySnapshot.docs.length == 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: Duration(seconds: 10),
+                          backgroundColor: Colors.red,
+                          content: Text(
+                            'This code does not match an existing doctor profile. Please ensure you are inputting the correct code as provided by your doctor',
+                            style: TextStyle(fontSize: 20.0),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
+                    } else {
+                      querySnapshot.docs.forEach((doc) async {
+                        String doctorUID = doc.id;
+                        FirebaseFirestore.instance
+                            .collection('patientprofile')
+                            .doc(uid)
+                            .collection('patientDoctors')
+                            .doc(doctorUID)
+                            .set({
+                          'doctorUID': doctorUID,
+                          'doctorFirstName': firstName,
+                          'doctorLastName': lastName,
+                          'doctorEmail': email,
+                          'doctorLabel': label
+                        });
+                        var patientUID = FirebaseAuth.instance.currentUser!.uid;
+                        var patientSnapshot = await FirebaseFirestore.instance
+                            .collection('patientprofile')
+                            .doc(patientUID)
+                            .get();
+                        var patientData = patientSnapshot.data();
+                        print(patientData);
+
+                        await FirebaseFirestore.instance
+                            .collection('doctorprofile')
+                            .doc(doctorUID)
+                            .collection('doctorPatients')
+                            .doc(patientUID)
+                            .set(patientData!);
+                        await FirebaseFirestore.instance
+                            .collection('doctorprofile')
+                            .doc(doctorUID)
+                            .collection('doctorPatients')
+                            .doc(patientUID)
+                            .set({'patientUID': patientUID});
+                      });
+
                       Navigator.pop(context);
-                    },
-                  );
+                    }
+                  });
                 },
                 child: Text(
                   'Add This Doctor',

@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/physHome.dart';
-import 'package:mobile_health_app/settings_pages/dr_settings.dart';
-import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
 
 class PhysDrawers extends StatelessWidget {
   const PhysDrawers({Key? key}) : super(key: key);
@@ -42,11 +39,11 @@ class PhysDrawers extends StatelessWidget {
               addItem(
                 text: 'Contact Patient',
                 icon: Icons.contacts,
-                onClicked: () => select(context, 5),
+                onClicked: () => select(context, 1),
               ),
               SizedBox(height: 10),
               addItem(
-                text: 'Setting',
+                text: 'Settings',
                 icon: Icons.settings,
                 onClicked: () => select(context, 2),
               ),
@@ -54,7 +51,7 @@ class PhysDrawers extends StatelessWidget {
               addItem(
                 text: 'Logout ',
                 icon: Icons.logout,
-                onClicked: () => select(context, 5),
+                onClicked: () => select(context, 3),
               ),
 
               // SizedBox
@@ -82,19 +79,18 @@ class PhysDrawers extends StatelessWidget {
     switch (i) {
       case 0:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => PhysHome()));
+            .pushNamed('/physHome');
         break;
       case 1:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => PhysHome()));
+            .pushNamed('/physHome');
         break;
       case 2:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => DrSettingsPage()));
+            .pushNamed('/drSettings');
         break;
       case 3:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => WelcomeScreen()));
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
         break;
     }
   }

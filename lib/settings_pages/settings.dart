@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/settings_pages/my_doctors.dart';
-import 'package:mobile_health_app/settings_pages/privacy_policy.dart';
+import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'settings_card.dart';
-import 'profile_tab.dart';
 import 'package:mobile_health_app/drawers.dart';
-import 'terms_and_conditions.dart';
+import 'delete_data_or_account.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -18,6 +16,9 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       backgroundColor: kSecondaryColour,
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
         title: Text(
           'Settings',
           style: kAppBarLabelStyle,
@@ -34,12 +35,7 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () {
                 setState(
                   () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProfilePage(),
-                      ),
-                    );
+                    Navigator.of(context).pushNamed('/profile'); // navigate to profile page
                   },
                 );
               },
@@ -63,12 +59,7 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () {
                 setState(
                   () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MyDoctors(),
-                      ),
-                    );
+                    Navigator.of(context).pushNamed('/myDoctors'); // navigate to doctors page
                   },
                 );
               },
@@ -82,12 +73,7 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () {
                 setState(
                   () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PrivacyPolicy(),
-                      ),
-                    );
+                    Navigator.of(context).pushNamed('/privacyPolicy');// navigate to privacy policy page
                   },
                 );
               },
@@ -99,14 +85,11 @@ class _SettingsPageState extends State<SettingsPage> {
             padding: EdgeInsets.all(10.0),
             child: ElevatedButton(
               onPressed: () {
-                setState(() {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TermsAndConditions(),
-                    ),
-                  );
-                });
+                setState(
+                  () {
+                    Navigator.of(context).pushNamed('/termsAndConditions'); // navigate to terms and conditions page
+                  },
+                );
               },
               child: TabContent(label: 'Terms and Conditions'),
               style: kSettingsCardStyle,
@@ -116,7 +99,11 @@ class _SettingsPageState extends State<SettingsPage> {
             padding: EdgeInsets.all(10.0),
             child: ElevatedButton(
               onPressed: () {
-                setState(() {});
+                setState(
+                  () {
+                    Navigator.of(context).pushNamed('/medicalDisclaimer'); // navigate to medical disclaimer page
+                  },
+                );
               },
               child: TabContent(label: 'Medical Disclaimer'),
               style: kSettingsCardStyle,
@@ -125,17 +112,17 @@ class _SettingsPageState extends State<SettingsPage> {
           Padding(
             padding: EdgeInsets.all(10.0),
             child: ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Alert(
-                        alertBody: 'This will erase ALL of your data.',
-                      ),
-                    ),
-                  );
-                });
+              onPressed: () async {
+                return showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return new Alert(
+                      widget: AlertPatientData(), // navigates to alert where user can input credentials and delete data
+                      alertBody:
+                          'This will erase all of your data except for your email address and your account type.',
+                    );
+                  },
+                );
               },
               child: TabContent2(label: 'Delete My Data'),
               style: kRedButtonStyle,
@@ -144,17 +131,13 @@ class _SettingsPageState extends State<SettingsPage> {
           Padding(
             padding: EdgeInsets.all(10.0),
             child: ElevatedButton(
-              onPressed: () {
-                setState(
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Alert(
-                          alertBody:
-                              'This will completely delete your account.',
-                        ),
-                      ),
+              onPressed: () async {
+                return showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return new Alert(
+                      widget: AlertPatientAccount(), // navigates to alert where user can input credentials and delete account
+                      alertBody: 'This will completely delete your account.',
                     );
                   },
                 );
