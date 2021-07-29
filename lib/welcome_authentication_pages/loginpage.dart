@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_health_app/authentication_button.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
-import 'package:mobile_health_app/main.dart';
+import 'package:mobile_health_app/Constants.dart';
 import 'accountcheck.dart';
 
 class LoginPage extends StatefulWidget {

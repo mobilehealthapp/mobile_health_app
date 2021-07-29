@@ -5,7 +5,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'Notification/green_page.dart';
 
 import 'Camera/camera_input.dart';
 import 'Camera/data_input_page.dart';
@@ -14,7 +13,7 @@ import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.da
 import 'welcome_authentication_pages/loginpage.dart';
 import 'welcome_authentication_pages/signup.dart';
 import 'welcome_authentication_pages/verify.dart';
-import 'welcome_authentication_pages/passwordreset..dart';
+import 'welcome_authentication_pages/passwordreset.dart';
 
 import 'settings_pages/settings.dart';
 import 'settings_pages/dr_settings.dart';
@@ -43,8 +42,6 @@ AndroidNotificationChannel? channel;
 FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
 
 late List<CameraDescription> cameras;
-const kPrimaryColour = Color(0xFF1B4DA8);
-const kSecondaryColour = Color(0xFFE6F3FC);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

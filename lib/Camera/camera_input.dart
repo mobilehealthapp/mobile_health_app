@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:mobile_health_app/Camera/data_input_page.dart';
 import 'data_transfer.dart';
-import 'package:mobile_health_app/main.dart' hide kPrimaryColour;
+import 'package:mobile_health_app/main.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
