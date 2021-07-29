@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/Constants.dart';
 import 'settings_constants.dart';
 import 'settings_card.dart';
 
@@ -13,14 +14,14 @@ class _AddDoctorsState extends State<AddDoctors> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color(0xFFB2EBF2),
+        backgroundColor: kSecondaryColour,
         appBar: AppBar(
           title: Text(
             'Add A Doctor',
             style: kAppBarLabelStyle,
           ),
           centerTitle: true,
-          backgroundColor: Color(0xFF00BCD4),
+          backgroundColor: kPrimaryColour,
         ),
         body: Padding(
           padding: EdgeInsets.all(10.0),

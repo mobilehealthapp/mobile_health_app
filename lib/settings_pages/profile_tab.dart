@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'settings_card.dart';
-import 'profile_edit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 final patientRef = FirebaseFirestore.instance
     .collection('patientprofile'); // create this as global variable
-var first;
+var first; // these variables will represent the info in firebase
 var last;
 var adr;
 var age;
@@ -31,6 +31,13 @@ class _ProfilePageState extends State<ProfilePage> {
   var loggedInUser;
   var uid;
 
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+    getUserData(_auth.currentUser!.uid);
+  }
+
   void getCurrentUser() async {
     try {
       final user = _auth.currentUser;
@@ -45,7 +52,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   getUserData(uid) async {
-    final DocumentSnapshot patientInfo = await patientRef.doc(uid).get();
+    final DocumentSnapshot patientInfo =
+        await patientRef.doc(_auth.currentUser!.uid).get();
     setState(
       () {
         first = patientInfo.get('first name');
@@ -64,23 +72,16 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   @override
-  void initState() {
-    getCurrentUser();
-    getUserData(uid);
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFB2EBF2),
+      backgroundColor: kSecondaryColour,
       appBar: AppBar(
         title: Text(
           'My Profile',
           style: kAppBarLabelStyle,
         ),
         centerTitle: true,
-        backgroundColor: Color(0xFF00BCD4),
+        backgroundColor: kPrimaryColour,
       ),
       body: ListView(
         children: [
@@ -118,12 +119,12 @@ class _ProfilePageState extends State<ProfilePage> {
             padding: EdgeInsets.all(10.0),
             child: ElevatedButton(
               onPressed: () async {
-                await Navigator.push(
+                await Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => ProfileEdit(),
-                  ),
-                ).then((value) => getUserData(uid));
+                  '/profileEdit',
+                ).then(
+                  (value) => getUserData(uid),
+                );
               },
               child: TabContent(label: 'Edit My Information'),
               style: kSettingsCardStyle,

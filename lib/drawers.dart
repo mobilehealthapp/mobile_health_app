@@ -1,10 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/HomePage.dart';
-import 'package:mobile_health_app/physHome.dart';
-import 'package:mobile_health_app/settings_pages/settings.dart';
-import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
-import 'health_analysis.dart';
 
 class Drawers extends StatelessWidget {
   final _auth = FirebaseAuth.instance;
@@ -47,8 +42,7 @@ class Drawers extends StatelessWidget {
               ListTile(
                 onTap: () {
                   _auth.signOut();
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => WelcomeScreen()));
+                  Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
                 },
                 leading: Icon(Icons.logout),
                 title: Text('Logout'),
@@ -59,7 +53,6 @@ class Drawers extends StatelessWidget {
                 icon: Icons.logout,
                 onClicked: () => select(context, 5),
               ),
-
               // SizedBox
             ],
           ),
@@ -85,27 +78,27 @@ class Drawers extends StatelessWidget {
     switch (i) {
       case 0:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => HomePage()));
+            .pushNamed('/home');
         break;
       case 1:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => SettingsPage()));
+            .pushNamed('/settings');
         break;
       case 2:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => HealthAnalysis()));
+            .pushNamed('/healthAnalysis');
         break;
       case 3:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => HealthAnalysis()));
+            .pushNamed('/healthAnalysis');
         break;
       case 4:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => PhysHome()));
+            .pushNamed('/physHome');
         break;
       case 5:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => PhysHome()));
+            .pushNamed('/physHome');
         break;
     }
   }

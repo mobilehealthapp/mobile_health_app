@@ -1,16 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mobile_health_app/HomePage.dart';
 import 'package:mobile_health_app/authentication_button.dart';
-import 'package:mobile_health_app/physHome.dart';
-import 'package:mobile_health_app/welcome_authentication_pages/passwordreset..dart';
-import 'package:mobile_health_app/welcome_authentication_pages/verify.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
 
 import 'accountcheck.dart';
-import 'signup.dart';
-
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -163,10 +157,7 @@ class _LoginPageState extends State<LoginPage> {
                                 style: TextStyle(
                                     color: Colors.lightBlue, fontSize: 17),
                               ),
-                              onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ResetScreen())),
+                              onPressed: () => Navigator.of(context).pushNamed('/reset'),
                               padding: EdgeInsets.only(bottom: 20, top: 5),
                             ),
                           ],
@@ -187,20 +178,12 @@ class _LoginPageState extends State<LoginPage> {
                               bool isPatient = await patientAccountCheck(uid);
                               bool isDoctor = await doctorAccountCheck(uid);
                               if (isPatient) {
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) => HomePage()));
+                                Navigator.of(context).pushReplacementNamed('/home');
                               } else if (isDoctor) {
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) => PhysHome()));
+                                Navigator.of(context).pushReplacementNamed('/physHome');
                               }
                             } else {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          EmailVerificationScreen()));
+                              Navigator.of(context).pushNamed('/verify');
                             }
                             setState(() {
                               showSpinner = false;
@@ -229,10 +212,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(fontSize: 20),
                         ),
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SignupPage()));
+                          Navigator.of(context).pushReplacementNamed('/signup');
                         },
                       ),
                     ],

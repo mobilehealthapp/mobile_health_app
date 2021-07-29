@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // ignore: unused_import
 import 'package:mobile_health_app/authentication_button.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/database_auth_services..dart';
-import 'package:mobile_health_app/welcome_authentication_pages/loginpage.dart';
-import 'package:mobile_health_app/welcome_authentication_pages/verify.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
@@ -186,10 +184,7 @@ class _SignupPageState extends State<SignupPage> {
                             firstName, lastName, email, accountType);
                       }
 
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EmailVerificationScreen()));
+                      Navigator.of(context).pushNamed('/verify');
                       setState(() {
                         showSpinner = false;
                       });
@@ -214,8 +209,7 @@ class _SignupPageState extends State<SignupPage> {
                     style: TextStyle(fontSize: 20),
                   ),
                   onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => LoginPage()));
+                    Navigator.of(context).pushReplacementNamed('/login');
                   },
                 )
               ],

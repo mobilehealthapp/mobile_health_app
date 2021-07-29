@@ -98,16 +98,13 @@ class WelcomeScreen extends StatelessWidget {
                   //   ),
                   // ),
                   AuthenticationButton('Log in', () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => LoginPage()));
+                    Navigator.of(context).pushNamed('/login');
                   }, Colors.blueGrey),
                   SizedBox(
                     height: 20.0,
                   ),
-
                   AuthenticationButton('Sign up', () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => SignupPage()));
+                    Navigator.of(context).pushNamed('/signup');
                   }, Colors.cyan)
                   // MaterialButton(
                   //   color: Colors.blue,

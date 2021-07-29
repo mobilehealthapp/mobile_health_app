@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'settings_constants.dart';
 
-class TermsAndConditions extends StatefulWidget {
-  const TermsAndConditions({Key? key}) : super(key: key);
+class MedicalDisclaimer extends StatefulWidget {
+  const MedicalDisclaimer({Key? key}) : super(key: key);
 
   @override
-  _TermsAndConditionsState createState() => _TermsAndConditionsState();
+  _MedicalDisclaimerState createState() => _MedicalDisclaimerState();
 }
 
-class _TermsAndConditionsState extends State<TermsAndConditions> {
+class _MedicalDisclaimerState extends State<MedicalDisclaimer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kSecondaryColour,
       appBar: AppBar(
         title: Text(
-          'Terms and Conditions',
+          'Medical Disclaimer',
           style: kAppBarLabelStyle,
         ),
         centerTitle: true,

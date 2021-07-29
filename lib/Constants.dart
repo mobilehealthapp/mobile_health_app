@@ -10,3 +10,6 @@ const kTextLabel2 = TextStyle(
 );
 
 const Color1 = Colors.grey;
+
+const kPrimaryColour = Color(0xFF1B4DA8);
+const kSecondaryColour = Color(0xFFe6f3fc);

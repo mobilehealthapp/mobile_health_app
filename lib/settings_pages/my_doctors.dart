@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/Constants.dart';
 import 'settings_constants.dart';
-import 'add_a_doctor.dart';
 import 'settings_card.dart';
 
 class MyDoctors extends StatefulWidget {
@@ -12,14 +12,14 @@ class _MyDoctorsState extends State<MyDoctors> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFB2EBF2),
+      backgroundColor: kSecondaryColour,
       appBar: AppBar(
         title: Text(
           'My Doctors',
           style: kAppBarLabelStyle,
         ),
         centerTitle: true,
-        backgroundColor: Color(0xFF00BCD4),
+        backgroundColor: kPrimaryColour,
       ),
       body: ListView(
         scrollDirection: Axis.vertical,
@@ -30,11 +30,9 @@ class _MyDoctorsState extends State<MyDoctors> {
               onPressed: () {
                 setState(
                   () {
-                    Navigator.push(
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => AddDoctors(),
-                      ),
+                      '/addDoctors'
                     );
                   },
                 );
