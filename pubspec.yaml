@@ -25,6 +25,8 @@ dependencies:
   provider: ^5.0.0
   modal_progress_hud_nsn: ^0.1.0-nullsafety-1
   draw_graph: ^1.0.0
+  firebase_messaging: ^10.0.4
+  flutter_local_notifications: ^6.0.0
 
 dev_dependencies:
   flutter_test:

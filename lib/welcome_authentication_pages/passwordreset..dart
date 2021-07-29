@@ -9,7 +9,7 @@ class ResetScreen extends StatefulWidget {
 }
 
 class _ResetScreenState extends State<ResetScreen> {
-  final _auth = FirebaseAuth.instance;
+  final auth = FirebaseAuth.instance;
   var user;
   var email;
   @override
@@ -95,7 +95,7 @@ class _ResetScreenState extends State<ResetScreen> {
                     height: 20,
                   ),
                   AuthenticationButton('Send Request', () {
-                    _auth.sendPasswordResetEmail(email: email);
+                    auth.sendPasswordResetEmail(email: email);
                     showDialog<String>(
                         context: context,
                         builder: (BuildContext context) {
