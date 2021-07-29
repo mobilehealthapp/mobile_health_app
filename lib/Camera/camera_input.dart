@@ -148,22 +148,6 @@ class _CameraAppState extends State<CameraApp> {
               showImage = true;
             });
             isStreamingImages = false;
-            // showDialog(
-            //     context: context,
-            //     builder: (BuildContext context) {
-            //       return AlertDialog(
-            //         title: Text('OCR output'),
-            //         content: Text(alertText),
-            //         actions: [
-            //           TextButton(
-            //             child: Text("OK"),
-            //             onPressed: () {
-            //               Navigator.pop(context);
-            //             },
-            //           )
-            //         ],
-            //       );
-            //     });
           } else {
             showDialog(
                 context: context,
@@ -173,8 +157,7 @@ class _CameraAppState extends State<CameraApp> {
                     content: selected.isEmpty
                         ? Text('Please select a measurement')
                         : Text((dataType == 'Blood Glucose')
-                            ? ocrAlertText(
-                                dataType, selected[0], bloodGlucoseUnit)
+                            ? ocrAlertText(dataType, selected[0], glucoseUnit)
                             : ocrAlertText(dataType, selected[0],
                                 (selected.length == 2) ? selected[1] : null)),
                     actions: [

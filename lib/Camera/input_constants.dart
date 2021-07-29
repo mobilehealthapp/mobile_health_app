@@ -16,6 +16,7 @@ const List kNumberOfVariables = [
   ['Heart Rate', 1],
 ];
 
+// Variables for inputted data
 double? systolic;
 double? diastolic;
 double? glucoseLevel;
@@ -105,6 +106,12 @@ class BloodGlucoseTF extends StatefulWidget {
 }
 
 class _BloodGlucoseTFState extends State<BloodGlucoseTF> {
+  @override
+  void initState() {
+    bloodGlucoseUnit = 'Select unit type';
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(

@@ -100,9 +100,6 @@ class _DataInputState extends State<DataInput> {
             // if the input is not valid, a corresponding alert will pop up
             ElevatedButton(
                 onPressed: () async {
-                  print(selectedDataType);
-                  print(systolic);
-                  print(diastolic);
                   // first check: BP chosen AND systolic empty AND diastolic empty
                   if (selectedDataType == 'Blood Pressure' &&
                       systolic == null &&

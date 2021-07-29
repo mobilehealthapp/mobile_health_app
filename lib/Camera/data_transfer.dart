@@ -25,6 +25,7 @@ void getCurrentUser() async {
 }
 
 void processData(String type, data1, data2) {
+  print("here: $data2");
   getCurrentUser();
   final userData = patientData.doc(uid);
   switch (type) {
@@ -39,14 +40,21 @@ void processData(String type, data1, data2) {
           .set({'systolic': systolic, 'diastolic': diastolic});
       break;
     case 'Blood Glucose':
+      print(data2);
       double filteredData = double.parse(filterAlpha(data1).toStringAsFixed(1));
-      double convertedData =
-          double.parse(convertGlucose(filteredData).toStringAsFixed(1));
-      double glucose = (data2 == 'mmol/L') ? filteredData : convertedData;
-      userData
-          .collection('bloodGlucose')
-          .doc(getCurrentTime())
-          .set({'blood glucose': glucose});
+
+      double convertedMMOL = double.parse(
+          convertGlucose(filteredData, "mmol/L").toStringAsFixed(1));
+      double glucoseMMOL = (data2 == "mmol/L") ? filteredData : convertedMMOL;
+
+      double convertedMG = double.parse(
+          convertGlucose(filteredData, "mg/dL").toStringAsFixed(0));
+      double glucoseMG = (data2 == "mg/dL") ? filteredData : convertedMG;
+
+      userData.collection('bloodGlucose').doc(getCurrentTime()).set({
+        "blood glucose (mmolL)": glucoseMMOL,
+        "blood glucose (mgdL)": glucoseMG
+      });
       break;
     case 'Heart Rate':
       int filteredData = filterAlpha(data1.toString()).toInt();
@@ -86,13 +94,19 @@ void recalculateAverage(String dataType) async {
       QuerySnapshot<Map<String, dynamic>> queries =
           await userData.collection('bloodGlucose').get();
       int numberOfDataPoints = queries.docs.length;
-      double avgGlucose = 0;
+      double avgGlucoseMMOL = 0;
+      double avgGlucoseMG = 0;
       for (QueryDocumentSnapshot document in queries.docs) {
-        avgGlucose += document.get('blood glucose');
+        avgGlucoseMMOL += document.get("blood glucose (mmolL)");
+        avgGlucoseMG += document.get("blood glucose (mgdL)");
       }
-      avgGlucose = avgGlucose / numberOfDataPoints;
+      avgGlucoseMMOL = avgGlucoseMMOL / numberOfDataPoints;
+      avgGlucoseMG = avgGlucoseMG / numberOfDataPoints;
       userData.set({
-        'Average Blood Glucose': double.parse(avgGlucose.toStringAsFixed(1)),
+        "Average Blood Glucose (mmolL)":
+            double.parse(avgGlucoseMMOL.toStringAsFixed(1)),
+        "Average Blood Glucose (mgdL)":
+            double.parse(avgGlucoseMG.toStringAsFixed(0))
       }, SetOptions(merge: true));
       break;
     case 'Heart Rate':
@@ -114,8 +128,12 @@ void recalculateAverage(String dataType) async {
 // To convert mg/dL to mmol/L
 double glucoseConversion = 18.0182;
 
-double convertGlucose(double data) {
-  return (data / glucoseConversion).toDouble();
+double convertGlucose(double data, String conversion) {
+  if (conversion == "mmol/L") {
+    return (data / glucoseConversion).toDouble();
+  } else {
+    return (data * glucoseConversion).toDouble();
+  }
 }
 
 double filterAlpha(String data) {
