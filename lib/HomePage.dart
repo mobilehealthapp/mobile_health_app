@@ -6,6 +6,8 @@ import 'package:mobile_health_app/Constants.dart';
 import 'drawers.dart';
 import 'package:mobile_health_app/drawers.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:mobile_health_app/graphData.dart';
 
 final patientRef = FirebaseFirestore.instance
     .collection('patientprofile'); //declare reference high up in file
@@ -53,48 +55,74 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Scaffold(
-      drawer: Drawers(),
-      appBar: AppBar(actions: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: GestureDetector(
-            child: Icon(Icons.logout),
-            onTap: () async {
-              FirebaseAuth.instance.signOut();
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => WelcomeScreen()));
-            },
+      child: Scaffold(
+        drawer: Drawers(),
+        appBar: AppBar(actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GestureDetector(
+              child: Icon(Icons.logout),
+              onTap: () async {
+                FirebaseAuth.instance.signOut();
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => WelcomeScreen()));
+              },
+            ),
+          )
+        ], backgroundColor: Colors.cyan, title: Text('Hello, $name')),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => DataInput()));
+          },
+          child: Icon(
+            Icons.camera_alt_rounded,
           ),
-        )
-      ], backgroundColor: Colors.cyan, title: Text('Hello, $name')),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => DataInput()));
-        },
-        child: Icon(
-          Icons.camera_alt_rounded,
+        ),
+        body: ListView(
+          children: [
+            SizedBox(
+              height: 30.0,
+            ),
+            Text(
+              ' Recent Analysis',
+              style: TextStyle(
+                fontSize: 40,
+              ),
+            ),
+            SizedBox(
+              height: 30.0,
+            ),
+            Text(
+              'Blood pressure for this week',
+              textAlign: TextAlign.center,
+            ),
+            Chart1(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Legend(
+                  text: 'Systolic',
+                  color: Colors.black,
+                ),
+                Legend(
+                  text: 'Diastolic',
+                  color: Colors.red,
+                ),
+              ],
+            ),
+            SummaryCard(
+              type: 'Average Blood Pressure',
+              value: '145/89 ',
+            ),
+            Chart2(),
+            SummaryCard(value: '3.4', type: 'Average Blood Sugar'),
+            Chart3(),
+            SummaryCard(value: '25', type: 'Average Pulse'),
+          ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-            // mainAxisAlignment: MainAxisAlignment.spaceAround,
-            // crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                ' Recent Analysis',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 15,
-                ),
-              ),
-            ]
-            // bottomNavigationBar: btomNav(),
-            ),
-      ),
-    ));
+    );
   }
 }
