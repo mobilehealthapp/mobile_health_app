@@ -1,5 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/HomePage.dart';
+import 'package:mobile_health_app/buttontest.dart';
+import 'package:mobile_health_app/health_analysis.dart';
+import 'package:mobile_health_app/settings_pages/settings.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
 
 class Drawers extends StatelessWidget {
   final _auth = FirebaseAuth.instance;
@@ -19,6 +25,12 @@ class Drawers extends StatelessWidget {
                 icon: Icons.home,
                 onClicked: () => select(context, 0),
               ),
+              SizedBox(height: 10),
+              addItem(
+                text: 'Settings',
+                icon: Icons.settings,
+                onClicked: () => select(context, 1),
+              ),
 
               SizedBox(height: 10),
               addItem(
@@ -32,18 +44,13 @@ class Drawers extends StatelessWidget {
                 icon: Icons.contacts,
                 onClicked: () => select(context, 5),
               ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Settings',
-                icon: Icons.settings,
-                onClicked: () => select(context, 1),
-              ),
+
               SizedBox(height: 10),
               ListTile(
                 onTap: () {
-                  _auth.signOut();
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/', (Route<dynamic> route) => false);
+                  FirebaseAuth.instance.signOut();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => WelcomeScreen()));
                 },
                 leading: Icon(Icons.logout),
                 title: Text('Logout'),
@@ -78,13 +85,16 @@ class Drawers extends StatelessWidget {
     Navigator.of(context).pop();
     switch (i) {
       case 0:
-        Navigator.of(context).pushNamed('/home');
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomePage()));
         break;
       case 1:
-        Navigator.of(context).pushNamed('/settings');
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => SettingsPage()));
         break;
       case 2:
-        Navigator.of(context).pushNamed('/healthAnalysis');
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HealthAnalysis()));
         break;
       case 3:
         Navigator.of(context).pushNamed('/healthAnalysis');
