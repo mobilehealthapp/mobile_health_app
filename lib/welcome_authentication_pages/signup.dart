@@ -3,10 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // ignore: unused_import
 import 'package:mobile_health_app/authentication_button.dart';
-import 'package:mobile_health_app/welcome_authentication_pages/database_auth_services..dart';
-import 'package:mobile_health_app/welcome_authentication_pages/loginpage.dart';
-import 'package:mobile_health_app/welcome_authentication_pages/verify.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/database_auth_services.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class SignupPage extends StatefulWidget {
@@ -24,6 +22,7 @@ class _SignupPageState extends State<SignupPage> {
   var password;
   var accountType;
   var _chosenValue;
+  bool areCredsValid = false;
   @override
   Widget build(BuildContext context) {
     return ModalProgressHUD(
@@ -168,54 +167,53 @@ class _SignupPageState extends State<SignupPage> {
                     ],
                   ),
                 ),
-                AuthenticationButton('Sign up', () async {
-                  setState(() {
-                    showSpinner = true;
-                  });
-                  var areCredsValid = formKey.currentState?.validate();
-                  if (areCredsValid == true) {
-                    try {
-                      var result = await _auth.createUserWithEmailAndPassword(
-                          email: email, password: password);
-                      var user = result.user;
-                      if (accountType == 'Patient account') {
-                        await DatabaseAuth(uid: user!.uid).setPatientData(
-                            firstName, lastName, email, accountType);
-                      } else if (accountType == 'Physician account') {
-                        await DatabaseAuth(uid: user!.uid).setDoctorData(
-                            firstName, lastName, email, accountType);
+                AuthenticationButton(
+                    label: 'Sign up',
+                    onPressed: () async {
+                      var areCredsValid = formKey.currentState?.validate();
+                      if (areCredsValid == true) {
+                        setState(() {
+                          showSpinner = true;
+                        });
+                        try {
+                          var result =
+                              await _auth.createUserWithEmailAndPassword(
+                                  email: email, password: password);
+                          var user = result.user;
+                          if (accountType == 'Patient account') {
+                            await DatabaseAuth(uid: user!.uid).setPatientData(
+                                firstName, lastName, email, accountType);
+                          } else if (accountType == 'Physician account') {
+                            await DatabaseAuth(uid: user!.uid).setDoctorData(
+                                firstName, lastName, email, accountType);
+                          }
+                          Navigator.of(context).pushNamed('/verify');
+                          setState(() {
+                            showSpinner = false;
+                          });
+                        } catch (signUpError) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: Duration(seconds: 10),
+                              backgroundColor: Colors.red,
+                              content: Text(
+                                signUpError.toString().split('] ')[1],
+                                style: TextStyle(fontSize: 20.0),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          );
+                        }
                       }
-
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EmailVerificationScreen()));
-                      setState(() {
-                        showSpinner = false;
-                      });
-                    } catch (signUpError) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          duration: Duration(seconds: 10),
-                          backgroundColor: Colors.red,
-                          content: Text(
-                            signUpError.toString().split('] ')[1],
-                            style: TextStyle(fontSize: 20.0),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      );
-                    }
-                  }
-                }, Colors.cyan),
+                    },
+                    colour: Colors.cyan),
                 TextButton(
                   child: Text(
                     'Already registered? Log in!',
                     style: TextStyle(fontSize: 20),
                   ),
                   onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => LoginPage()));
+                    Navigator.of(context).pushReplacementNamed('/login');
                   },
                 )
               ],

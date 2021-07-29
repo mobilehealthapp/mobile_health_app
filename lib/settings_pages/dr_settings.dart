@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/PhysDrawer.dart';
-import 'package:mobile_health_app/settings_pages/dr_profile.dart';
-import 'package:mobile_health_app/settings_pages/privacy_policy.dart';
+import 'package:mobile_health_app/settings_pages/delete_data_or_account.dart';
 import 'settings_card.dart';
 import 'settings_constants.dart';
-import 'terms_and_conditions.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+final doctorRef = FirebaseFirestore.instance
+    .collection('doctorprofile'); // create this as global variable
+var drFirst; // these variables will represent the info in firebase
+var drLast;
+var quali;
+var drTele;
+var fax;
+var clinicAdr;
 
 class DrSettingsPage extends StatefulWidget {
   @override
@@ -12,18 +22,44 @@ class DrSettingsPage extends StatefulWidget {
 }
 
 class _DrSettingsPageState extends State<DrSettingsPage> {
+  final _auth = FirebaseAuth.instance;
+  var loggedInUser;
+  var uid;
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+  }
+
+  void getCurrentUser() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        loggedInUser = user;
+        print(loggedInUser.email);
+        uid = user.uid.toString(); //convert uid to String
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: PhysDrawers(),
-      backgroundColor: Color(0xFFB2EBF2),
+      backgroundColor: kSecondaryColour,
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
         title: Text(
           'Settings',
           style: kAppBarLabelStyle,
         ),
         centerTitle: true,
-        backgroundColor: Color(0xFF00BCD4),
+        backgroundColor: kPrimaryColour,
       ),
       body: ListView(
         children: <Widget>[
@@ -32,13 +68,8 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
             child: ElevatedButton(
               onPressed: () {
                 setState(
-                      () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DrProfilePage(),
-                      ),
-                    );
+                  () {
+                    Navigator.of(context).pushNamed('/drProfile'); // navigate to profile page
                   },
                 );
               },
@@ -61,13 +92,8 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
             child: ElevatedButton(
               onPressed: () {
                 setState(
-                      () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PrivacyPolicy(),
-                      ),
-                    );
+                  () {
+                    Navigator.of(context).pushNamed('/privacyPolicy'); // navigate to privacy policy page
                   },
                 );
               },
@@ -79,9 +105,11 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
             padding: EdgeInsets.all(10.0),
             child: ElevatedButton(
               onPressed: () {
-                setState(() {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => TermsAndConditions(),),);
-                },);
+                setState(
+                  () {
+                    Navigator.of(context).pushNamed('/termsAndConditions'); // navigate to terms and conditions page
+                  },
+                );
               },
               child: TabContent(label: 'Terms and Conditions'),
               style: kSettingsCardStyle,
@@ -91,19 +119,48 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
             padding: EdgeInsets.all(10.0),
             child: ElevatedButton(
               onPressed: () {
-                setState(() {});
+                setState(
+                  () {
+                    Navigator.of(context).pushNamed('/medicalDisclaimer'); // navigate to medical disclaimer page
+                  },
+                );
               },
               child: TabContent(label: 'Medical Disclaimer'),
               style: kSettingsCardStyle,
             ),
           ),
           Padding(
-            padding:  EdgeInsets.all(10.0),
+            padding: EdgeInsets.all(10.0),
             child: ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> Alert(alertBody: 'This will completely delete your account.',),),);
-                },);
+              onPressed: () async {
+                return showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return new Alert(
+                      widget: AlertDoctorData(),
+                      alertBody:
+                          'This will erase all of your data except for your email address and your account type.',
+                    );
+                  },
+                );
+              },
+              child: TabContent2(label: 'Delete My Data'),
+              style: kRedButtonStyle,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(10.0),
+            child: ElevatedButton(
+              onPressed: () async {
+                return showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return new Alert(
+                      widget: AlertDoctorAccount(),
+                      alertBody: 'This will completely delete your account.',
+                    );
+                  },
+                );
               },
               child: TabContent2(label: 'Delete My Account'),
               style: kRedButtonStyle,
@@ -114,3 +171,7 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
     );
   }
 }
+
+//Firestore.instance.collection('path').document('name').update({'Desc': FieldValue.delete()}).whenComplete((){
+//   print('Field Deleted');
+// });

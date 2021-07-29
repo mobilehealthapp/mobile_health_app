@@ -27,6 +27,9 @@ dependencies:
   draw_graph: ^1.0.0
   firebase_messaging: ^10.0.4
   flutter_local_notifications: ^6.0.0
+  get_it: ^7.2.0
+  fluttertoast: ^8.0.7
+  fl_chart: ^0.36.3
 
 dev_dependencies:
   flutter_test:

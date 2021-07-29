@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'input_constants.dart';
 import 'package:flutter/cupertino.dart';
-import 'camera_input.dart';
 import 'data_input_alert.dart';
 
 class DataInput extends StatefulWidget {
@@ -205,8 +204,7 @@ class _DataInputState extends State<DataInput> {
                   }
                   // All clear!
                   else {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => CameraApp()));
+                    Navigator.of(context).pushNamed('/cameraInput');
                   }
                 },
                 style: ButtonStyle(

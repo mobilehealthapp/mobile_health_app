@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'settings_constants.dart';
 
+GlobalKey<FormState> formKey = GlobalKey<FormState>();
+bool checkCurrentPasswordValid = true;
+
 class SettingsCard extends StatelessWidget {
   SettingsCard({required this.settingsTab});
 
@@ -77,7 +80,8 @@ class ProfileTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100.0,
+      constraints: BoxConstraints(minHeight: 100.0,),
+      padding: EdgeInsets.all(10.0),
       margin: EdgeInsets.all(10.0),
       child: Center(
         child: Text(
@@ -96,9 +100,10 @@ class ProfileTab extends StatelessWidget {
 }
 
 class Alert extends StatelessWidget {
-  Alert({required this.alertBody});
+  Alert({required this.alertBody, required this.widget});
 
   final String alertBody;
+  final Widget widget;
 
   @override
   Widget build(BuildContext context) {
@@ -122,71 +127,21 @@ class Alert extends StatelessWidget {
           onPressed: () => Navigator.pop(context, 'Cancel'),
           child: Text(
             'Cancel',
-            style: TextStyle(
-              fontSize: 16.0,
-              color: Color(0xFF0097A7),
-            ),
+            style: kAlertTextStyle,
           ),
         ),
         TextButton(
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Alert2(),
-            ),
-          ),
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return widget;
+              },
+            );
+          },
           child: Text(
             'Confirm',
-            style: TextStyle(
-              fontSize: 16.0,
-              color: Color(0xFF0097A7),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class Alert2 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        'Please enter your password to complete this action.',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 20.0,
-        ),
-      ),
-      content: TextField(
-        decoration: InputDecoration(
-          hintText: 'Password',
-          hintStyle: TextStyle(
-            fontSize: 20.0,
-            color: Colors.black,
-          ),
-        ),
-      ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => Navigator.of(context)..pop()..pop(),
-          child: Text(
-            'Cancel',
-            style: TextStyle(
-              fontSize: 16.0,
-              color: Color(0xFF0097A7),
-            ),
-          ),
-        ),
-        TextButton(
-          onPressed: () => Navigator.of(context)..pop()..pop(),
-          child: Text(
-            'Enter Password and Confirm',
-            style: TextStyle(
-              fontSize: 16.0,
-              color: Color(0xFF0097A7),
-            ),
+            style: kAlertTextStyle,
           ),
         ),
       ],
@@ -238,10 +193,7 @@ class Alert3 extends StatelessWidget {
           onPressed: () => Navigator.pop(context, 'Okay'),
           child: Text(
             'Okay',
-            style: TextStyle(
-              fontSize: 16.0,
-              color: Color(0xFF0097A7),
-            ),
+            style: kAlertTextStyle,
           ),
         ),
       ],
@@ -265,10 +217,7 @@ class Alert4 extends StatelessWidget {
           onPressed: () => Navigator.pop(context, 'Okay'),
           child: Text(
             'Okay',
-            style: TextStyle(
-              fontSize: 16.0,
-              color: Color(0xFF0097A7),
-            ),
+            style: kAlertTextStyle,
           ),
         ),
       ],
@@ -276,5 +225,35 @@ class Alert4 extends StatelessWidget {
   }
 }
 
+class ConfirmButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onPressed;
 
+  ConfirmButton(this.label, this.onPressed);
 
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      style: TextButton.styleFrom(minimumSize: Size(20.0, 20.0)),
+      onPressed: onPressed,
+      child: Text(
+        label,
+        style: kAlertTextStyle,
+      ),
+    );
+  }
+}
+
+class CancelButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      style: TextButton.styleFrom(minimumSize: Size(20.0, 20.0)),
+      onPressed: () => Navigator.of(context)..pop()..pop(),
+      child: Text(
+        'Cancel',
+        style: kAlertTextStyle,
+      ),
+    );
+  }
+}
