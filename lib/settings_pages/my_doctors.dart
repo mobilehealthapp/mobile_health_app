@@ -1,7 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'settings_constants.dart';
+
 import 'settings_card.dart';
+
+final _firestore = FirebaseFirestore.instance;
+var loggedInUser;
+var uid;
 
 class MyDoctors extends StatefulWidget {
   @override
@@ -9,6 +16,26 @@ class MyDoctors extends StatefulWidget {
 }
 
 class _MyDoctorsState extends State<MyDoctors> {
+  final _auth = FirebaseAuth.instance;
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+  }
+
+  void getCurrentUser() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        loggedInUser = user;
+        print(loggedInUser.email);
+        uid = user.uid.toString(); //convert to string in this method
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,6 +49,7 @@ class _MyDoctorsState extends State<MyDoctors> {
         backgroundColor: kPrimaryColour,
       ),
       body: ListView(
+        shrinkWrap: true,
         scrollDirection: Axis.vertical,
         children: [
           Padding(
@@ -30,10 +58,7 @@ class _MyDoctorsState extends State<MyDoctors> {
               onPressed: () {
                 setState(
                   () {
-                    Navigator.pushNamed(
-                      context,
-                      '/addDoctors'
-                    );
+                    Navigator.pushNamed(context, '/addDoctors');
                   },
                 );
               },
@@ -41,21 +66,65 @@ class _MyDoctorsState extends State<MyDoctors> {
               style: kSettingsCardStyle,
             ),
           ),
-          DoctorCard(),
+          DoctorList(),
         ],
       ),
     );
   }
 }
 
-class DoctorCard extends StatelessWidget {
-  //Card which will display information of doctor once patient adds one
-  const DoctorCard({Key? key}) : super(key: key);
+class DoctorList extends StatefulWidget {
+  @override
+  _DoctorListState createState() => _DoctorListState();
+}
 
+class _DoctorListState extends State<DoctorList> {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _firestore
+          .collection('patientprofile')
+          .doc(uid)
+          .collection('patientDoctors')
+          .snapshots(),
+      builder: (context, snapshot) {
+        final doctors = snapshot.data!.docs;
+        List<DoctorCard> doctorCardList = [];
+        for (var doctor in doctors) {
+          final firstName = doctor.get('doctorFirstName');
+          final lastName = doctor.get('doctorLastName');
+          final email = doctor.get('doctorEmail');
+          final label = doctor.get('doctorLabel');
+
+          final doctorCard = DoctorCard(
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            label: label,
+          );
+          doctorCardList.add(doctorCard);
+        }
+        return ListView(
+          key: UniqueKey(),
+          shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+          children: doctorCardList,
+        );
+      },
+    );
+  }
+}
+
+class DoctorCard extends StatelessWidget {
+  final firstName;
+  final lastName;
+  final email;
+  final label; //Card which will display information of doctor once patient adds one
+  const DoctorCard({this.firstName, this.lastName, this.email, this.label});
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100.0,
+      height: 120.0,
       margin: EdgeInsets.all(10.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,7 +132,7 @@ class DoctorCard extends StatelessWidget {
           Padding(
             padding: EdgeInsets.all(3.0),
             child: Text(
-              'Doctor\'s Label',
+              '$label',
               style: kLabelStyle,
               textAlign: TextAlign.center,
             ),
@@ -74,7 +143,7 @@ class DoctorCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'First and Last Name',
+                    '$firstName $lastName',
                     style: kLabelStyle,
                     textAlign: TextAlign.start,
                   ),
@@ -92,7 +161,7 @@ class DoctorCard extends StatelessWidget {
           Padding(
             padding: EdgeInsets.all(3.0),
             child: Text(
-              'Email',
+              '$email',
               style: kLabelStyle,
               textAlign: TextAlign.start,
             ),

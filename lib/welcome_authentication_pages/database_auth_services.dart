@@ -68,12 +68,6 @@ class DatabaseAuth {
           'quali': '',
           'tele': '',
           'fax': '',
-          // 'first name': FieldValue.delete(),
-          // 'last name': FieldValue.delete(),
-          // 'clinicAddress': FieldValue.delete(),
-          // 'quali': FieldValue.delete(),
-          // 'tele': FieldValue.delete(),
-          // 'fax': FieldValue.delete(),
         },
       );
       Navigator.of(context).pushNamedAndRemoveUntil(
@@ -88,6 +82,12 @@ class DatabaseAuth {
       );
     }
     return patientProfileCollection.doc(_auth.currentUser!.uid).delete();
+  }
+
+  Future setDoctorCode(String physicianCode) async {
+    return await doctorProfileCollection
+        .doc(uid)
+        .update({'access code': physicianCode});
   }
 
   Future deletePatientData(

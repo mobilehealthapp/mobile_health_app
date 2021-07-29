@@ -5,6 +5,7 @@ import 'package:mobile_health_app/authentication_button.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
 
 import 'accountcheck.dart';
+
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -157,7 +158,8 @@ class _LoginPageState extends State<LoginPage> {
                                 style: TextStyle(
                                     color: Colors.lightBlue, fontSize: 17),
                               ),
-                              onPressed: () => Navigator.of(context).pushNamed('/reset'),
+                              onPressed: () =>
+                                  Navigator.of(context).pushNamed('/reset'),
                               padding: EdgeInsets.only(bottom: 20, top: 5),
                             ),
                           ],
@@ -166,43 +168,50 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(
                         height: 20,
                       ),
-                      AuthenticationButton('Log in', () async {
-                        var areCredsValid = formKey.currentState?.validate();
-                        if (areCredsValid == true) {
-                          try {
-                            await _auth.signInWithEmailAndPassword(
-                                email: email, password: password);
-                            user = _auth.currentUser;
-                            if (user.emailVerified) {
-                              var uid = user!.uid;
-                              bool isPatient = await patientAccountCheck(uid);
-                              bool isDoctor = await doctorAccountCheck(uid);
-                              if (isPatient) {
-                                Navigator.of(context).pushReplacementNamed('/home');
-                              } else if (isDoctor) {
-                                Navigator.of(context).pushReplacementNamed('/physHome');
+                      AuthenticationButton(
+                          label: 'Log in',
+                          onPressed: () async {
+                            var areCredsValid =
+                                formKey.currentState?.validate();
+                            if (areCredsValid == true) {
+                              try {
+                                await _auth.signInWithEmailAndPassword(
+                                    email: email, password: password);
+                                user = _auth.currentUser;
+                                if (user.emailVerified) {
+                                  var uid = user!.uid;
+                                  bool isPatient =
+                                      await patientAccountCheck(uid);
+                                  bool isDoctor = await doctorAccountCheck(uid);
+                                  if (isPatient) {
+                                    Navigator.of(context)
+                                        .pushReplacementNamed('/home');
+                                  } else if (isDoctor) {
+                                    Navigator.of(context)
+                                        .pushReplacementNamed('/physHome');
+                                  }
+                                } else {
+                                  Navigator.of(context).pushNamed('/verify');
+                                  setState(() {
+                                    showSpinner = false;
+                                  });
+                                }
+                              } catch (signInError) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration: Duration(seconds: 10),
+                                    backgroundColor: Colors.red,
+                                    content: Text(
+                                      signInError.toString().split('] ')[1],
+                                      style: TextStyle(fontSize: 20.0),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                );
                               }
-                            } else {
-                              Navigator.of(context).pushNamed('/verify');
                             }
-                            setState(() {
-                              showSpinner = false;
-                            });
-                          } catch (signInError) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                duration: Duration(seconds: 10),
-                                backgroundColor: Colors.red,
-                                content: Text(
-                                  signInError.toString().split('] ')[1],
-                                  style: TextStyle(fontSize: 20.0),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            );
-                          }
-                        }
-                      }, Colors.blueGrey),
+                          },
+                          colour: Colors.blueGrey),
                       SizedBox(
                         height: 30,
                       ),

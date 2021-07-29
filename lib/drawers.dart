@@ -19,6 +19,12 @@ class Drawers extends StatelessWidget {
                 icon: Icons.home,
                 onClicked: () => select(context, 0),
               ),
+              SizedBox(height: 10),
+              addItem(
+                text: 'Settings',
+                icon: Icons.settings,
+                onClicked: () => select(context, 1),
+              ),
 
               SizedBox(height: 10),
               addItem(
@@ -32,17 +38,13 @@ class Drawers extends StatelessWidget {
                 icon: Icons.contacts,
                 onClicked: () => select(context, 5),
               ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Settings',
-                icon: Icons.settings,
-                onClicked: () => select(context, 1),
-              ),
+
               SizedBox(height: 10),
               ListTile(
                 onTap: () {
                   _auth.signOut();
-                  Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/', (Route<dynamic> route) => false);
                 },
                 leading: Icon(Icons.logout),
                 title: Text('Logout'),
@@ -77,28 +79,22 @@ class Drawers extends StatelessWidget {
     Navigator.of(context).pop();
     switch (i) {
       case 0:
-        Navigator.of(context)
-            .pushNamed('/home');
+        Navigator.of(context).pushNamed('/home');
         break;
       case 1:
-        Navigator.of(context)
-            .pushNamed('/settings');
+        Navigator.of(context).pushNamed('/settings');
         break;
       case 2:
-        Navigator.of(context)
-            .pushNamed('/healthAnalysis');
+        Navigator.of(context).pushNamed('/healthAnalysis');
         break;
       case 3:
-        Navigator.of(context)
-            .pushNamed('/healthAnalysis');
+        Navigator.of(context).pushNamed('/healthAnalysis');
         break;
       case 4:
-        Navigator.of(context)
-            .pushNamed('/physHome');
+        Navigator.of(context).pushNamed('/physHome');
         break;
       case 5:
-        Navigator.of(context)
-            .pushNamed('/physHome');
+        Navigator.of(context).pushNamed('/physHome');
         break;
     }
   }
