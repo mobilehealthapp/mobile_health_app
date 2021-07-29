@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -142,7 +140,7 @@ String ocrAlertText(String type, data1, data2) {
     case 'Blood Glucose':
       double glucose = filterAlpha(data1);
       isValid = true;
-      return 'The recorded value for your blood glucose was: ${glucose} $data2. \n\nIs this correct?';
+      return 'The recorded value for your blood glucose was: $glucose $data2. \n\nIs this correct?';
     case 'Heart Rate':
       double bpm = filterAlpha(data1);
       isValid = true;
