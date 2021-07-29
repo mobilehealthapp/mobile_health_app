@@ -32,6 +32,12 @@ class DatabaseAuth {
     });
   }
 
+  Future setDoctorCode(String physicianCode) async {
+    return await doctorProfileCollection
+        .doc(uid)
+        .update({'access code': physicianCode});
+  }
+
   Future deletePatientData() {
     return patientProfileCollection.doc(uid).delete();
   }

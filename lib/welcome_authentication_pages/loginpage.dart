@@ -175,51 +175,56 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(
                         height: 20,
                       ),
-                      AuthenticationButton('Log in', () async {
-                        var areCredsValid = formKey.currentState?.validate();
-                        if (areCredsValid == true) {
-                          try {
-                            await _auth.signInWithEmailAndPassword(
-                                email: email, password: password);
-                            user = _auth.currentUser;
-                            if (user.emailVerified) {
-                              var uid = user!.uid;
-                              bool isPatient = await patientAccountCheck(uid);
-                              bool isDoctor = await doctorAccountCheck(uid);
-                              if (isPatient) {
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) => HomePage()));
-                              } else if (isDoctor) {
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) => PhysHome()));
+                      AuthenticationButton(
+                          label: 'Log in',
+                          onPressed: () async {
+                            var areCredsValid =
+                                formKey.currentState?.validate();
+                            if (areCredsValid == true) {
+                              try {
+                                await _auth.signInWithEmailAndPassword(
+                                    email: email, password: password);
+                                user = _auth.currentUser;
+                                if (user.emailVerified) {
+                                  var uid = user!.uid;
+                                  bool isPatient =
+                                      await patientAccountCheck(uid);
+                                  bool isDoctor = await doctorAccountCheck(uid);
+                                  if (isPatient) {
+                                    Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                            builder: (context) => HomePage()));
+                                  } else if (isDoctor) {
+                                    Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                            builder: (context) => PhysHome()));
+                                  }
+                                } else {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              EmailVerificationScreen()));
+                                }
+                                setState(() {
+                                  showSpinner = false;
+                                });
+                              } catch (signInError) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration: Duration(seconds: 10),
+                                    backgroundColor: Colors.red,
+                                    content: Text(
+                                      signInError.toString().split('] ')[1],
+                                      style: TextStyle(fontSize: 20.0),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                );
                               }
-                            } else {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          EmailVerificationScreen()));
                             }
-                            setState(() {
-                              showSpinner = false;
-                            });
-                          } catch (signInError) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                duration: Duration(seconds: 10),
-                                backgroundColor: Colors.red,
-                                content: Text(
-                                  signInError.toString().split('] ')[1],
-                                  style: TextStyle(fontSize: 20.0),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            );
-                          }
-                        }
-                      }, Colors.blueGrey),
+                          },
+                          colour: Colors.blueGrey),
                       SizedBox(
                         height: 30,
                       ),

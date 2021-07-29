@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/HomePage.dart';
-import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'package:mobile_health_app/physHome.dart';
 
 import 'accountcheck.dart';
+import 'database_auth_services.dart';
 import 'physiciancode.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
@@ -78,41 +78,43 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     user = auth.currentUser;
     var uid = user!.uid;
     await user.reload();
-    setState(() {
-      showSpinner = true;
-    });
     if (user.emailVerified) {
+      setState(() {
+        showSpinner = true;
+      });
       timer.cancel();
       bool isPatient = await patientAccountCheck(uid);
       bool isDoctor = await doctorAccountCheck(uid);
-      if (isPatient) {
+      if (isPatient == true) {
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => HomePage()));
         setState(() {
           showSpinner = false;
         });
-      } else if (isDoctor) {
+      } else if (isDoctor == true) {
         String physicianCode = getSecureCode(12);
+        DatabaseAuth(uid: uid).setDoctorCode(physicianCode);
         showDialog(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            builder: (context) => PhysHome()));
+                      },
+                      child: Text('Dismiss'))
+                ],
                 title: Text('Physician access code'),
                 content: Text(
                     'Your physician access code is $physicianCode, please write this code down and keep it secure. Provide it to your patients so they can add you to their list of approved physicians'),
               );
             });
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => PhysHome()));
         setState(() {
           showSpinner = false;
         });
       }
-      Navigator.of(context)
-          .pushReplacement(MaterialPageRoute(builder: (context) => HomePage()));
-      setState(() {
-        showSpinner = false;
-      });
     }
   }
 }

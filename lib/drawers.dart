@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/HomePage.dart';
 import 'package:mobile_health_app/physHome.dart';
-import 'package:mobile_health_app/settings_pages/privacy_policy.dart';
 import 'package:mobile_health_app/settings_pages/settings.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
+
 import 'health_analysis.dart';
 
 class Drawers extends StatelessWidget {
