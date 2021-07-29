@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Camera/data_input_page.dart';
 import 'package:mobile_health_app/drawers.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:mobile_health_app/graphData.dart';
 
 import 'drawers.dart';
 
@@ -67,6 +69,7 @@ class _HomePageState extends State<HomePage> {
           ),
         )
       ], backgroundColor: Colors.cyan, title: Text('Hello, $name')),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context)
@@ -76,23 +79,47 @@ class _HomePageState extends State<HomePage> {
           Icons.camera_alt_rounded,
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-            // mainAxisAlignment: MainAxisAlignment.spaceAround,
-            // crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                ' Recent Analysis',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 15,
-                ),
-              ),
-            ]
-            // bottomNavigationBar: btomNav(),
+      body: ListView(
+        children: [
+          SizedBox(
+            height: 30.0,
+          ),
+          Text(
+            ' Recent Analysis',
+            style: TextStyle(
+              fontSize: 40,
             ),
+          ),
+          SizedBox(
+            height: 30.0,
+          ),
+          Text(
+            'Blood pressure for this week',
+            textAlign: TextAlign.center,
+          ),
+          Chart1(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Legend(
+                text: 'Systolic',
+                color: Colors.black,
+              ),
+              Legend(
+                text: 'Diastolic',
+                color: Colors.red,
+              ),
+            ],
+          ),
+          SummaryCard(
+            type: 'Average Blood Pressure',
+            value: '145/89 ',
+          ),
+          Chart2(),
+          SummaryCard(value: '3.4', type: 'Average Blood Sugar'),
+          Chart3(),
+          SummaryCard(value: '25', type: 'Average Pulse'),
+        ],
       ),
     );
   }

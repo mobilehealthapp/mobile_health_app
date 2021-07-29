@@ -330,22 +330,16 @@ class _ProfileEditState extends State<ProfileEdit> {
                         () {
                           showSpinner = true;
                           updateProfile();
-                          Navigator.pop(context, {
-                            first,
-                            last,
-                            age,
-                            dob,
-                            sex.toString(),
-                            ht,
-                            wt,
-                            conds,
-                            meds,
-                            tele,
-                            adr
+                          DatabaseAuth(uid: loggedInUser.uid).updatePatientData(first, last, age,
+                              dob, sex, ht, wt, conds, meds, tele, adr,);
+                          Navigator.pop(context,
+                          {
+                            first, last, age,
+                            dob, sex, ht, wt, conds, meds, tele, adr
                           });
                           setState(() {
                             showSpinner = false;
-                          });
+                          },);
                         },
                       );
                     },

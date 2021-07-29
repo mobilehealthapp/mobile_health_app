@@ -82,4 +82,21 @@ class DatabaseAuth {
   Stream<QuerySnapshot> get patient {
     return patientProfileCollection.snapshots();
   }
+
+  Future updatePatientData(String firstName, lastName, age, dob, sex, ht, wt, conds, meds, tele, adr) async {
+    return await patientProfileCollection.doc(uid).update({
+      'first name': firstName,
+      'last name': lastName,
+      'age': age,
+      'dob': dob,
+      'sex': sex,
+      'ht': ht,
+      'wt': wt,
+      'conds': conds,
+      'meds': meds,
+      'tele': tele,
+      'address': adr,
+    },);
+  }
+
 }
