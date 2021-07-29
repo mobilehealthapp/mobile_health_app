@@ -1,13 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/Camera/data_input_page.dart';
-import 'package:mobile_health_app/drawers.dart';
-import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:mobile_health_app/graphData.dart';
-
+import 'package:mobile_health_app/Constants.dart';
+import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'drawers.dart';
+import 'package:mobile_health_app/drawers.dart';
+import 'package:mobile_health_app/graphData.dart';
 
 final patientRef = FirebaseFirestore.instance
     .collection('patientprofile'); //declare reference high up in file
@@ -55,25 +53,37 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kSecondaryColour,
       drawer: Drawers(),
-      appBar: AppBar(actions: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: GestureDetector(
-            child: Icon(Icons.logout),
-            onTap: () async {
-              FirebaseAuth.instance.signOut();
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => WelcomeScreen()));
-            },
-          ),
-        )
-      ], backgroundColor: Colors.cyan, title: Text('Hello, $name')),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GestureDetector(
+              child: Icon(
+                Icons.logout,
+              ),
+              onTap: () async {
+                FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/', (Route<dynamic> route) => false);
+              },
+            ),
+          )
+        ],
+        backgroundColor: kPrimaryColour,
+        title: Text(
+          'Hello, $name',
+          style: kAppBarLabelStyle,
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.grey[600],
         onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => DataInput()));
+          Navigator.of(context).pushNamed('/dataInput');
         },
         child: Icon(
           Icons.camera_alt_rounded,

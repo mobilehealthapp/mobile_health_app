@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/HomePage.dart';
+import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/physHome.dart';
 
 import 'accountcheck.dart';
@@ -42,6 +42,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kSecondaryColour,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -53,8 +54,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('images/logo-1-removebg-preview.png'),
-                    fit: BoxFit.fill),
+                    image: AssetImage('images/BCLogo.png'), fit: BoxFit.fill),
               ),
             ),
             Container(
@@ -85,9 +85,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       timer.cancel();
       bool isPatient = await patientAccountCheck(uid);
       bool isDoctor = await doctorAccountCheck(uid);
-      if (isPatient == true) {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => HomePage()));
+      if (isPatient) {
+        Navigator.of(context).pushReplacementNamed('/home');
         setState(() {
           showSpinner = false;
         });
@@ -111,6 +110,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     'Your physician access code is $physicianCode, please write this code down and keep it secure. Provide it to your patients so they can add you to their list of approved physicians'),
               );
             });
+        Navigator.of(context).pushReplacementNamed('/physHome');
         setState(() {
           showSpinner = false;
         });

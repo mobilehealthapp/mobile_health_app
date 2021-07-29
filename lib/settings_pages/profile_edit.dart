@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 
 final patientRef = FirebaseFirestore.instance
@@ -42,7 +43,7 @@ class _ProfileEditState extends State<ProfileEdit> {
   TextEditingController teleTEC = TextEditingController();
   TextEditingController adrTEC = TextEditingController();
 
-  void updateProfile() {
+  void updateProfile() { // this function tells code that if the user does not enter anything in a specific text field, don't change it
     setState(
       () {
         if (firstTEC.text == '') {
@@ -96,7 +97,14 @@ class _ProfileEditState extends State<ProfileEdit> {
     );
   }
 
-  void getCurrentUser() async {
+  @override
+  void initState() { // initialize functions
+    getCurrentUser();
+    getUserData(uid);
+    super.initState();
+  }
+
+  void getCurrentUser() async { // find uid
     try {
       final user = _auth.currentUser;
       if (user != null) {
@@ -109,7 +117,7 @@ class _ProfileEditState extends State<ProfileEdit> {
     }
   }
 
-  getUserData(uid) async {
+  getUserData(uid) async { // calls on specific fields from the patient's document to display their profile info
     final DocumentSnapshot patientInfo = await patientRef.doc(uid).get();
     setState(
       () {
@@ -129,16 +137,9 @@ class _ProfileEditState extends State<ProfileEdit> {
   }
 
   @override
-  void initState() {
-    getCurrentUser();
-    getUserData(uid);
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFB2EBF2),
+      backgroundColor: kSecondaryColour,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
@@ -146,7 +147,7 @@ class _ProfileEditState extends State<ProfileEdit> {
           style: kAppBarLabelStyle,
         ),
         centerTitle: true,
-        backgroundColor: Color(0xFF00BCD4),
+        backgroundColor: kPrimaryColour,
       ),
       body: Padding(
         padding: EdgeInsets.all(10.0),
@@ -155,6 +156,7 @@ class _ProfileEditState extends State<ProfileEdit> {
             Padding(
               padding: EdgeInsets.all(10.0),
             ),
+            textFieldLabel('First Name'),
             TextFormField(
               controller: firstTEC,
               decoration: kTextFieldDecoration.copyWith(
@@ -164,6 +166,7 @@ class _ProfileEditState extends State<ProfileEdit> {
             SizedBox(
               height: 10.0,
             ),
+            textFieldLabel('Last Name'),
             TextFormField(
               controller: lastTEC,
               decoration: kTextFieldDecoration.copyWith(
@@ -173,6 +176,7 @@ class _ProfileEditState extends State<ProfileEdit> {
             SizedBox(
               height: 10.0,
             ),
+            textFieldLabel('Age'),
             TextFormField(
               maxLength: 3,
               controller: ageTEC,
@@ -185,10 +189,11 @@ class _ProfileEditState extends State<ProfileEdit> {
             SizedBox(
               height: 10.0,
             ),
+            textFieldLabel('Date of Birth (DD-MM-YYYY)'),
             TextFormField(
               maxLength: 10,
               controller: dobTEC,
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.datetime,
               decoration: kTextFieldDecoration.copyWith(
                 counterText: '',
                 hintText: dob,
@@ -201,6 +206,14 @@ class _ProfileEditState extends State<ProfileEdit> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 DropdownButton<String>(
+                  iconDisabledColor: Colors.black,
+                  iconEnabledColor: Colors.black,
+                  hint: Text(
+                    'Sex',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
                   value: sex,
                   style: TextStyle(
                     fontSize: 20.0,
@@ -208,8 +221,8 @@ class _ProfileEditState extends State<ProfileEdit> {
                   ),
                   items: [
                     DropdownMenuItem(
-                      child: Text('--Sex--'),
-                      value: '--Sex--',
+                      child: Text('Sex'),
+                      value: 'Sex',
                     ),
                     DropdownMenuItem(
                       child: Text('M'),
@@ -237,6 +250,7 @@ class _ProfileEditState extends State<ProfileEdit> {
             SizedBox(
               height: 10.0,
             ),
+            textFieldLabel('Height (Please specify if measured in cm or ft)'),
             TextFormField(
               controller: htTEC,
               decoration: kTextFieldDecoration.copyWith(
@@ -246,6 +260,7 @@ class _ProfileEditState extends State<ProfileEdit> {
             SizedBox(
               height: 10.0,
             ),
+            textFieldLabel('Weight (Please specify if measured in lbs or kg)'),
             TextFormField(
               controller: wtTEC,
               decoration: kTextFieldDecoration.copyWith(
@@ -255,6 +270,7 @@ class _ProfileEditState extends State<ProfileEdit> {
             SizedBox(
               height: 10.0,
             ),
+            textFieldLabel('Medical Conditions (Please list all)'),
             TextFormField(
               controller: condsTEC,
               decoration: kTextFieldDecoration.copyWith(
@@ -264,6 +280,7 @@ class _ProfileEditState extends State<ProfileEdit> {
             SizedBox(
               height: 10.0,
             ),
+            textFieldLabel('Medications (Please list all)'),
             TextFormField(
               controller: medsTEC,
               decoration: kTextFieldDecoration.copyWith(
@@ -273,16 +290,22 @@ class _ProfileEditState extends State<ProfileEdit> {
             SizedBox(
               height: 10.0,
             ),
+            textFieldLabel('Telephone Number'),
             TextFormField(
+              maxLength: 12,
               controller: teleTEC,
+              keyboardType: TextInputType.phone,
               decoration: kTextFieldDecoration.copyWith(
+                counterText: '',
                 hintText: tele,
               ),
             ),
             SizedBox(
               height: 10.0,
             ),
+            textFieldLabel('Home Address'),
             TextFormField(
+              keyboardType: TextInputType.streetAddress,
               controller: adrTEC,
               decoration: kTextFieldDecoration.copyWith(
                 hintText: adr,
@@ -330,16 +353,40 @@ class _ProfileEditState extends State<ProfileEdit> {
                         () {
                           showSpinner = true;
                           updateProfile();
-                          DatabaseAuth(uid: loggedInUser.uid).updatePatientData(first, last, age,
-                              dob, sex, ht, wt, conds, meds, tele, adr,);
-                          Navigator.pop(context,
-                          {
-                            first, last, age,
-                            dob, sex, ht, wt, conds, meds, tele, adr
-                          });
-                          setState(() {
-                            showSpinner = false;
-                          },);
+                          DatabaseAuth(uid: loggedInUser.uid).updatePatientData(
+                            first,
+                            last,
+                            age,
+                            dob,
+                            sex,
+                            ht,
+                            wt,
+                            conds,
+                            meds,
+                            tele,
+                            adr,
+                          );
+                          Navigator.pop(
+                            context,
+                            {
+                              first,
+                              last,
+                              age,
+                              dob,
+                              sex,
+                              ht,
+                              wt,
+                              conds,
+                              meds,
+                              tele,
+                              adr
+                            },
+                          );
+                          setState(
+                            () {
+                              showSpinner = false;
+                            },
+                          );
                         },
                       );
                     },

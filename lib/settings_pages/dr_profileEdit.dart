@@ -2,95 +2,106 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:mobile_health_app/Constants.dart';
 import 'settings_constants.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/database_auth_services.dart';
+
+final doctorRef = FirebaseFirestore.instance
+    .collection('doctorprofile'); // create this as global variable
+var drFirst;
+var drLast;
+var quali;
+var drTele;
+var fax;
+var clinicAdr;
 
 class DrProfileEdit extends StatefulWidget {
-  static String drFirst = 'First Name';
-  static String drLast = 'Last Name';
-  static String quali = 'My Qualifications';
-  static String drTele = 'Telephone Number';
-  static String drEmail = 'Email Address';
-  static String drFax = 'Fax';
-  static String clinicAdd = 'Clinic Address';
-
-  static TextEditingController drFirstTEC = TextEditingController();
-  static TextEditingController drLastTEC = TextEditingController();
-  static TextEditingController qualiTEC = TextEditingController();
-  static TextEditingController drTeleTEC = TextEditingController();
-  static TextEditingController drEmailTEC = TextEditingController();
-  static TextEditingController drFaxTEC = TextEditingController();
-  static TextEditingController clinicAddTEC = TextEditingController();
-
-  static void drUpdateProfile() {
-    if (drFirstTEC.text == '') {
-      DrProfileEdit.drFirst = DrProfileEdit.drFirst;
-    } else
-      DrProfileEdit.drFirst = drFirstTEC.text;
-
-    if (drLastTEC.text == '') {
-      DrProfileEdit.drLast = DrProfileEdit.drLast;
-    } else
-      DrProfileEdit.drLast = drLastTEC.text;
-
-    if (qualiTEC.text == '') {
-      DrProfileEdit.quali = DrProfileEdit.quali;
-    } else
-      DrProfileEdit.quali = qualiTEC.text;
-
-    if (drTeleTEC.text == '') {
-      DrProfileEdit.drTele = DrProfileEdit.drTele;
-    } else
-      DrProfileEdit.drTele = drTeleTEC.text;
-
-    if (drEmailTEC.text == '') {
-      DrProfileEdit.drEmail = DrProfileEdit.drEmail;
-    } else
-      DrProfileEdit.drEmail = drEmailTEC.text;
-
-    if (drFaxTEC.text == '') {
-      DrProfileEdit.drFax = DrProfileEdit.drFax;
-    } else
-      DrProfileEdit.drFax = drFaxTEC.text;
-
-    if (clinicAddTEC.text == '') {
-      DrProfileEdit.clinicAdd = DrProfileEdit.clinicAdd;
-    } else
-      DrProfileEdit.clinicAdd = clinicAddTEC.text;
-  }
-
   @override
   _DrProfileEditState createState() => _DrProfileEditState();
 }
 
 class _DrProfileEditState extends State<DrProfileEdit> {
-  final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
-  late User loggedInUser;
+  var uid;
+  var loggedInUser;
+
+  TextEditingController drFirstTEC = TextEditingController();
+  TextEditingController drLastTEC = TextEditingController();
+  TextEditingController qualiTEC = TextEditingController();
+  TextEditingController drTeleTEC = TextEditingController();
+  TextEditingController faxTEC = TextEditingController();
+  TextEditingController clinicAdrTEC = TextEditingController();
+
+  void drUpdateProfile() {
+    if (drFirstTEC.text == '') {
+      drFirst = drFirst;
+    } else
+      drFirst = drFirstTEC.text;
+
+    if (drLastTEC.text == '') {
+      drLast = drLast;
+    } else
+      drLast = drLastTEC.text;
+
+    if (qualiTEC.text == '') {
+      quali = quali;
+    } else
+      quali = qualiTEC.text;
+
+    if (drTeleTEC.text == '') {
+      drTele = drTele;
+    } else
+      drTele = drTeleTEC.text;
+
+    if (faxTEC.text == '') {
+      fax = fax;
+    } else
+      fax = faxTEC.text;
+
+    if (clinicAdrTEC.text == '') {
+      clinicAdr = clinicAdr;
+    } else
+      clinicAdr = clinicAdrTEC.text;
+  }
 
   @override
   void initState() {
     super.initState();
-
-    getUser();
+    getCurrentUser();
+    getUserData(uid);
   }
 
-  void getUser() async {
+  void getCurrentUser() async {
     try {
       final user = _auth.currentUser;
       if (user != null) {
         loggedInUser = user;
         print(loggedInUser.email);
+        uid = user.uid.toString(); //convert uid to String
       }
     } catch (e) {
       print(e);
     }
   }
 
+  getUserData(uid) async {
+    final DocumentSnapshot doctorInfo = await doctorRef.doc(uid).get();
+    setState(
+      () {
+        drFirst = doctorInfo.get('first name');
+        drLast = doctorInfo.get('last name');
+        drTele = doctorInfo.get('tele');
+        quali = doctorInfo.get('quali');
+        fax = doctorInfo.get('fax');
+        clinicAdr = doctorInfo.get('clinicAddress');
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFB2EBF2),
+      backgroundColor: kSecondaryColour,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
@@ -98,73 +109,77 @@ class _DrProfileEditState extends State<DrProfileEdit> {
           style: kAppBarLabelStyle,
         ),
         centerTitle: true,
-        backgroundColor: Color(0xFF00BCD4),
+        backgroundColor: kPrimaryColour,
       ),
       body: Padding(
         padding: EdgeInsets.all(10.0),
         child: ListView(
           children: <Widget>[
-            SizedBox(
-              height: 20.0,
+            Padding(
+              padding: EdgeInsets.all(10.0),
             ),
+            textFieldLabel('First Name'),
             TextField(
-              controller: DrProfileEdit.drFirstTEC,
+              controller: drFirstTEC,
               decoration: kTextFieldDecoration.copyWith(
-                hintText: DrProfileEdit.drFirst,
+                hintText: drFirst,
               ),
             ),
             SizedBox(
               height: 20.0,
             ),
+            textFieldLabel('Last Name'),
             TextField(
-              controller: DrProfileEdit.drLastTEC,
+              controller: drLastTEC,
               decoration: kTextFieldDecoration.copyWith(
-                hintText: DrProfileEdit.drLast,
+                hintText: drLast,
               ),
             ),
             SizedBox(
               height: 20.0,
             ),
+            textFieldLabel('Qualifications'),
             TextField(
-              controller: DrProfileEdit.qualiTEC,
+              controller: qualiTEC,
               decoration: kTextFieldDecoration.copyWith(
-                hintText: DrProfileEdit.quali,
+                hintText: quali,
               ),
             ),
             SizedBox(
               height: 20.0,
             ),
+            textFieldLabel('Telephone Number'),
             TextField(
-              controller: DrProfileEdit.drTeleTEC,
+              maxLength: 12,
+              controller: drTeleTEC,
+              keyboardType: TextInputType.phone,
               decoration: kTextFieldDecoration.copyWith(
-                hintText: DrProfileEdit.drTele,
+                counterText: '',
+                hintText: drTele,
               ),
             ),
             SizedBox(
               height: 20.0,
             ),
+            textFieldLabel('Fax Number'),
             TextField(
-              controller: DrProfileEdit.drEmailTEC,
+              maxLength: 12,
+              controller: faxTEC,
+              keyboardType: TextInputType.phone,
               decoration: kTextFieldDecoration.copyWith(
-                hintText: DrProfileEdit.drEmail,
+                counterText: '',
+                hintText: fax,
               ),
             ),
             SizedBox(
               height: 20.0,
             ),
+            textFieldLabel('Clinic Address'),
             TextField(
-              controller: DrProfileEdit.drFaxTEC,
+              keyboardType: TextInputType.streetAddress,
+              controller: clinicAdrTEC,
               decoration: kTextFieldDecoration.copyWith(
-                hintText: DrProfileEdit.drFax,
-              ),
-            ),
-            SizedBox(
-              height: 20.0,
-            ),
-            TextField(
-              controller: DrProfileEdit.clinicAddTEC,
-              decoration: kTextFieldDecoration.copyWith(
-                hintText: DrProfileEdit.clinicAdd,
+                hintText: clinicAdr,
               ),
             ),
             SizedBox(
@@ -178,18 +193,13 @@ class _DrProfileEditState extends State<DrProfileEdit> {
                     onPressed: () async {
                       setState(
                         () {
-                          Navigator.pop(
-                            context,
-                            {
-                              DrProfileEdit.drFirst = DrProfileEdit.drFirst,
-                              DrProfileEdit.drLast = DrProfileEdit.drLast,
-                              DrProfileEdit.quali = DrProfileEdit.quali,
-                              DrProfileEdit.drTele = DrProfileEdit.drTele,
-                              DrProfileEdit.drEmail = DrProfileEdit.drEmail,
-                              DrProfileEdit.drFax = DrProfileEdit.drFax,
-                              DrProfileEdit.clinicAdd = DrProfileEdit.clinicAdd,
-                            },
-                          );
+                          drFirst = drFirst;
+                          drLast = drLast;
+                          quali = quali;
+                          drTele = drTele;
+                          fax = fax;
+                          clinicAdr = clinicAdr;
+                          Navigator.pop(context);
                         },
                       );
                     },
@@ -208,20 +218,25 @@ class _DrProfileEditState extends State<DrProfileEdit> {
                     onPressed: () async {
                       setState(
                         () {
-                          DrProfileEdit.drUpdateProfile();
-                          _firestore.collection('doctorprofile').add(
-                            {
-                              'drFirst': DrProfileEdit.drFirst,
-                              'drLast': DrProfileEdit.drLast,
-                              'quali': DrProfileEdit.quali,
-                              'drTele': DrProfileEdit.drTele,
-                              'drEmail': DrProfileEdit.drEmail,
-                              'drFax': DrProfileEdit.drFax,
-                              'clinicAddress': DrProfileEdit.clinicAdd,
-                            },
+                          drUpdateProfile();
+                          DatabaseAuth(uid: loggedInUser.uid).updateDoctorData(
+                            drFirst,
+                            drLast,
+                            quali,
+                            fax,
+                            drTele,
+                            clinicAdr,
                           );
                           Navigator.pop(
                             context,
+                            {
+                              drFirst,
+                              drLast,
+                              quali,
+                              drTele,
+                              fax,
+                              clinicAdr,
+                            },
                           );
                         },
                       );

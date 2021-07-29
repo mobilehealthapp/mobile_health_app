@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-import 'add_a_doctor.dart';
-import 'settings_card.dart';
+import 'package:mobile_health_app/Constants.dart';
 import 'settings_constants.dart';
+
+import 'settings_card.dart';
 
 final _firestore = FirebaseFirestore.instance;
 var loggedInUser;
@@ -39,14 +39,14 @@ class _MyDoctorsState extends State<MyDoctors> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFB2EBF2),
+      backgroundColor: kSecondaryColour,
       appBar: AppBar(
         title: Text(
           'My Doctors',
           style: kAppBarLabelStyle,
         ),
         centerTitle: true,
-        backgroundColor: Color(0xFF00BCD4),
+        backgroundColor: kPrimaryColour,
       ),
       body: ListView(
         shrinkWrap: true,
@@ -58,12 +58,7 @@ class _MyDoctorsState extends State<MyDoctors> {
               onPressed: () {
                 setState(
                   () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddDoctors(),
-                      ),
-                    );
+                    Navigator.pushNamed(context, '/addDoctors');
                   },
                 );
               },

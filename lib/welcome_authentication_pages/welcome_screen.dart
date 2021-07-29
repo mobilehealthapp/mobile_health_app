@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/authentication_button.dart';
-import 'package:mobile_health_app/welcome_authentication_pages/loginpage.dart';
 
 import 'signup.dart';
 
@@ -76,71 +76,21 @@ class WelcomeScreen extends StatelessWidget {
                   SizedBox(
                     height: 50,
                   ),
-                  // MaterialButton(
-                  //   color: Colors.white,
-                  //   height: 50.0,
-                  //   minWidth: 300,
-                  //   onPressed: () {
-                  //     Navigator.push(context,
-                  //         MaterialPageRoute(builder: (context) => LoginPage()));
-                  //   },
-                  //   shape: RoundedRectangleBorder(
-                  //     // side: BorderSide(
-                  //     //   color: Colors.black,
-                  //     // ),
-                  //     borderRadius: BorderRadius.circular(50.0),
-                  //   ),
-                  //   child: Text(
-                  //     'Login',
-                  //     style: TextStyle(
-                  //       fontWeight: FontWeight.w500,
-                  //       fontSize: 18.0,
-                  //     ),
-                  //   ),
-                  // ),
                   AuthenticationButton(
                       label: 'Log in',
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginPage()));
+                        Navigator.of(context).pushNamed('/login');
                       },
                       colour: Colors.blueGrey),
                   SizedBox(
                     height: 20.0,
                   ),
-
                   AuthenticationButton(
                       label: 'Sign up',
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SignupPage()));
+                        Navigator.of(context).pushNamed('/signup');
                       },
-                      colour: Colors.cyan)
-                  // MaterialButton(
-                  //   color: Colors.blue,
-                  //   height: 50.0,
-                  //   minWidth: 300.0,
-                  //   onPressed: () {
-                  //     Navigator.push(
-                  //         context,
-                  //         MaterialPageRoute(
-                  //             builder: (context) => SignupPage()));
-                  //   },
-                  //   shape: RoundedRectangleBorder(
-                  //     borderRadius: BorderRadius.circular(50.0),
-                  //   ),
-                  //   child: Text(
-                  //     'Signup',
-                  //     style: TextStyle(
-                  //         fontWeight: FontWeight.w500,
-                  //         fontSize: 18.0,
-                  //         color: Colors.white),
-                  //   ),
-                  // ),
+                      colour: kPrimaryColour)
                 ],
               )
             ],

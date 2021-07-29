@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile_health_app/Constants.dart';
 
 final kTextFieldDecoration = InputDecoration(
   hintText: 'Enter a Value',
@@ -14,11 +15,11 @@ final kTextFieldDecoration = InputDecoration(
     borderRadius: BorderRadius.all(Radius.circular(10.0)),
   ),
   enabledBorder: OutlineInputBorder(
-    borderSide: BorderSide(color: Color(0xFF0097A7), width: 1.0),
+    borderSide: BorderSide(color: Color(0xFF1B4DA8), width: 1.0),
     borderRadius: BorderRadius.all(Radius.circular(10.0)),
   ),
   focusedBorder: OutlineInputBorder(
-    borderSide: BorderSide(color: Color(0xFF0097A7), width: 2.0),
+    borderSide: BorderSide(color: Color(0xFF1B4DA8), width: 2.0),
     borderRadius: BorderRadius.all(Radius.circular(10.0)),
   ),
 );
@@ -65,4 +66,17 @@ final kConfirm = ElevatedButton.styleFrom(
     borderRadius: BorderRadius.circular(10.0),
   ),
   fixedSize: Size.fromHeight(40.0),
+);
+
+Widget textFieldLabel(label) {
+  return Text(
+    label,
+    style: TextStyle(
+        fontSize: 15.0, fontWeight: FontWeight.w400, color: Colors.black),
+  );
+}
+
+final kAlertTextStyle = TextStyle(
+  fontSize: 16.0,
+  color: Color(0xFF0097A7),
 );
