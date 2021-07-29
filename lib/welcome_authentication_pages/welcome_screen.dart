@@ -1,11 +1,12 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/Constants.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mobile_health_app/authentication_button.dart';
-
-import 'signup.dart';
+import '../main.dart';
+import 'package:mobile_health_app/Constants.dart';
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,7 +20,59 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
+  @override
+  _WelcomeScreenState createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    FirebaseMessaging.instance.getInitialMessage();
+    // .then(
+    //   (RemoteMessage? message) {
+    //     if (message != null) {
+    //       Navigator.pushNamed(context, 'green',
+    //           arguments: MessageArguments(message, true));
+    //     }
+    //   },
+    // );
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      final routeFromMessage = message.data['route'];
+      print('A new onMessage event was published!');
+      Navigator.of(context).pushNamed(routeFromMessage);
+
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null && !kIsWeb) {
+        flutterLocalNotificationsPlugin!.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              channel!.id,
+              channel!.name,
+              channel!.description,
+              //      one that already exists in example app.
+              icon: 'launch_background',
+            ),
+          ),
+          payload: message.data['route'],
+        );
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      final routeFromMessage = message.data['route'];
+      print('A new onMessageOpenedApp event was published!');
+      Navigator.of(context).pushNamed(routeFromMessage);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
