@@ -69,7 +69,8 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
               onPressed: () {
                 setState(
                   () {
-                    Navigator.of(context).pushNamed('/drProfile'); // navigate to profile page
+                    Navigator.of(context)
+                        .pushNamed('/drProfile'); // navigate to profile page
                   },
                 );
               },
@@ -93,7 +94,8 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
               onPressed: () {
                 setState(
                   () {
-                    Navigator.of(context).pushNamed('/privacyPolicy'); // navigate to privacy policy page
+                    Navigator.of(context).pushNamed(
+                        '/privacyPolicy'); // navigate to privacy policy page
                   },
                 );
               },
@@ -107,7 +109,8 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
               onPressed: () {
                 setState(
                   () {
-                    Navigator.of(context).pushNamed('/termsAndConditions'); // navigate to terms and conditions page
+                    Navigator.of(context).pushNamed(
+                        '/termsAndConditions'); // navigate to terms and conditions page
                   },
                 );
               },
@@ -121,7 +124,8 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
               onPressed: () {
                 setState(
                   () {
-                    Navigator.of(context).pushNamed('/medicalDisclaimer'); // navigate to medical disclaimer page
+                    Navigator.of(context).pushNamed(
+                        '/medicalDisclaimer'); // navigate to medical disclaimer page
                   },
                 );
               },

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_health_app/Constants.dart';
 
+const kPrimaryColour = Color(0xFF1B4DA8);
+const kSecondaryColour = Color(0xFFE6F3FC);
+
 final kTextFieldDecoration = InputDecoration(
   hintText: 'Enter a Value',
   hintStyle: GoogleFonts.rubik(

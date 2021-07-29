@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'input_constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'data_input_alert.dart';
+import 'OCR_text_overlay.dart';
+
+String dataType = '';
 
 class DataInput extends StatefulWidget {
   @override
@@ -70,7 +73,7 @@ class _DataInputState extends State<DataInput> {
       child: Scaffold(
         appBar: AppBar(
           title: Text('Record your measurement'),
-          backgroundColor: Colors.cyan,
+          backgroundColor: kPrimaryColour,
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -204,11 +207,13 @@ class _DataInputState extends State<DataInput> {
                   }
                   // All clear!
                   else {
+                    dataType = selectedDataType!;
+                    selected = [];
                     Navigator.of(context).pushNamed('/cameraInput');
                   }
                 },
                 style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.cyan)),
+                    backgroundColor: MaterialStateProperty.all(kPrimaryColour)),
                 child: Container(
                   child: Text('Submit'),
                 ))

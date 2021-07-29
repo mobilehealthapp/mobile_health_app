@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+const kPrimaryColour = Color(0xFF1B4DA8);
+const kSecondaryColour = Color(0xFFDAE9F4);
+
 const List dataTypes = [
   'Select Data Type',
   'Blood Pressure',
@@ -7,14 +10,17 @@ const List dataTypes = [
   'Heart Rate',
 ];
 
+const List kNumberOfVariables = [
+  ['Blood Pressure', 2],
+  ['Blood Glucose', 1],
+  ['Heart Rate', 1],
+];
+
 double? systolic;
 double? diastolic;
 double? glucoseLevel;
 String? glucoseUnit;
 double? bpm;
-
-// To convert mg/dL to mmol/L
-double glucoseConversion = 18.0182;
 
 Column bloodPressureTF = Column(
   children: [

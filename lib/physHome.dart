@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/PhysDrawer.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'package:mobile_health_app/settings_pages/settings_constants.dart';
-
+import 'settings_pages/settings_constants.dart';
 import 'input_file.dart';
 
 class PhysHome extends StatefulWidget {
@@ -76,8 +75,8 @@ class PatientCard extends StatelessWidget {
                     ),
                     Container(
                         child: ElevatedButton(
-                           onPressed: () {},
-                           child: Text(''),
+                      onPressed: () {},
+                      child: Text(''),
                       style: ElevatedButton.styleFrom(primary: Colors.red),
                     ))
                   ]),

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_health_app/authentication_button.dart';
+import 'package:mobile_health_app/main.dart';
 
 class ResetScreen extends StatefulWidget {
   @override
@@ -16,6 +17,7 @@ class _ResetScreenState extends State<ResetScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          backgroundColor: kPrimaryColour,
           leading: BackButton(
             onPressed: () {
               Navigator.pop(context);
@@ -42,8 +44,7 @@ class _ResetScreenState extends State<ResetScreen> {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                            image: AssetImage(
-                                'images/logo-1-removebg-preview.png'),
+                            image: AssetImage('images/logo.png'),
                             fit: BoxFit.fill),
                       ),
                     ),

@@ -43,6 +43,8 @@ AndroidNotificationChannel? channel;
 FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
 
 late List<CameraDescription> cameras;
+const kPrimaryColour = Color(0xFF1B4DA8);
+const kSecondaryColour = Color(0xFFE6F3FC);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

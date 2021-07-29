@@ -1,95 +1,129 @@
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'dart:io';
+import 'package:bordered_text/bordered_text.dart';
+import 'data_input_page.dart';
+import 'input_constants.dart';
+import 'overlay_constants.dart';
 
-double translateX(
-    double x, InputImageRotation rotation, Size size, Size absoluteImageSize) {
-  switch (rotation) {
-    case InputImageRotation.Rotation_90deg:
-      return x *
-          size.width /
-          (Platform.isIOS ? absoluteImageSize.width : absoluteImageSize.height);
-    case InputImageRotation.Rotation_270deg:
-      return size.width -
-          x *
-              size.width /
-              (Platform.isIOS
-                  ? absoluteImageSize.width
-                  : absoluteImageSize.height);
-    default:
-      return x * size.width / absoluteImageSize.width;
-  }
+List<String> selected = [];
+
+class CameraOverlay extends StatefulWidget {
+  final RecognisedText? recognisedText;
+  final Size absoluteImageSize;
+  final InputImageRotation rotation;
+  final Size size;
+
+  const CameraOverlay(
+      this.recognisedText, this.absoluteImageSize, this.rotation, this.size);
+
+  @override
+  _CameraOverlayState createState() => _CameraOverlayState(
+      this.recognisedText, this.absoluteImageSize, this.rotation, this.size);
 }
 
-double translateY(
-    double y, InputImageRotation rotation, Size size, Size absoluteImageSize) {
-  switch (rotation) {
-    case InputImageRotation.Rotation_90deg:
-      return y *
-          size.height /
-          (Platform.isIOS ? absoluteImageSize.height : absoluteImageSize.width);
-    case InputImageRotation.Rotation_270deg:
-      return y *
-          size.height /
-          (Platform.isIOS ? absoluteImageSize.height : absoluteImageSize.width);
-    default:
-      return y * size.height / absoluteImageSize.height;
-  }
-}
+class _CameraOverlayState extends State<CameraOverlay> {
+  final RecognisedText? recognisedText;
+  final Size absoluteImageSize;
+  final InputImageRotation rotation;
+  final Size size;
+  List<Color> _blockColours = [];
+  List<Color> _borderColours = [];
+  List<String> text = [];
+  int numOfMeasurements =
+      kNumberOfVariables[dataTypes.indexOf(dataType) - 1][1];
 
-Stack? CameraOverlay(recognisedText, absoluteImageSize, rotation, size) {
-  Color _blockColour = Colors.blueGrey.withOpacity(0.75);
-  print(size);
-  List<Widget> boxes = [
-    // Positioned.fromRect(
-    //   rect: Rect.fromLTRB(0, 0, 414, 56),
-    //   child: Container(
-    //       width: 10,
-    //       height: 10,
-    //       decoration: BoxDecoration(
-    //         color: Colors.blueGrey.withOpacity(1),
-    //       )),
-    // ),
-  ];
-  for (TextBlock block in recognisedText!.blocks) {
-    for (TextLine line in block.lines) {
-      for (TextElement element in line.elements) {
-        if (element.text.contains(RegExp(r'.*[0-9]+.*'))) {
-          final left =
-              translateX(element.rect.left, rotation, size, absoluteImageSize);
-          final right =
-              translateX(element.rect.right, rotation, size, absoluteImageSize);
-          final top =
-              translateY(element.rect.top, rotation, size, absoluteImageSize);
-          final bottom = translateY(
-              element.rect.bottom, rotation, size, absoluteImageSize);
-          boxes.add(
-            Positioned.fromRect(
-              rect: Rect.fromLTRB(left, top, right, bottom),
-              child: FittedBox(
-                fit: BoxFit.contain,
-                child: GestureDetector(
-                  onTap: () {
-                    print("tapped on ${element.text}!");
-                  },
-                  child: Container(
-                    color: _blockColour,
-                    child: Text(
-                      element.text,
-                      style: TextStyle(color: Colors.white, fontSize: 20),
+  _CameraOverlayState(
+      this.recognisedText, this.absoluteImageSize, this.rotation, this.size);
+
+  void activateOverlay(selectedText) {
+    setState(() {
+      _blockColours[text.indexOf(selectedText)] =
+          kActiveColour.withOpacity(0.75);
+      _borderColours[text.indexOf(selectedText)] = kActiveBorderColour;
+    });
+  }
+
+  void deactivateOverlay(selectedText) {
+    setState(() {
+      _blockColours[text.indexOf(selectedText)] =
+          kInactiveColour.withOpacity(0.75);
+      _borderColours[text.indexOf(selectedText)] = kInactiveBorderColour;
+    });
+  }
+
+  List<Widget> getBoxes() {
+    int count = 0;
+    List<Widget> boxes = [];
+    for (TextBlock block in recognisedText!.blocks) {
+      for (TextLine line in block.lines) {
+        for (TextElement element in line.elements) {
+          if (element.text.contains(RegExp(r'.*[0-9]+.*'))) {
+            _blockColours.add(Colors.blueGrey.withOpacity(0.75));
+            _borderColours.add(Colors.transparent);
+            text.add(element.text);
+            final left = translateX(
+                element.rect.left, rotation, size, absoluteImageSize);
+            final right = translateX(
+                element.rect.right, rotation, size, absoluteImageSize);
+            final top =
+                translateY(element.rect.top, rotation, size, absoluteImageSize);
+            final bottom = translateY(
+                element.rect.bottom, rotation, size, absoluteImageSize);
+            boxes.add(
+              Positioned.fromRect(
+                rect: Rect.fromLTRB(left, top, right, bottom),
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (_blockColours[text.indexOf(element.text)] ==
+                            kActiveColour.withOpacity(0.75)) {
+                          deactivateOverlay(element.text);
+                          selected.remove(element.text);
+                        } else {
+                          activateOverlay(element.text);
+                          if (selected.length == numOfMeasurements) {
+                            String toRemove = selected[0];
+                            deactivateOverlay(toRemove);
+                            selected.remove(toRemove);
+                          }
+                          selected.add(element.text);
+                        }
+                      });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: _borderColours[count]),
+                        color: _blockColours[count],
+                      ),
+                      child: BorderedText(
+                        strokeWidth: 1.5,
+                        strokeColor: Colors.black54,
+                        child: Text(
+                          element.text,
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          );
+            );
+            count += 1;
+          }
         }
       }
     }
+    return boxes;
   }
-  return Stack(
-    clipBehavior: Clip.none,
-    fit: StackFit.loose,
-    children: boxes,
-  );
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      fit: StackFit.loose,
+      children: getBoxes(),
+    );
+  }
 }

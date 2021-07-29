@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/database_auth_services.dart';
 
 final patientRef = FirebaseFirestore.instance
     .collection('patientprofile'); // create this as global variable
@@ -43,7 +44,8 @@ class _ProfileEditState extends State<ProfileEdit> {
   TextEditingController teleTEC = TextEditingController();
   TextEditingController adrTEC = TextEditingController();
 
-  void updateProfile() { // this function tells code that if the user does not enter anything in a specific text field, don't change it
+  void updateProfile() {
+    // this function tells code that if the user does not enter anything in a specific text field, don't change it
     setState(
       () {
         if (firstTEC.text == '') {
@@ -98,13 +100,15 @@ class _ProfileEditState extends State<ProfileEdit> {
   }
 
   @override
-  void initState() { // initialize functions
+  void initState() {
+    // initialize functions
     getCurrentUser();
     getUserData(uid);
     super.initState();
   }
 
-  void getCurrentUser() async { // find uid
+  void getCurrentUser() async {
+    // find uid
     try {
       final user = _auth.currentUser;
       if (user != null) {
@@ -117,7 +121,8 @@ class _ProfileEditState extends State<ProfileEdit> {
     }
   }
 
-  getUserData(uid) async { // calls on specific fields from the patient's document to display their profile info
+  getUserData(uid) async {
+    // calls on specific fields from the patient's document to display their profile info
     final DocumentSnapshot patientInfo = await patientRef.doc(uid).get();
     setState(
       () {

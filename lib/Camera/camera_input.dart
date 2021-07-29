@@ -1,5 +1,7 @@
 import 'dart:async';
-import 'package:mobile_health_app/main.dart';
+import 'package:mobile_health_app/Camera/data_input_page.dart';
+import 'data_transfer.dart';
+import 'package:mobile_health_app/main.dart' hide kPrimaryColour;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
@@ -7,6 +9,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'OCR_text_overlay.dart';
 import 'dart:ui';
+import 'input_constants.dart';
 
 final windowSize =
     Size(window.physicalSize.width / 2, window.physicalSize.height / 2);
@@ -40,7 +43,6 @@ class _CameraAppState extends State<CameraApp> {
       if (!mounted) {
         return;
       }
-      print("size = $windowSize");
       setState(() {});
     });
     _initializeControllerFuture = controller.initialize();
@@ -50,6 +52,8 @@ class _CameraAppState extends State<CameraApp> {
   void dispose() {
     controller.dispose();
     textDetector.close();
+    // File(pathToImage).delete();
+    imageCache!.clear();
     super.dispose();
   }
 
@@ -57,7 +61,7 @@ class _CameraAppState extends State<CameraApp> {
     if (isBusy) return;
     isBusy = true;
     final recognisedText = await textDetector.processImage(inputImage);
-    print('Found ${recognisedText.blocks.length} textBlocks');
+    // print('Found ${recognisedText.blocks.length} textBlocks');
 
     ocrText = recognisedText;
     alertText = recognisedText.text;
@@ -113,63 +117,95 @@ class _CameraAppState extends State<CameraApp> {
 
   Future<void> _onItemTapped(int index) async {
     _selectedIndex = index;
-    if (_selectedIndex == 0) {
-      try {
-        await _initializeControllerFuture;
-        if (!isStreamingImages) {
-          await controller.startImageStream(_processCameraImage);
-          setState(() {
-            showImage = false;
-          });
-          isStreamingImages = true;
-        }
-      } catch (e) {
-        // If an error occurs, log the error to the console.
-        print(e);
-      }
-    } else if (_selectedIndex == 1) {
-      try {
-        await _initializeControllerFuture;
-        if (isStreamingImages) {
-          await controller.stopImageStream();
-          final image = await controller.takePicture();
-          if (lastImage != []) {
-            await processImage(lastImage[0]);
+    switch (_selectedIndex) {
+      case 0:
+        try {
+          await _initializeControllerFuture;
+          if (!isStreamingImages) {
+            await controller.startImageStream(_processCameraImage);
+            setState(() {
+              showImage = false;
+            });
+            File(pathToImage).delete();
+            isStreamingImages = true;
           }
-          pathToImage = image.path;
-          setState(() {
-            showImage = true;
-          });
-          isStreamingImages = false;
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text('OCR output'),
-                  content: Text(alertText),
-                  actions: [
-                    TextButton(
-                      child: Text("OK"),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    )
-                  ],
-                );
-              });
-        } else {
-          await controller.startImageStream(_processCameraImage);
-          setState(() {
-            showImage = false;
-          });
-          isStreamingImages = true;
+        } catch (e) {
+          // If an error occurs, log the error to the console.
+          print(e);
         }
-      } catch (e) {
-        // If an error occurs, log the error to the console.
-        print(e);
-      }
-    } else {
-      print('from photos');
+        break;
+      case 1:
+        try {
+          await _initializeControllerFuture;
+          if (isStreamingImages) {
+            await controller.stopImageStream();
+            final image = await controller.takePicture();
+            if (lastImage != []) {
+              await processImage(lastImage[0]);
+            }
+            pathToImage = image.path;
+            setState(() {
+              showImage = true;
+            });
+            isStreamingImages = false;
+            // showDialog(
+            //     context: context,
+            //     builder: (BuildContext context) {
+            //       return AlertDialog(
+            //         title: Text('OCR output'),
+            //         content: Text(alertText),
+            //         actions: [
+            //           TextButton(
+            //             child: Text("OK"),
+            //             onPressed: () {
+            //               Navigator.pop(context);
+            //             },
+            //           )
+            //         ],
+            //       );
+            //     });
+          } else {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Selected value(s)'),
+                    content: selected.isEmpty
+                        ? Text('Please select a measurement')
+                        : Text((dataType == 'Blood Glucose')
+                            ? ocrAlertText(
+                                dataType, selected[0], bloodGlucoseUnit)
+                            : ocrAlertText(dataType, selected[0],
+                                (selected.length == 2) ? selected[1] : null)),
+                    actions: [
+                      TextButton(
+                        child: Text(
+                            isValid ? 'Yes, submit this measurement' : 'Ok'),
+                        onPressed: () {
+                          if (isValid) {
+                            processData(dataType, selected[0],
+                                (selected.length == 2) ? selected[1] : null);
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            recalculateAverage(dataType);
+                            File(pathToImage).delete();
+                          } else {
+                            Navigator.pop(context);
+                          }
+                        },
+                      )
+                    ],
+                  );
+                });
+          }
+        } catch (e) {
+          // If an error occurs, log the error to the console.
+          print(e);
+        }
+        break;
+      case 2:
+        break;
     }
   }
 
@@ -183,18 +219,18 @@ class _CameraAppState extends State<CameraApp> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Take an image'),
-        backgroundColor: Colors.cyan,
+        backgroundColor: kPrimaryColour,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.cyan,
+        selectedItemColor: kPrimaryColour,
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.camera_alt_outlined),
             label: 'Retake',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings_overscan),
-            label: 'Scan',
+            icon: showImage ? Icon(Icons.check) : Icon(Icons.settings_overscan),
+            label: showImage ? 'Submit' : 'Scan',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.crop_square),
@@ -218,7 +254,7 @@ class _CameraAppState extends State<CameraApp> {
                   Container(
                     child: CameraOverlay(
                       ocrText,
-                      imageSize,
+                      imageSize!,
                       imageRotation,
                       Size(
                           windowSize.width,

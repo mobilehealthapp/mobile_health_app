@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'main.dart';
 
 class InputFile extends StatefulWidget {
   @override
@@ -13,6 +14,7 @@ class _InputFileState extends State<InputFile> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: kPrimaryColour,
           title: Text('INPUT'),
         ),
         body: Container(

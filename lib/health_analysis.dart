@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/drawers.dart';
+import 'main.dart';
 
 class HealthAnalysis extends StatelessWidget {
   const HealthAnalysis({Key? key}) : super(key: key);
@@ -10,6 +11,7 @@ class HealthAnalysis extends StatelessWidget {
     return Scaffold(
       drawer: Drawers(),
       appBar: AppBar(
+        backgroundColor: kPrimaryColour,
         title: Text('Health Analysis'),
       ),
       body: Container(

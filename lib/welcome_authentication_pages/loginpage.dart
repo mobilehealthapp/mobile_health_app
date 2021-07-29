@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_health_app/authentication_button.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
-
+import 'package:mobile_health_app/main.dart';
 import 'accountcheck.dart';
 
 class LoginPage extends StatefulWidget {
@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Colors.cyan,
+          backgroundColor: kPrimaryColour,
           leading: BackButton(
             onPressed: () {
               Navigator.pop(context);
@@ -55,8 +55,7 @@ class _LoginPageState extends State<LoginPage> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                                image: AssetImage(
-                                    'images/logo-1-removebg-preview.png'),
+                                image: AssetImage('images/logo.png'),
                                 fit: BoxFit.fill),
                           ),
                         ),

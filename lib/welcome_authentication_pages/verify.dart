@@ -27,7 +27,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     user = auth.currentUser;
     user.sendEmailVerification();
 
-    timer = Timer.periodic(Duration(seconds: 5), (timer) {
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
       checkEmailVerify();
     });
     super.initState();

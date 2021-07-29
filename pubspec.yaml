@@ -16,6 +16,7 @@ dependencies:
   camera: ^0.8.1+3 # camera package to be able to access the device's camera
   path_provider: ^2.0.2 # path provider package to find local files/photos
   path: ^1.8.0 # path package to generate paths
+  bordered_text: ^2.0.0
   image_picker: ^0.8.1+3
   font_awesome_flutter: ^9.1.0
   wc_form_validators: ^1.0.0

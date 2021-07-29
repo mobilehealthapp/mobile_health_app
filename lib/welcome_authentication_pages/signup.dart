@@ -6,6 +6,7 @@ import 'package:mobile_health_app/authentication_button.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/database_auth_services.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:mobile_health_app/Constants.dart';
 
 class SignupPage extends StatefulWidget {
   @override
@@ -30,7 +31,7 @@ class _SignupPageState extends State<SignupPage> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.cyan,
+          backgroundColor: kPrimaryColour,
           title: Text(
             'Sign up',
             style: TextStyle(color: Colors.white),
@@ -206,7 +207,7 @@ class _SignupPageState extends State<SignupPage> {
                         }
                       }
                     },
-                    colour: Colors.cyan),
+                    colour: kPrimaryColour),
                 TextButton(
                   child: Text(
                     'Already registered? Log in!',
