@@ -17,11 +17,11 @@ const List kNumberOfVariables = [
 ];
 
 // Variables for inputted data
-double? systolic;
-double? diastolic;
-double? glucoseLevel;
+double? systolicInput;
+double? diastolicInput;
+double? glucoseLevelInput;
 String? glucoseUnit;
-double? bpm;
+double? bpmInput;
 
 Column bloodPressureTF = Column(
   children: [
@@ -46,9 +46,9 @@ Column bloodPressureTF = Column(
               ),
               onChanged: (value) {
                 if (value != '') {
-                  systolic = double.parse(value);
+                  systolicInput = double.parse(value);
                 } else {
-                  systolic = null;
+                  systolicInput = null;
                 }
               },
             ),
@@ -81,9 +81,9 @@ Column bloodPressureTF = Column(
               ),
               onChanged: (value) {
                 if (value != '') {
-                  diastolic = double.parse(value);
+                  diastolicInput = double.parse(value);
                 } else {
-                  diastolic = null;
+                  diastolicInput = null;
                 }
               },
             ),
@@ -132,9 +132,9 @@ class _BloodGlucoseTFState extends State<BloodGlucoseTF> {
               onChanged: (value) {
                 setState(() {
                   if (value != '') {
-                    glucoseLevel = double.parse(value);
+                    glucoseLevelInput = double.parse(value);
                   } else {
-                    glucoseLevel = null;
+                    glucoseLevelInput = null;
                   }
                 });
               },
@@ -192,9 +192,9 @@ Row heartRateTF = Row(
           ),
           onChanged: (value) {
             if (value != '') {
-              bpm = double.parse(value);
+              bpmInput = double.parse(value);
             } else {
-              bpm = null;
+              bpmInput = null;
             }
           },
         ),

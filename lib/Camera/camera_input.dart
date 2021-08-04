@@ -11,6 +11,8 @@ import 'OCR_text_overlay.dart';
 import 'dart:ui';
 import 'input_constants.dart';
 
+Data ocrData = Data(null, null, null);
+
 final windowSize =
     Size(window.physicalSize.width / 2, window.physicalSize.height / 2);
 
@@ -28,7 +30,6 @@ class _CameraAppState extends State<CameraApp> {
   String pathToImage = '';
   List<InputImage> lastImage = [];
   bool isStreamingImages = false;
-  String alertText = 'Nothing Found!';
   RecognisedText? ocrText;
   Size? imageSize;
   InputImageRotation imageRotation = InputImageRotation.Rotation_0deg;
@@ -52,8 +53,8 @@ class _CameraAppState extends State<CameraApp> {
   void dispose() {
     controller.dispose();
     textDetector.close();
-    // File(pathToImage).delete();
     imageCache!.clear();
+
     super.dispose();
   }
 
@@ -61,10 +62,8 @@ class _CameraAppState extends State<CameraApp> {
     if (isBusy) return;
     isBusy = true;
     final recognisedText = await textDetector.processImage(inputImage);
-    // print('Found ${recognisedText.blocks.length} textBlocks');
 
     ocrText = recognisedText;
-    alertText = recognisedText.text;
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
       imageSize = inputImage.inputImageData!.size;
@@ -149,37 +148,99 @@ class _CameraAppState extends State<CameraApp> {
             });
             isStreamingImages = false;
           } else {
+            if (dataType == "Blood Glucose") {
+              ocrData = Data(dataType, (selected.isEmpty) ? null : selected[0],
+                  glucoseUnit);
+            } else {
+              ocrData = Data(dataType, selected[0],
+                  (selected.length == 2) ? selected[1] : null);
+            }
+
             showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('Selected value(s)'),
-                    content: selected.isEmpty
-                        ? Text('Please select a measurement')
-                        : Text((dataType == 'Blood Glucose')
-                            ? ocrAlertText(dataType, selected[0], glucoseUnit)
-                            : ocrAlertText(dataType, selected[0],
-                                (selected.length == 2) ? selected[1] : null)),
-                    actions: [
-                      TextButton(
-                        child: Text(
-                            isValid ? 'Yes, submit this measurement' : 'Ok'),
-                        onPressed: () {
-                          if (isValid) {
-                            processData(dataType, selected[0],
-                                (selected.length == 2) ? selected[1] : null);
+                  String alertText = ocrData.ocrAlertText();
+                  if (selected.isEmpty) {
+                    return AlertDialog(
+                        title: Text('Selected value(s)'),
+                        content: Text('Please select a measurement'),
+                        actions: [
+                          TextButton(
+                            child: Text('Ok'),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          )
+                        ]);
+                  } else if (!ocrData.isValid) {
+                    return AlertDialog(
+                      title: Text('Selected value(s)'),
+                      content: Text(alertText),
+                      actions: [
+                        TextButton(
+                          child: Text('Cancel'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        TextButton(
+                          child: Text('Ok'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        )
+                      ],
+                    );
+                  } else if (!ocrData.isSame(inputtedData)) {
+                    return AlertDialog(
+                      title: Text('Selected value(s)'),
+                      content: Text(
+                          'The recorded value(s) from the image does not match the value(s) you entered. If you choose to submit anyways, the value(s) obtained from the image will be uploaded for your physician, the image will be saved for your physician to view, and the data point will be flagged in case the text detection was incorrect. \nWould you like to submit anyways?'),
+                      actions: [
+                        TextButton(
+                          child: Text('No, retake the image'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        TextButton(
+                          child: Text('Yes, submit anyways'),
+                          onPressed: () {
+                            ocrData.processData();
                             Navigator.pop(context);
                             Navigator.pop(context);
                             Navigator.pop(context);
-                            recalculateAverage(dataType);
+                            ocrData.recalculateAverage();
                             File(pathToImage).delete();
-                          } else {
+                          },
+                        )
+                      ],
+                    );
+                  } else {
+                    return AlertDialog(
+                      title: Text('Selected value(s)'),
+                      content: Text(ocrData.ocrAlertText()),
+                      actions: [
+                        TextButton(
+                          child: Text('Cancel'),
+                          onPressed: () {
                             Navigator.pop(context);
-                          }
-                        },
-                      )
-                    ],
-                  );
+                          },
+                        ),
+                        TextButton(
+                          child: Text('Yes, submit this measurement'),
+                          onPressed: () {
+                            ocrData.processData();
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            ocrData.recalculateAverage();
+                            File(pathToImage).delete();
+                          },
+                        )
+                      ],
+                    );
+                  }
                 });
           }
         } catch (e) {
@@ -188,6 +249,9 @@ class _CameraAppState extends State<CameraApp> {
         }
         break;
       case 2:
+        try {} catch (e) {
+          print(e);
+        }
         break;
     }
   }

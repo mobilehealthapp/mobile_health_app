@@ -8,25 +8,31 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  # firebase packages
   firebase_core: ^1.3.0
   firebase_auth: ^2.0.0
+  cloud_firestore: ^2.3.0
+
   cupertino_icons: ^1.0.2
   google_fonts: ^2.1.0
+  bordered_text: ^2.0.0 # package to add a border to text (i.e. black text with a white border
+  font_awesome_flutter: ^9.1.0
+  firebase_messaging: ^10.0.4
+
+  # OCR/Camera packages
   google_ml_kit: ^0.6.0 # google's ML kit - used for the text recognition
   camera: ^0.8.1+3 # camera package to be able to access the device's camera
   path_provider: ^2.0.2 # path provider package to find local files/photos
   path: ^1.8.0 # path package to generate paths
-  bordered_text: ^2.0.0
-  image_picker: ^0.8.1+3
-  font_awesome_flutter: ^9.1.0
+  image_picker: ^0.8.1+3 # package to prompt the user to pick an image from their phone's gallery
+
   wc_form_validators: ^1.0.0
-  cloud_firestore: ^2.3.0
   shared_preferences: ^2.0.6
   clipboard: ^0.1.3
   provider: ^5.0.0
   modal_progress_hud_nsn: ^0.1.0-nullsafety-1
   draw_graph: ^1.0.0
-  firebase_messaging: ^10.0.4
   flutter_local_notifications: ^6.0.0
   get_it: ^7.2.0
   fluttertoast: ^8.0.7

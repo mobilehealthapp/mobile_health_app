@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'input_constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'data_input_alert.dart';
-import 'OCR_text_overlay.dart';
+import 'data_transfer.dart';
 
 String dataType = '';
+Data inputtedData = Data(null, null, null);
 
 class DataInput extends StatefulWidget {
   @override
@@ -36,11 +37,11 @@ class _DataInputState extends State<DataInput> {
       items: dropdownItems,
       onChanged: (value) {
         setState(() {
-          systolic = null;
-          diastolic = null;
-          glucoseLevel = null;
+          systolicInput = null;
+          diastolicInput = null;
+          glucoseLevelInput = null;
           glucoseUnit = null;
-          bpm = null;
+          bpmInput = null;
           selectedDataType = value;
           if (selectedDataType == 'Blood Pressure') {
             textFields = bloodPressureTF;
@@ -102,8 +103,8 @@ class _DataInputState extends State<DataInput> {
                 onPressed: () async {
                   // first check: BP chosen AND systolic empty AND diastolic empty
                   if (selectedDataType == 'Blood Pressure' &&
-                      systolic == null &&
-                      diastolic == null) {
+                      systolicInput == null &&
+                      diastolicInput == null) {
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -119,8 +120,9 @@ class _DataInputState extends State<DataInput> {
                   }
                   // check: BP chosen AND (systolic empty OR diastolic empty)
                   else if (selectedDataType == 'Blood Pressure' &&
-                      (systolic == null || diastolic == null)) {
-                    String type = (systolic == null ? 'systolic' : 'diastolic');
+                      (systolicInput == null || diastolicInput == null)) {
+                    String type =
+                        (systolicInput == null ? 'systolic' : 'diastolic');
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -137,7 +139,7 @@ class _DataInputState extends State<DataInput> {
                   }
                   // check: BG chosen AND glucose level empty AND glucose unit empty
                   else if (selectedDataType == 'Blood Glucose' &&
-                      glucoseLevel == null &&
+                      glucoseLevelInput == null &&
                       glucoseUnit == null) {
                     showDialog(
                         context: context,
@@ -154,11 +156,11 @@ class _DataInputState extends State<DataInput> {
                   }
                   // check: BG chosen AND (glucose level empty OR glucose unit empty)
                   else if (selectedDataType == 'Blood Glucose' &&
-                      (glucoseLevel == null || glucoseUnit == null)) {
-                    String msg = (glucoseLevel == null
+                      (glucoseLevelInput == null || glucoseUnit == null)) {
+                    String msg = (glucoseLevelInput == null
                         ? 'input a value for your blood glucose level'
                         : 'select a measurement unit');
-                    String title = (glucoseLevel == null
+                    String title = (glucoseLevelInput == null
                         ? 'Blood Glucose Level'
                         : 'Blood Glucose Unit');
                     showDialog(
@@ -175,7 +177,8 @@ class _DataInputState extends State<DataInput> {
                         });
                   }
                   // check: BPM chosen AND bpm empty
-                  else if (selectedDataType == 'Heart Rate' && bpm == null) {
+                  else if (selectedDataType == 'Heart Rate' &&
+                      bpmInput == null) {
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -205,7 +208,18 @@ class _DataInputState extends State<DataInput> {
                   // All clear!
                   else {
                     dataType = selectedDataType!;
-                    selected = [];
+                    var data1;
+                    var data2;
+                    if (dataType == "Blood Pressure") {
+                      data1 = systolicInput;
+                      data2 = diastolicInput;
+                    } else if (dataType == "Blood Glucose") {
+                      data1 = glucoseLevelInput;
+                      data2 = glucoseUnit;
+                    } else {
+                      data1 = bpmInput;
+                    }
+                    inputtedData = Data(dataType, data1, data2);
                     Navigator.of(context).pushNamed('/cameraInput');
                   }
                 },

@@ -115,6 +115,8 @@ class _CameraOverlayState extends State<CameraOverlay> {
         }
       }
     }
+    print(text);
+    print(boxes);
     return boxes;
   }
 
@@ -125,5 +127,11 @@ class _CameraOverlayState extends State<CameraOverlay> {
       fit: StackFit.loose,
       children: getBoxes(),
     );
+  }
+
+  @override
+  void dispose() {
+    text = [];
+    super.dispose();
   }
 }
