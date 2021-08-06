@@ -1,61 +1,71 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
+
 import 'package:mobile_health_app/Constants.dart';
+import 'package:mobile_health_app/Graph/ExtractData.dart';
+
 import 'package:mobile_health_app/drawers.dart';
 
-class HealthAnalysis extends StatelessWidget {
+var loggedInUser;
+var uid;
+
+class HealthAnalysis extends StatefulWidget {
   const HealthAnalysis({Key? key}) : super(key: key);
+
+  @override
+  _HealthAnalysisState createState() => _HealthAnalysisState();
+}
+
+class _HealthAnalysisState extends State<HealthAnalysis> {
+  final _auth = FirebaseAuth.instance;
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+    ExtractDataCard();
+  }
+
+  void getCurrentUser() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        loggedInUser = user;
+        print(loggedInUser.email);
+        uid = user.uid.toString(); //convert to string in this method
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: Drawers(),
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
         backgroundColor: kPrimaryColour,
-        title: Text('Health Analysis'),
-      ),
-      body: Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Expanded(
-              child: Container(
-                child: Card(math: 'Median'),
-                padding: EdgeInsets.only(bottom: 20.0),
-              ),
-            ),
-            Expanded(
-              child: Card(math: 'Variance'),
-            ),
-            Expanded(
-              child: Card(math: 'Standard Deviation'),
-            ),
-          ],
+        title: Text(
+          'Health Analysis',
+          style: TextStyle(color: Colors.white),
         ),
       ),
-    );
-  }
-}
-
-class Card extends StatelessWidget {
-  Card({required this.math});
-
-  final String math;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.all(9.0),
-        child: Text(
-          math,
-          style: kTextLabel1,
-        ),
-      ),
-      margin: EdgeInsets.all(25.0),
-      decoration: BoxDecoration(
-        color: Colors.lightBlue,
-        borderRadius: BorderRadius.circular(15.0),
+      body: ListView(
+        shrinkWrap: true,
+        scrollDirection: Axis.vertical,
+        children: [
+          ExtractDataV2(),
+          ExtractData3V2(),
+          ExtractData2V2(),
+          ExtractDataCard()
+          // ExtractData2(),
+          // ExtractData3(),
+        ],
       ),
     );
+    // DoctorList()
   }
 }

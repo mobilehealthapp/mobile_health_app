@@ -1,15 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/Graph/ExtractData.dart';
 import 'drawers.dart';
 import 'package:mobile_health_app/drawers.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
-import 'package:mobile_health_app/graphData.dart';
 
 final patientRef = FirebaseFirestore.instance
     .collection('patientprofile'); //declare reference high up in file
-var name; //declare variable high up in file
+var name;
+//declare variable high up in file
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -47,6 +48,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     getCurrentUser();
     getUserData(uid);
+
     super.initState();
   }
 
@@ -80,6 +82,7 @@ class _HomePageState extends State<HomePage> {
           style: kAppBarLabelStyle,
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.grey[600],
         onPressed: () {
@@ -106,29 +109,50 @@ class _HomePageState extends State<HomePage> {
           Text(
             'Blood pressure for this week',
             textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
           ),
-          Chart1(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Legend(
-                text: 'Systolic',
-                color: Colors.black,
-              ),
-              Legend(
-                text: 'Diastolic',
-                color: Colors.red,
-              ),
-            ],
+          Container(
+            // height: 400,
+            // width: 400,
+            child: ExtractData2V2(),
           ),
-          SummaryCard(
-            type: 'Average Blood Pressure',
-            value: '145/89 ',
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //   children: <Widget>[
+          //     Legend(
+          //       text: 'Systolic',
+          //       color: Colors.black,
+          //     ),
+          //     Legend(
+          //       text: 'Diastolic',
+          //       color: Colors.red,
+          //     ),
+          //   ],
+          // ),
+
+          // Text(
+          //   'Blood Sugar for this week',
+          //   textAlign: TextAlign.center,
+          //   style: TextStyle(fontSize: 20.0),
+          // ),
+          // Chart2(),
+          // SummaryCard(value: '3.4', type: 'Average Blood Sugar'),
+          // Text(
+          //   'Heart pulse for this week',
+          //   textAlign: TextAlign.center,
+          //   style: TextStyle(fontSize: 20.0),
+          // ),
+          // Chart3(),
+          // SummaryCard(value: '25', type: 'Average Pulse'),
+          Container(
+            child: ExtractDataV2(),
           ),
-          Chart2(),
-          SummaryCard(value: '3.4', type: 'Average Blood Sugar'),
-          Chart3(),
-          SummaryCard(value: '25', type: 'Average Pulse'),
+          Container(
+            height: 400,
+            width: 400,
+            child: ExtractData3V2(),
+          ),
+          // ExtractDataCard()
         ],
       ),
     );
