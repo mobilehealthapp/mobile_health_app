@@ -17,7 +17,6 @@ class Chart1 extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.0),
         border: Border.all(color: Colors.black),
-        color: Colors.blue.shade100,
       ),
       child: LineChart(
         LineChartData(
@@ -111,7 +110,9 @@ class Chart2 extends StatelessWidget {
           lineBarsData: [
             LineChartBarData(
               isCurved: true,
-              colors: [Colors.black],
+              colors: [
+                kPrimaryColour,
+              ],
               // dotData: FlDotData( // removes dots
               //   show: false,
               // ),
@@ -177,7 +178,9 @@ class Chart3 extends StatelessWidget {
           lineBarsData: [
             LineChartBarData(
               isCurved: true,
-              colors: [Colors.black],
+              colors: [
+                kPrimaryColour,
+              ],
               // dotData: FlDotData( // removes dots
               //   show: false,
               // ),
@@ -199,7 +202,7 @@ class Chart3 extends StatelessWidget {
           axisTitleData: FlAxisTitleData(
             leftTitle: AxisTitle(
               showTitle: true,
-              titleText: 'mmol/L ',
+              titleText: 'BPM',
             ),
             bottomTitle: AxisTitle(
               showTitle: true,
@@ -228,8 +231,10 @@ class SummaryCard extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
       child: Card(
+        shadowColor: Colors.blueGrey,
+        color: Colors.blueGrey[100],
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(10.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -240,9 +245,6 @@ class SummaryCard extends StatelessWidget {
                   Text(
                     type,
                     style: kTextLabel2,
-                  ),
-                  SizedBox(
-                    width: 20,
                   ),
                   Text(
                     value,
