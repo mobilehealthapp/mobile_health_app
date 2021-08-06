@@ -28,9 +28,9 @@ import 'settings_pages/add_a_doctor.dart';
 import 'package:mobile_health_app/settings_pages/delete_data_or_account.dart';
 import 'settings_pages/medical_disclaimer.dart';
 
-import 'package:mobile_health_app/HomePage.dart';
-import 'health_analysis.dart';
-import 'physHome.dart';
+import 'package:mobile_health_app/Home%20page/HomePage.dart';
+import 'Analysis/health_analysis.dart';
+import 'Physician side/physHome.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -41,11 +41,16 @@ AndroidNotificationChannel? channel;
 
 FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
 
-late List<CameraDescription> cameras;
+List<CameraDescription> cameras = [];
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  cameras = await availableCameras();
+  try {
+    cameras = await availableCameras();
+  } catch (e) {
+    cameras = [];
+    print(e);
+  }
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage;

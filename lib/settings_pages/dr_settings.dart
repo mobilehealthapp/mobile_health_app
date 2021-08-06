@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'package:mobile_health_app/PhysDrawer.dart';
+import 'package:mobile_health_app/Drawers/PhysDrawer.dart';
 import 'package:mobile_health_app/settings_pages/delete_data_or_account.dart';
 import 'settings_card.dart';
 import 'settings_constants.dart';

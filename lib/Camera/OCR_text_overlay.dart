@@ -115,8 +115,8 @@ class _CameraOverlayState extends State<CameraOverlay> {
         }
       }
     }
-    print(text);
-    print(boxes);
+    //print(text);
+    //print(boxes);
     return boxes;
   }
 
@@ -130,8 +130,11 @@ class _CameraOverlayState extends State<CameraOverlay> {
   }
 
   @override
-  void dispose() {
+  void initState() {
     text = [];
-    super.dispose();
+    _borderColours = [];
+    _blockColours = [];
+    numOfMeasurements = kNumberOfVariables[dataTypes.indexOf(dataType) - 1][1];
+    super.initState();
   }
 }

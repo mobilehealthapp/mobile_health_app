@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/PhysDrawer.dart';
+import 'package:mobile_health_app/Drawers/PhysDrawer.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'settings_pages/settings_constants.dart';
+import '../settings_pages/settings_constants.dart';
 import 'input_file.dart';
 
 class PhysHome extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mobile_health_app/authentication_button.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/authentication_button.dart';
 import 'package:mobile_health_app/Constants.dart';
 
 class ResetScreen extends StatefulWidget {

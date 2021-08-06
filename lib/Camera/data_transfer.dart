@@ -8,8 +8,8 @@ final _auth = FirebaseAuth.instance;
 var loggedInUser;
 var uid;
 
-String getCurrentTime() {
-  return DateTime.now().toUtc().toString();
+DateTime getCurrentTime() {
+  return DateTime.now().toUtc();
 }
 
 void getCurrentUser() async {
@@ -50,8 +50,6 @@ class Data {
   bool sameAsInput = false;
 
   bool isSame(Data inputtedData) {
-    print(data1);
-    print(inputtedData.data1);
     var d1 = data1;
     var d2 = data2;
     if (data2 != null) {
@@ -59,6 +57,12 @@ class Data {
     }
     if (data1 != null) {
       d1 = filterAlpha(data1);
+    }
+    if (type == "Blood Pressure") {
+      var sys = (d1 > d2) ? d1 : d2;
+      var dia = (d1 < d2) ? d1 : d2;
+      d1 = sys;
+      d2 = dia;
     }
     if (type == inputtedData.type &&
         d1 == inputtedData.data1 &&
@@ -72,16 +76,18 @@ class Data {
   void processData() {
     getCurrentUser();
     final userData = patientData.doc(uid);
+    final date = getCurrentTime().toString();
     switch (type) {
       case 'Blood Pressure':
         double sys = filterAlpha(data1);
         double dia = filterAlpha(data2);
         double systolic = (sys >= dia) ? sys : dia;
         double diastolic = (sys <= dia) ? sys : dia;
-        userData
-            .collection('bloodPressure')
-            .doc(getCurrentTime())
-            .set({'systolic': systolic, 'diastolic': diastolic});
+        userData.collection('bloodPressure').doc(date).set({
+          "systolic": systolic,
+          "diastolic": diastolic,
+          "uploaded": date,
+        });
         break;
       case 'Blood Glucose':
         double filteredData =
@@ -95,17 +101,18 @@ class Data {
             convertGlucose(filteredData, "mg/dL").toStringAsFixed(1));
         double glucoseMG = (data2 == "mg/dL") ? filteredData : convertedMG;
 
-        userData.collection('bloodGlucose').doc(getCurrentTime()).set({
+        userData.collection('bloodGlucose').doc(date).set({
           "blood glucose (mmol|L)": glucoseMMOL,
-          "blood glucose (mg|dL)": glucoseMG
+          "blood glucose (mg|dL)": glucoseMG,
+          "uploaded": date,
         });
         break;
       case 'Heart Rate':
         int filteredData = filterAlpha(data1.toString()).toInt();
-        userData
-            .collection('heartRate')
-            .doc(getCurrentTime())
-            .set({'heart rate': filteredData});
+        userData.collection('heartRate').doc(date).set({
+          'heart rate': filteredData,
+          "uploaded": date,
+        });
         break;
       default:
         break;

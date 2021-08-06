@@ -25,7 +25,7 @@ dependencies:
   camera: ^0.8.1+3 # camera package to be able to access the device's camera
   path_provider: ^2.0.2 # path provider package to find local files/photos
   path: ^1.8.0 # path package to generate paths
-  image_picker: ^0.8.1+3 # package to prompt the user to pick an image from their phone's gallery
+  image_picker: ^0.8.3 # package to prompt the user to pick an image from their phone's gallery
 
   wc_form_validators: ^1.0.0
   shared_preferences: ^2.0.6

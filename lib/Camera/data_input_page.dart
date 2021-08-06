@@ -60,6 +60,12 @@ class _DataInputState extends State<DataInput> {
   Widget textFields = Container();
 
   @override
+  void initState() {
+    inputtedData = Data(null, null, null);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // The below gesture detector dismisses any keyboard when the user
     // taps anywhere on the page
