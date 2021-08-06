@@ -99,11 +99,11 @@ class _ExtractDataState extends State<ExtractData> {
 
         for (var val in value) {
           int heartrate = val.get('heart rate');
-          //[ heartrate.toDouble();
           data1.add(FlSpot(index++, heartrate.toDouble()));
-          print(heartrate.toString());
         }
         return Charts(
+          yStart: 30,
+          bool1: false,
           yLength: 200,
           xLength: numberOfHRPoints.toDouble(),
           list: data1,
@@ -142,9 +142,10 @@ class _ExtractData2State extends State<ExtractData2> {
 
           data2.add(FlSpot(index++, dias.toDouble()));
           data3.add(FlSpot(index2++, sys.toDouble()));
-          print(sys);
         }
         return Charts2(
+          yStart: 10,
+          bool1: false,
           yLength: 180,
           xLength: numberOfBPPoints.toDouble(),
           list: data2, list2: data3,);
@@ -178,10 +179,11 @@ class _ExtractData3State extends State<ExtractData3> {
           double glucose = val.get('blood glucose (mmol|L)');
           //[ heartrate.toDouble();
           data1.add(FlSpot(index++, glucose.toDouble()));
-          print(glucose.toString());
         }
         return Charts(
-          yLength: 80,
+          yStart: 0,
+          bool1: false,
+          yLength: 10,
           xLength: numberOfBGPoints.toDouble(),
           list: data1,
         );

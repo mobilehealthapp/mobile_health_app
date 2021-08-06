@@ -18,7 +18,7 @@ var name; //declare variable high up in file
 var avgGlucose;
 var avgPressureDia;
 var avgPressureSys;
-var avgHeartRate; 
+var avgHeartRate;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -51,11 +51,14 @@ class _HomePageState extends State<HomePage> {
       name = patientInfo.get('first name');
     });
   }
-  
+
   getUploadedData() async {
-    final DocumentSnapshot uploadedData = await FirebaseFirestore.instance.collection('patientData').doc(_auth.currentUser!.uid).get();
+    final DocumentSnapshot uploadedData = await FirebaseFirestore.instance
+        .collection('patientData')
+        .doc(_auth.currentUser!.uid)
+        .get();
     setState(
-          () {
+      () {
         avgGlucose = uploadedData.get('Average Blood Glucose (mmol|L)');
         avgPressureDia = uploadedData.get('Average Blood Pressure (diastolic)');
         avgPressureSys = uploadedData.get('Average Blood Pressure (systolic)');
@@ -115,12 +118,13 @@ class _HomePageState extends State<HomePage> {
         shrinkWrap: true,
         children: [
           SizedBox(
-            height: 30.0,
+            height: 10.0,
           ),
           Padding(
             padding: EdgeInsets.only(left: 10.0),
             child: Text(
               'Recent Analysis',
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 40,
                 decoration: TextDecoration.underline,
@@ -131,7 +135,7 @@ class _HomePageState extends State<HomePage> {
             height: 30.0,
           ),
           Text(
-            'Blood pressure for this week',
+            'Blood Pressure',
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
@@ -139,7 +143,9 @@ class _HomePageState extends State<HomePage> {
             ),
             textAlign: TextAlign.center,
           ),
-          ExtractData2V2(),
+          Container(
+            child: ExtractData2V2(),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
@@ -157,8 +163,11 @@ class _HomePageState extends State<HomePage> {
             type: 'Average Blood Pressure:',
             value: '$avgPressureSys/$avgPressureDia mmHg',
           ),
+          SizedBox(
+            height: 25.0,
+          ),
           Text(
-            'Blood glucose for this week',
+            'Blood Glucose',
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
@@ -166,10 +175,16 @@ class _HomePageState extends State<HomePage> {
             ),
             textAlign: TextAlign.center,
           ),
-          ExtractData3V2(),
-          SummaryCard(value: '$avgGlucose mmol/L', type: 'Average Blood Glucose:'),
+          Container(
+            child: ExtractData3V2(),
+          ),
+          SummaryCard(
+              value: '$avgGlucose mmol/L', type: 'Average Blood Glucose:'),
+          SizedBox(
+            height: 25.0,
+          ),
           Text(
-            'Pulse rate for this week',
+            'Pulse Rate',
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
@@ -177,7 +192,9 @@ class _HomePageState extends State<HomePage> {
             ),
             textAlign: TextAlign.center,
           ),
-          ExtractDataV2(),
+          Container(
+            child: ExtractDataV2(),
+          ),
           SummaryCard(value: '$avgHeartRate bpm', type: 'Average Pulse Rate:'),
           SizedBox(
             height: 70.0,
@@ -202,20 +219,21 @@ class _ExtractDataV2State extends State<ExtractDataV2> {
       stream: FirebaseFirestore.instance
           .collection('patientData')
           .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection('heartRate').orderBy('uploaded').limitToLast(6)
+          .collection('heartRate')
+          .orderBy('uploaded')
+          .limitToLast(6)
           .snapshots(),
       builder: (context, snapshot) {
         final value = snapshot.data!.docs;
         final List<FlSpot> data1 = [];
         double index = 1.0;
-
         for (var val in value) {
           int heartrate = val.get('heart rate');
-          //[ heartrate.toDouble();
           data1.add(FlSpot(index++, heartrate.toDouble()));
-          print(heartrate.toString());
         }
         return Charts(
+          yStart: 30,
+          bool1: true,
           yLength: 200,
           xLength: 6,
           list: data1,
@@ -239,7 +257,9 @@ class _ExtractData2V2State extends State<ExtractData2V2> {
       stream: FirebaseFirestore.instance
           .collection('patientData')
           .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection('bloodPressure').orderBy('uploaded').limitToLast(4)
+          .collection('bloodPressure')
+          .orderBy('uploaded')
+          .limitToLast(6)
           .snapshots(),
       builder: (context, snapshot) {
         final value = snapshot.data!.docs;
@@ -254,16 +274,19 @@ class _ExtractData2V2State extends State<ExtractData2V2> {
 
           data2.add(FlSpot(index++, dias.toDouble()));
           data3.add(FlSpot(index2++, sys.toDouble()));
-          print(sys);
         }
         return Charts2(
-          yLength: 180,
+            yStart: 10,
+            bool1: true,
+            yLength: 180,
             xLength: 6,
-            list: data2, list2: data3);
+            list: data2,
+            list2: data3);
       },
     );
   }
 }
+
 class ExtractData3V2 extends StatefulWidget {
   const ExtractData3V2({Key? key}) : super(key: key);
 
@@ -278,7 +301,9 @@ class _ExtractData3V2State extends State<ExtractData3V2> {
       stream: FirebaseFirestore.instance
           .collection('patientData')
           .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection('bloodGlucose').orderBy('uploaded').limitToLast(6)
+          .collection('bloodGlucose')
+          .orderBy('uploaded')
+          .limitToLast(2)
           .snapshots(),
       builder: (context, snapshot) {
         final value = snapshot.data!.docs;
@@ -287,12 +312,12 @@ class _ExtractData3V2State extends State<ExtractData3V2> {
 
         for (var val in value) {
           double glucose = val.get('blood glucose (mmol|L)');
-          //[ heartrate.toDouble();
           data1.add(FlSpot(index++, glucose.toDouble()));
-          print(glucose.toString());
         }
         return Charts(
-          yLength: 80,
+          yStart: 0,
+          bool1: true,
+          yLength: 10,
           xLength: 6,
           list: data1,
         );

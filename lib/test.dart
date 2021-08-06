@@ -1,29 +1,36 @@
+import 'package:mobile_health_app/settings_pages/graph_info.dart';
+import 'drawers.dart';
+import 'package:mobile_health_app/drawers.dart';
+import 'package:mobile_health_app/Constants.dart';
+import 'package:mobile_health_app/settings_pages/settings_constants.dart';
+import 'package:mobile_health_app/graphData.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-import 'package:mobile_health_app/Constants.dart';
-import 'package:mobile_health_app/drawers.dart';
+final patientData = FirebaseFirestore.instance
+    .collection('patientData')
+    .doc(FirebaseAuth.instance.currentUser!.uid);
+final patientRef = FirebaseFirestore.instance
+    .collection('patientprofile'); //declare reference high up in file
+var name; //declare variable high up in file
+var avgGlucose;
+var avgPressureDia;
+var avgPressureSys;
+var avgHeartRate;
 
-final _firestore = FirebaseFirestore.instance;
-var loggedInUser;
-var uid;
-
-class HealthAnalysis extends StatefulWidget {
-  const HealthAnalysis({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  _HealthAnalysisState createState() => _HealthAnalysisState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _HealthAnalysisState extends State<HealthAnalysis> {
+class _HomePageState extends State<HomePage> {
   final _auth = FirebaseAuth.instance;
-  @override
-  void initState() {
-    super.initState();
-    getCurrentUser();
-  }
+  var loggedInUser;
+  var uid; //declare below state
 
   void getCurrentUser() async {
     try {
@@ -38,62 +45,178 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     }
   }
 
+  getUserData(uid) async {
+    final DocumentSnapshot patientInfo = await patientRef.doc(uid).get();
+    setState(() {
+      name = patientInfo.get('first name');
+    });
+  }
+
+  getUploadedData() async {
+    final DocumentSnapshot uploadedData = await FirebaseFirestore.instance.collection('patientData').doc(_auth.currentUser!.uid).get();
+    setState(
+          () {
+        avgGlucose = uploadedData.get('Average Blood Glucose (mmol|L)');
+        avgPressureDia = uploadedData.get('Average Blood Pressure (diastolic)');
+        avgPressureSys = uploadedData.get('Average Blood Pressure (systolic)');
+        avgHeartRate = uploadedData.get('Average Heart Rate');
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    getCurrentUser();
+    getUserData(uid);
+    getUploadedData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kSecondaryColour,
       drawer: Drawers(),
       appBar: AppBar(
         iconTheme: IconThemeData(
           color: Colors.white,
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GestureDetector(
+              child: Icon(
+                Icons.logout,
+              ),
+              onTap: () async {
+                FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/', (Route<dynamic> route) => false);
+              },
+            ),
+          )
+        ],
         backgroundColor: kPrimaryColour,
         title: Text(
-          'Health Analysis',
-          style: TextStyle(color: Colors.white),
+          'Hello, $name',
+          style: kAppBarLabelStyle,
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.grey[600],
+        onPressed: () {
+          Navigator.of(context).pushNamed('/dataInput');
+        },
+        child: Icon(
+          Icons.camera_alt_rounded,
         ),
       ),
       body: ListView(
         shrinkWrap: true,
-        scrollDirection: Axis.vertical,
         children: [
-          ExtractData(),
-          ExtractData2(),
-          ExtractData3(),
+          SizedBox(
+            height: 30.0,
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 10.0),
+            child: Text(
+              'Recent Analysis',
+              style: TextStyle(
+                fontSize: 40,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 30.0,
+          ),
+          Text(
+            'Blood pressure for this week',
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 17.0,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          Container(child: ExtractData2V2()),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Legend(
+                text: 'Systolic',
+                color: Colors.black,
+              ),
+              Legend(
+                text: 'Diastolic',
+                color: Colors.red,
+              ),
+            ],
+          ),
+          SummaryCard(
+            type: 'Average Blood Pressure:',
+            value: '$avgPressureSys/$avgPressureDia mmHg',
+          ),
+          Text(
+            'Blood glucose for this week',
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 17.0,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          ExtractData3V2(),
+          SummaryCard(value: '$avgGlucose mmol/L', type: 'Average Blood Glucose:'),
+          Text(
+            'Pulse rate for this week',
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 17.0,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          ExtractDataV2(),
+          SummaryCard(value: '$avgHeartRate bpm', type: 'Average Pulse Rate:'),
+          SizedBox(
+            height: 70.0,
+          ),
         ],
       ),
     );
-    // DoctorList()
   }
 }
 
-class ExtractData extends StatefulWidget {
-  const ExtractData({Key? key}) : super(key: key);
+class ExtractDataV2 extends StatefulWidget {
+  const ExtractDataV2({Key? key}) : super(key: key);
 
   @override
-  _ExtractDataState createState() => _ExtractDataState();
+  _ExtractDataV2State createState() => _ExtractDataV2State();
 }
 
-class _ExtractDataState extends State<ExtractData> {
+class _ExtractDataV2State extends State<ExtractDataV2> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _firestore
+      stream: FirebaseFirestore.instance
           .collection('patientData')
-          .doc(uid)
-          .collection('heartRate')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('heartRate').orderBy('uploaded').limitToLast(6)
           .snapshots(),
       builder: (context, snapshot) {
         final value = snapshot.data!.docs;
         final List<FlSpot> data1 = [];
         double index = 1.0;
-
         for (var val in value) {
           int heartrate = val.get('heart rate');
-          //[ heartrate.toDouble();
           data1.add(FlSpot(index++, heartrate.toDouble()));
-          print(heartrate.toString());
         }
         return Charts(
+          yStart: 30,
+          bool1: true,
+          yLength: 200,
+          xLength: 6,
           list: data1,
         );
       },
@@ -101,56 +224,21 @@ class _ExtractDataState extends State<ExtractData> {
   }
 }
 
-class ExtractData3 extends StatefulWidget {
-  const ExtractData3({Key? key}) : super(key: key);
+class ExtractData2V2 extends StatefulWidget {
+  const ExtractData2V2({Key? key}) : super(key: key);
 
   @override
-  _ExtractData3State createState() => _ExtractData3State();
+  _ExtractData2V2State createState() => _ExtractData2V2State();
 }
 
-class _ExtractData3State extends State<ExtractData3> {
+class _ExtractData2V2State extends State<ExtractData2V2> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _firestore
+      stream: FirebaseFirestore.instance
           .collection('patientData')
-          .doc(uid)
-          .collection('bloodGlucose')
-          .snapshots(),
-      builder: (context, snapshot) {
-        final value = snapshot.data!.docs;
-        final List<FlSpot> data1 = [];
-        double index = 1.0;
-
-        for (var val in value) {
-          double glucose = val.get('blood glucose (mmol|L)');
-          //[ heartrate.toDouble();
-          data1.add(FlSpot(index++, glucose.toDouble()));
-          print(glucose.toString());
-        }
-        return Charts(
-          list: data1,
-        );
-      },
-    );
-  }
-}
-
-class ExtractData2 extends StatefulWidget {
-  const ExtractData2({Key? key}) : super(key: key);
-
-  @override
-  _ExtractData2State createState() => _ExtractData2State();
-}
-
-class _ExtractData2State extends State<ExtractData2> {
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: _firestore
-          .collection('patientData')
-          .doc(uid)
-          .collection('bloodPressure')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('bloodPressure').orderBy('uploaded').limitToLast(4)
           .snapshots(),
       builder: (context, snapshot) {
         final value = snapshot.data!.docs;
@@ -165,98 +253,51 @@ class _ExtractData2State extends State<ExtractData2> {
 
           data2.add(FlSpot(index++, dias.toDouble()));
           data3.add(FlSpot(index2++, sys.toDouble()));
-          print(sys);
         }
-        return Charts2(list: data2, list2: data3);
+        return Charts2(
+            yStart: 10,
+            bool1: true,
+            yLength: 180,
+            xLength: 6,
+            list: data2, list2: data3);
       },
     );
   }
 }
-
-class Charts extends StatelessWidget {
-  Charts({required this.list});
-
-  List<FlSpot> list = [];
+class ExtractData3V2 extends StatefulWidget {
+  const ExtractData3V2({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 20, horizontal: 30.0),
-      padding: EdgeInsets.fromLTRB(10, 20, 20, 10),
-      width: 350,
-      height: 350,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.0),
-        border: Border.all(color: Colors.black),
-        color: Colors.blue.shade100,
-      ),
-      child: LineChart(
-        LineChartData(
-          borderData: FlBorderData(
-            show: true,
-          ),
-          maxX: 8,
-          minX: 1,
-          maxY: 180,
-          minY: 0,
-
-          // backgroundColor: Colors.green,
-          lineBarsData: [
-            LineChartBarData(
-              isCurved: true,
-              colors: [Colors.red],
-              spots: list,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  _ExtractData3V2State createState() => _ExtractData3V2State();
 }
 
-class Charts2 extends StatelessWidget {
-  Charts2({required this.list, required this.list2});
-
-  List<FlSpot> list = [];
-  List<FlSpot> list2 = [];
-
+class _ExtractData3V2State extends State<ExtractData3V2> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 20, horizontal: 30.0),
-      padding: EdgeInsets.fromLTRB(10, 20, 20, 10),
-      width: 350,
-      height: 350,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.0),
-        border: Border.all(color: Colors.black),
-        color: Colors.blue.shade100,
-      ),
-      child: LineChart(
-        LineChartData(
-          borderData: FlBorderData(
-            show: true,
-          ),
-          maxX: 30,
-          minX: 1,
-          maxY: 180,
-          minY: 0,
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('patientData')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('bloodGlucose').orderBy('uploaded').limitToLast(6)
+          .snapshots(),
+      builder: (context, snapshot) {
+        final value = snapshot.data!.docs;
+        final List<FlSpot> data1 = [];
+        double index = 1.0;
 
-          // backgroundColor: Colors.green,
-          lineBarsData: [
-            LineChartBarData(
-              isCurved: true,
-              colors: [Colors.red],
-              spots: list,
-            ),
-            LineChartBarData(
-              isCurved: true,
-              colors: [Colors.black],
-              spots: list2,
-            ),
-          ],
-        ),
-      ),
+        for (var val in value) {
+          double glucose = val.get('blood glucose (mmol|L)');
+          //[ heartrate.toDouble();
+          data1.add(FlSpot(index++, glucose.toDouble()));
+        }
+        return Charts(
+          yStart: 0,
+          bool1: true,
+          yLength: 10,
+          xLength: 6,
+          list: data1,
+        );
+      },
     );
   }
 }
