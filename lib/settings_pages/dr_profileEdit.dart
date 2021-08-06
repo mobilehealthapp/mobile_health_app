@@ -104,12 +104,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
       backgroundColor: kSecondaryColour,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(
-          'Edit my Information',
-          style: kAppBarLabelStyle,
-        ),
-        centerTitle: true,
-        backgroundColor: kPrimaryColour,
+        title: Text('Edit my Information'),
       ),
       body: Padding(
         padding: EdgeInsets.all(10.0),

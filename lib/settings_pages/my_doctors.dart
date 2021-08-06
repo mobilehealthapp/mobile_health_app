@@ -41,12 +41,7 @@ class _MyDoctorsState extends State<MyDoctors> {
     return Scaffold(
       backgroundColor: kSecondaryColour,
       appBar: AppBar(
-        title: Text(
-          'My Doctors',
-          style: kAppBarLabelStyle,
-        ),
-        centerTitle: true,
-        backgroundColor: kPrimaryColour,
+        title: Text('My Doctors'),
       ),
       body: ListView(
         shrinkWrap: true,

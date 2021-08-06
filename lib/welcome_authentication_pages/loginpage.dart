@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/authentication_button.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
-import 'package:mobile_health_app/Constants.dart';
 import 'accountcheck.dart';
 
 class LoginPage extends StatefulWidget {
@@ -22,16 +21,13 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: kPrimaryColour,
-          leading: BackButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          title: Text('Log in',
-              style: TextStyle(
-                color: Colors.white,
-              ))),
+        leading: BackButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text('Log in'),
+      ),
       backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(

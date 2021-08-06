@@ -31,11 +31,7 @@ class _SignupPageState extends State<SignupPage> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: kPrimaryColour,
-          title: Text(
-            'Sign up',
-            style: TextStyle(color: Colors.white),
-          ),
+          title: Text('Sign up'),
           elevation: 0,
           leading: IconButton(
             onPressed: () {
@@ -44,7 +40,7 @@ class _SignupPageState extends State<SignupPage> {
             icon: Icon(
               Icons.arrow_back_ios,
               size: 20.0,
-              color: Colors.black,
+              color: Colors.white,
             ),
           ),
         ),

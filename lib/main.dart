@@ -99,6 +99,8 @@ class MyApp extends StatelessWidget {
             color: Colors.white,
           ),
           titleTextStyle: kAppBarLabelStyle,
+          backgroundColor: kPrimaryColour,
+          centerTitle: true,
         ),
         primaryColor: Color(0xFF00BCD4),
         primaryColorDark: Color(0xFF0097A7),

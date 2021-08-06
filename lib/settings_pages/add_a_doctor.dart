@@ -22,12 +22,7 @@ class _AddDoctorsState extends State<AddDoctors> {
     return Scaffold(
       backgroundColor: kSecondaryColour,
       appBar: AppBar(
-        title: Text(
-          'Add A Doctor',
-          style: kAppBarLabelStyle,
-        ),
-        centerTitle: true,
-        backgroundColor: kPrimaryColour,
+        title: Text('Add A Doctor'),
       ),
       body: Padding(
         padding: EdgeInsets.all(10.0),

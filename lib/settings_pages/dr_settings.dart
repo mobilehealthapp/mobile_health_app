@@ -51,15 +51,7 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
       drawer: PhysDrawers(),
       backgroundColor: kSecondaryColour,
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
-        title: Text(
-          'Settings',
-          style: kAppBarLabelStyle,
-        ),
-        centerTitle: true,
-        backgroundColor: kPrimaryColour,
+        title: Text('Settings'),
       ),
       body: ListView(
         children: <Widget>[
