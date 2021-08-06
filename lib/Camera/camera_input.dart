@@ -325,7 +325,9 @@ class _CameraAppState extends State<CameraApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Take an image'),
+        title: Text(
+          'Take an image',
+        ),
         backgroundColor: kPrimaryColour,
       ),
       bottomNavigationBar: BottomNavigationBar(

@@ -78,7 +78,11 @@ class _DataInputState extends State<DataInput> {
         }
       },
       child: Scaffold(
+        backgroundColor: kSecondaryColour,
         appBar: AppBar(
+          iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
           title: Text('Record your measurement'),
           backgroundColor: kPrimaryColour,
         ),

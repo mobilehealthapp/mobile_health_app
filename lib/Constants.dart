@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 const kTextLabel1 = TextStyle(
   fontSize: 30.0,
@@ -7,6 +8,13 @@ const kTextLabel1 = TextStyle(
 const kTextLabel2 = TextStyle(
   fontSize: 20.0,
   fontWeight: FontWeight.w400,
+);
+
+final kAppBarLabelStyle = GoogleFonts.rubik(
+  textStyle: TextStyle(
+    color: Colors.white,
+    fontSize: 25.0,
+  ),
 );
 
 const Color1 = Colors.grey;

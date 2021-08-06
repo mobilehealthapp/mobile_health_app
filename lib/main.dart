@@ -5,6 +5,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter/services.dart';
+import 'package:mobile_health_app/Constants.dart';
 
 import 'Camera/camera_input.dart';
 import 'Camera/data_input_page.dart';
@@ -90,6 +92,14 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Mobile Health App',
       theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          backwardsCompatibility: false,
+          systemOverlayStyle: SystemUiOverlayStyle.light,
+          iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
+          titleTextStyle: kAppBarLabelStyle,
+        ),
         primaryColor: Color(0xFF00BCD4),
         primaryColorDark: Color(0xFF0097A7),
         primaryColorLight: Color(0xFFB2EBF2),

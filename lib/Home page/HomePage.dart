@@ -6,6 +6,7 @@ import 'package:mobile_health_app/Drawers/drawers.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'package:mobile_health_app/Home%20page/graphData.dart';
+import 'package:flutter/services.dart';
 
 final patientRef = FirebaseFirestore.instance
     .collection('patientprofile'); //declare reference high up in file
@@ -56,9 +57,6 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: kSecondaryColour,
       drawer: Drawers(),
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
