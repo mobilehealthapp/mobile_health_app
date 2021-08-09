@@ -53,9 +53,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   getUploadedData() async {
-    final DocumentSnapshot uploadedData = await FirebaseFirestore.instance.collection('patientData').doc(_auth.currentUser!.uid).get();
+    final DocumentSnapshot uploadedData = await FirebaseFirestore.instance
+        .collection('patientData')
+        .doc(_auth.currentUser!.uid)
+        .get();
     setState(
-          () {
+      () {
         avgGlucose = uploadedData.get('Average Blood Glucose (mmol|L)');
         avgPressureDia = uploadedData.get('Average Blood Pressure (diastolic)');
         avgPressureSys = uploadedData.get('Average Blood Pressure (systolic)');
@@ -167,7 +170,8 @@ class _HomePageState extends State<HomePage> {
             textAlign: TextAlign.center,
           ),
           ExtractData3V2(),
-          SummaryCard(value: '$avgGlucose mmol/L', type: 'Average Blood Glucose:'),
+          SummaryCard(
+              value: '$avgGlucose mmol/L', type: 'Average Blood Glucose:'),
           Text(
             'Pulse rate for this week',
             style: TextStyle(
@@ -202,7 +206,9 @@ class _ExtractDataV2State extends State<ExtractDataV2> {
       stream: FirebaseFirestore.instance
           .collection('patientData')
           .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection('heartRate').orderBy('uploaded').limitToLast(6)
+          .collection('heartRate')
+          .orderBy('uploaded')
+          .limitToLast(6)
           .snapshots(),
       builder: (context, snapshot) {
         final value = snapshot.data!.docs;
@@ -213,6 +219,7 @@ class _ExtractDataV2State extends State<ExtractDataV2> {
           data1.add(FlSpot(index++, heartrate.toDouble()));
         }
         return Charts(
+          units: 'BPM',
           yStart: 30,
           bool1: true,
           yLength: 200,
@@ -238,7 +245,9 @@ class _ExtractData2V2State extends State<ExtractData2V2> {
       stream: FirebaseFirestore.instance
           .collection('patientData')
           .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection('bloodPressure').orderBy('uploaded').limitToLast(4)
+          .collection('bloodPressure')
+          .orderBy('uploaded')
+          .limitToLast(4)
           .snapshots(),
       builder: (context, snapshot) {
         final value = snapshot.data!.docs;
@@ -255,15 +264,18 @@ class _ExtractData2V2State extends State<ExtractData2V2> {
           data3.add(FlSpot(index2++, sys.toDouble()));
         }
         return Charts2(
+            units: 'mmHg',
             yStart: 10,
             bool1: true,
             yLength: 180,
             xLength: 6,
-            list: data2, list2: data3);
+            list: data2,
+            list2: data3);
       },
     );
   }
 }
+
 class ExtractData3V2 extends StatefulWidget {
   const ExtractData3V2({Key? key}) : super(key: key);
 
@@ -278,7 +290,9 @@ class _ExtractData3V2State extends State<ExtractData3V2> {
       stream: FirebaseFirestore.instance
           .collection('patientData')
           .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection('bloodGlucose').orderBy('uploaded').limitToLast(6)
+          .collection('bloodGlucose')
+          .orderBy('uploaded')
+          .limitToLast(6)
           .snapshots(),
       builder: (context, snapshot) {
         final value = snapshot.data!.docs;
@@ -287,10 +301,10 @@ class _ExtractData3V2State extends State<ExtractData3V2> {
 
         for (var val in value) {
           double glucose = val.get('blood glucose (mmol|L)');
-          //[ heartrate.toDouble();
           data1.add(FlSpot(index++, glucose.toDouble()));
         }
         return Charts(
+          units: 'mmol/L',
           yStart: 0,
           bool1: true,
           yLength: 10,

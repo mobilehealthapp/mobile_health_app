@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-
 class LineTitles {
   static getTitleData() {
     return FlTitlesData(
@@ -9,9 +8,9 @@ class LineTitles {
       leftTitles: SideTitles(
           showTitles: true,
           getTextStyles: (value) => TextStyle(
-            color: Colors.black,
-            fontSize: 10,
-          ),
+                color: Colors.black,
+                fontSize: 10,
+              ),
           getTitles: (value) {
             switch (value.toInt()) {
               case 10:
@@ -60,13 +59,20 @@ class LineTitles {
 }
 
 class Charts extends StatelessWidget {
-  Charts({required this.list, required this.xLength, required this.yLength, required this.bool1, required this.yStart});
+  Charts(
+      {required this.list,
+      required this.xLength,
+      required this.yLength,
+      required this.bool1,
+      required this.yStart,
+      required this.units});
 
   List<FlSpot> list = [];
   final double? xLength;
   final double? yLength;
   final double? yStart;
   final bool bool1;
+  final String units;
 
   @override
   Widget build(BuildContext context) {
@@ -96,18 +102,21 @@ class Charts extends StatelessWidget {
             LineChartBarData(
               isCurved: true,
               colors: [Colors.red],
-              dotData: FlDotData( // removes dots
+              dotData: FlDotData(
+                // removes dots
                 show: bool1,
               ),
               spots: list,
             ),
           ],
           axisTitleData: FlAxisTitleData(
+            leftTitle: AxisTitle(
+              titleText: units,
+              showTitle: true,
+            ),
             bottomTitle: AxisTitle(
-                showTitle: true,
-                titleText: 'This week',
-                textAlign: TextAlign.right
-              // textAlign: TextAlign.center,
+              titleText: 'Most Recent Uploads',
+              showTitle: true,
             ),
           ),
         ),
@@ -117,7 +126,14 @@ class Charts extends StatelessWidget {
 }
 
 class Charts2 extends StatelessWidget {
-  Charts2({required this.list, required this.list2, required this.xLength, required this.yLength, required this.bool1, required this.yStart});
+  Charts2(
+      {required this.list,
+      required this.list2,
+      required this.xLength,
+      required this.yLength,
+      required this.bool1,
+      required this.yStart,
+      required this.units});
 
   List<FlSpot> list = [];
   List<FlSpot> list2 = [];
@@ -125,6 +141,7 @@ class Charts2 extends StatelessWidget {
   final double? yLength;
   final double? yStart;
   final bool bool1;
+  final String units;
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +149,7 @@ class Charts2 extends StatelessWidget {
       margin: EdgeInsets.symmetric(vertical: 20, horizontal: 30.0),
       padding: EdgeInsets.fromLTRB(10, 20, 20, 10),
       width: 350,
-      height: 350,
+      height: 400,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.0),
         border: Border.all(color: Colors.black),
@@ -147,13 +164,30 @@ class Charts2 extends StatelessWidget {
           minX: 1,
           maxY: yLength,
           minY: yStart,
-
-          // backgroundColor: Colors.green,
+          axisTitleData: FlAxisTitleData(
+            leftTitle: AxisTitle(
+              titleText: units,
+              textStyle: TextStyle(
+                fontSize: 15.0,
+                color: Colors.black,
+              ),
+              showTitle: true,
+            ),
+            bottomTitle: AxisTitle(
+              titleText: 'Most Recent Uploads',
+              textStyle: TextStyle(
+                fontSize: 15.0,
+                color: Colors.black,
+              ),
+              showTitle: true,
+            ),
+          ),
           lineBarsData: [
             LineChartBarData(
               isCurved: true,
               colors: [Colors.red],
-              dotData: FlDotData( // removes dots
+              dotData: FlDotData(
+                // removes dots
                 show: bool1,
               ),
               spots: list,
@@ -161,7 +195,8 @@ class Charts2 extends StatelessWidget {
             LineChartBarData(
               isCurved: true,
               colors: [Colors.black],
-              dotData: FlDotData( // removes dots
+              dotData: FlDotData(
+                // removes dots
                 show: bool1,
               ),
               spots: list2,

@@ -102,6 +102,7 @@ class _ExtractDataState extends State<ExtractData> {
           data1.add(FlSpot(index++, heartrate.toDouble()));
         }
         return Charts(
+          units: 'BPM',
           yStart: 30,
           bool1: false,
           yLength: 200,
@@ -144,6 +145,7 @@ class _ExtractData2State extends State<ExtractData2> {
           data3.add(FlSpot(index2++, sys.toDouble()));
         }
         return Charts2(
+          units: 'mmHg',
           yStart: 10,
           bool1: false,
           yLength: 180,
@@ -177,10 +179,10 @@ class _ExtractData3State extends State<ExtractData3> {
 
         for (var val in value) {
           double glucose = val.get('blood glucose (mmol|L)');
-          //[ heartrate.toDouble();
           data1.add(FlSpot(index++, glucose.toDouble()));
         }
         return Charts(
+          units: 'mmol/L',
           yStart: 0,
           bool1: false,
           yLength: 10,
