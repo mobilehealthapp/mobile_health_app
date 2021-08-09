@@ -200,6 +200,8 @@ class _HomePageState extends State<HomePage> {
             textAlign: TextAlign.center,
           ),
           Container(
+            width: 400,
+            height: 500,
             child: extractData2V2(),
           ),
           Row(
@@ -285,7 +287,7 @@ Widget extractData2V2() {
 }
 
 Widget extractData3V2() {
-  return Charts(
+  return Charts3(
     units: 'mmol/L',
     yStart: 0,
     bool1: true,

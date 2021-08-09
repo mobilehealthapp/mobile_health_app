@@ -35,8 +35,8 @@ getNumberOfHRPoints() async {
   numberOfHRPoints = getHR.docs.length;
   return numberOfHRPoints;
 }
-class HealthAnalysis extends StatefulWidget {
 
+class HealthAnalysis extends StatefulWidget {
   @override
   _HealthAnalysisState createState() => _HealthAnalysisState();
 }
@@ -71,8 +71,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
             ExtractData2(),
             ExtractData3(),
           ],
-        )
-    );
+        ));
   }
 }
 
@@ -150,7 +149,9 @@ class _ExtractData2State extends State<ExtractData2> {
           bool1: false,
           yLength: 180,
           xLength: numberOfBPPoints.toDouble(),
-          list: data2, list2: data3,);
+          list: data2,
+          list2: data3,
+        );
       },
     );
   }
@@ -193,4 +194,3 @@ class _ExtractData3State extends State<ExtractData3> {
     );
   }
 }
-
