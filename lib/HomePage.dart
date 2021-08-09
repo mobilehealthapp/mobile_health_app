@@ -116,6 +116,40 @@ class _HomePageState extends State<HomePage> {
             // width: 400,
             child: ExtractData2V2(),
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Container(
+                    width: 10,
+                    height: 10,
+                    color: Colors.black,
+                  ),
+                  SizedBox(width: 5.0),
+                  Text(
+                    'Systolic',
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+              SizedBox(width: 10.0),
+              Row(
+                children: <Widget>[
+                  Container(
+                    width: 10,
+                    height: 10,
+                    color: Colors.red,
+                  ),
+                  SizedBox(width: 5.0),
+                  Text(
+                    'Diastolic',
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ],
+          ),
           // Row(
           //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           //   children: <Widget>[

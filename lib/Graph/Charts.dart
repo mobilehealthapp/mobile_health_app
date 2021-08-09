@@ -30,7 +30,8 @@ class Charts extends StatelessWidget {
       ),
       child: LineChart(
         LineChartData(
-          titlesData: LineTitles.getTitleData(),
+          titlesData: LineTitles
+              .getTitleData(), // the data that will be shown on the y axis.
           borderData: FlBorderData(
             show: true,
           ),
@@ -139,9 +140,9 @@ class Charts2 extends StatelessWidget {
 
   List<FlSpot> list = [];
   List<FlSpot> list2 = [];
-  final double? xLength;
-  final double? yLength;
-  final double? yStart;
+  final double? xLength; // maximum X value
+  final double? yLength; // maximum y value
+  final double? yStart; // minimum y value
   final bool bool1;
 
   @override

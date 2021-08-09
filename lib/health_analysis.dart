@@ -60,7 +60,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           ExtractDataV2(),
           ExtractData3V2(),
           ExtractData2V2(),
-          ExtractDataCard()
+          // ExtractDataCard()
           // ExtractData2(),
           // ExtractData3(),
         ],

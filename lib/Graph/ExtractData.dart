@@ -73,7 +73,6 @@ class _ExtractData2V2State extends State<ExtractData2V2> {
         for (var val in value) {
           double dias = val.get('diastolic');
           double sys = val.get('systolic');
-
           data2.add(FlSpot(index++, dias.toDouble()));
           data3.add(FlSpot(index2++, sys.toDouble()));
         }
@@ -105,7 +104,7 @@ class _ExtractData3V2State extends State<ExtractData3V2> {
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection('bloodGlucose')
           .orderBy('uploaded')
-          .limitToLast(2)
+          .limitToLast(4)
           .snapshots(),
       builder: (context, snapshot) {
         final value = snapshot.data!.docs;

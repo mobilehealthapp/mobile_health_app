@@ -34,26 +34,9 @@ class Drawers extends StatelessWidget {
               ),
               SizedBox(height: 10),
               addItem(
-                text: 'Contact',
-                icon: Icons.contacts,
-                onClicked: () => select(context, 5),
-              ),
-
-              SizedBox(height: 10),
-              // ListTile(
-              //   onTap: () {
-              //     _auth.signOut();
-              //     Navigator.of(context).pushNamedAndRemoveUntil(
-              //         '/', (Route<dynamic> route) => false);
-              //   },
-              //   leading: Icon(Icons.logout),
-              //   title: Text('Logout'),
-              // ),
-              SizedBox(height: 10),
-              addItem(
                 text: 'Physician Side ',
                 icon: Icons.logout,
-                onClicked: () => select(context, 5),
+                onClicked: () => select(context, 3),
               ),
               // SizedBox
             ],
@@ -88,12 +71,6 @@ class Drawers extends StatelessWidget {
         Navigator.of(context).pushNamed('/healthAnalysis');
         break;
       case 3:
-        Navigator.of(context).pushNamed('/healthAnalysis');
-        break;
-      case 4:
-        Navigator.of(context).pushNamed('/physHome');
-        break;
-      case 5:
         Navigator.of(context).pushNamed('/physHome');
         break;
     }
