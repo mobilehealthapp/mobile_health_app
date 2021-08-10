@@ -206,6 +206,8 @@ class _HomePageState extends State<HomePage> {
             textAlign: TextAlign.center,
           ),
           Container(
+            width: 400,
+            height: 500,
             child: extractData2V2(),
           ),
           Row(
