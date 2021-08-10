@@ -47,6 +47,86 @@ class SummaryCard extends StatelessWidget {
   }
 }
 
+class FullSummaryCard extends StatelessWidget {
+  FullSummaryCard({
+    required this.avgValue,
+    required this.varValue,
+    required this.sdValue,
+    required this.sdType,
+    required this.avgType,
+    required this.varType,
+  });
+
+  final String avgType;
+  final String varType;
+  final String sdType;
+  final String avgValue;
+  final String varValue;
+  final String sdValue;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+      child: Card(
+        shadowColor: Colors.blueGrey,
+        color: Colors.blueGrey[100],
+        child: Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    avgType,
+                    style: kTextLabel2,
+                  ),
+                  Text(
+                    avgValue,
+                    style: kTextLabel2,
+                  )
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    varType,
+                    style: kTextLabel2,
+                  ),
+                  Text(
+                    varValue,
+                    style: kTextLabel2,
+                  )
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    sdType,
+                    style: kTextLabel2,
+                  ),
+                  Text(
+                    sdValue,
+                    style: kTextLabel2,
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class Legend extends StatelessWidget {
   Legend({required this.text, required this.color});
 

@@ -57,9 +57,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   getUploadedData() async {
-    final DocumentSnapshot uploadedData = await FirebaseFirestore.instance
-        .collection('patientData')
-        .doc(_auth.currentUser!.uid)
+    final DocumentSnapshot uploadedData = await patientData
         .get();
     setState(
       () {
@@ -86,23 +84,34 @@ class _HomePageState extends State<HomePage> {
     return data1;
   }
 
-  Future<List<FlSpot>> getBPData() async {
+  Future<List<FlSpot>> getDiasData() async {
     final bpData = await patientData
         .collection('bloodPressure')
         .orderBy('uploaded')
         .limitToLast(6)
         .get();
     final value = bpData.docs;
-    double index = 1;
-    double index2 = 1;
+    double index = 1.0;
     for (var val in value) {
       double dias = val.get('diastolic');
-      double sys = val.get('systolic');
-
       data2.add(FlSpot(index++, dias.toDouble()));
-      data2a.add(FlSpot(index2++, sys.toDouble()));
     }
     return data2;
+  }
+
+  Future<List<FlSpot>> getSysData() async {
+    final bpData = await patientData
+        .collection('bloodPressure')
+        .orderBy('uploaded')
+        .limitToLast(6)
+        .get();
+    final value = bpData.docs;
+    double index2 = 1.0;
+    for (var val in value) {
+      double sys = val.get('systolic');
+      data2a.add(FlSpot(index2++, sys.toDouble()));
+    }
+    return data2a;
   }
 
   Future<List<FlSpot>> getBGData() async {
@@ -126,7 +135,8 @@ class _HomePageState extends State<HomePage> {
     getUserData(uid);
     getUploadedData();
     getBGData();
-    getBPData();
+    getSysData();
+    getDiasData();
     getHRData();
     super.initState();
   }
@@ -192,11 +202,7 @@ class _HomePageState extends State<HomePage> {
           ),
           Text(
             'Blood Pressure',
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 17.0,
-            ),
+            style: kGraphTitleTextStyle,
             textAlign: TextAlign.center,
           ),
           Container(
@@ -224,11 +230,7 @@ class _HomePageState extends State<HomePage> {
           ),
           Text(
             'Blood Glucose',
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 17.0,
-            ),
+            style: kGraphTitleTextStyle,
             textAlign: TextAlign.center,
           ),
           Container(
@@ -241,11 +243,7 @@ class _HomePageState extends State<HomePage> {
           ),
           Text(
             'Pulse Rate',
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 17.0,
-            ),
+            style: kGraphTitleTextStyle,
             textAlign: TextAlign.center,
           ),
           Container(
@@ -275,7 +273,7 @@ Widget extractDataV2() {
 Widget extractData2V2() {
   return Charts2(
     units: 'mmHg',
-    yStart: 10,
+    yStart: 30,
     bool1: true,
     yLength: 180,
     xLength: 6,
@@ -285,7 +283,7 @@ Widget extractData2V2() {
 }
 
 Widget extractData3V2() {
-  return Charts(
+  return Charts3(
     units: 'mmol/L',
     yStart: 0,
     bool1: true,
@@ -294,3 +292,4 @@ Widget extractData3V2() {
     list: data3,
   );
 }
+
