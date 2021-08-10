@@ -29,7 +29,6 @@ final kLabelStyle = GoogleFonts.rubik(
     color: Colors.white,
   ),
 );
-
 final kRedButtonStyle = ElevatedButton.styleFrom(
   primary: Colors.red[900],
   padding: EdgeInsets.all(10.0),

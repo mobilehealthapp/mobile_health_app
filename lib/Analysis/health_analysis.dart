@@ -10,6 +10,7 @@ class HealthAnalysis extends StatelessWidget {
     return Scaffold(
       drawer: Drawers(),
       appBar: AppBar(
+        backgroundColor: kPrimaryColour,
         title: Text('Health Analysis'),
       ),
       body: Container(

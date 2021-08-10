@@ -340,7 +340,7 @@ class _CameraAppState extends State<CameraApp> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.crop_square),
-            label: 'from photos',
+            label: 'From Photos',
           ),
         ],
         currentIndex: _selectedIndex,

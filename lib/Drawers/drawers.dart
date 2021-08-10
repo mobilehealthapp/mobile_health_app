@@ -34,6 +34,12 @@ class Drawers extends StatelessWidget {
               ),
               SizedBox(height: 10),
               addItem(
+                text: 'Health Analysis Form',
+                icon: Icons.health_and_safety,
+                onClicked: () => select(context, 3),
+              ),
+              SizedBox(height: 10),
+              addItem(
                 text: 'Contact',
                 icon: Icons.contacts,
                 onClicked: () => select(context, 5),
@@ -88,7 +94,7 @@ class Drawers extends StatelessWidget {
         Navigator.of(context).pushNamed('/healthAnalysis');
         break;
       case 3:
-        Navigator.of(context).pushNamed('/healthAnalysis');
+        Navigator.of(context).pushNamed('/healthAnalysisForm');
         break;
       case 4:
         Navigator.of(context).pushNamed('/physHome');

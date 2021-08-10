@@ -31,7 +31,8 @@ import 'package:mobile_health_app/settings_pages/delete_data_or_account.dart';
 import 'settings_pages/medical_disclaimer.dart';
 
 import 'package:mobile_health_app/Home%20page/HomePage.dart';
-import 'Analysis/health_analysis.dart';
+import 'package:mobile_health_app/Analysis/health_analysis.dart';
+import 'package:mobile_health_app/Analysis/health_analysis_form.dart';
 import 'Physician side/physHome.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -121,6 +122,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomePage(),
         '/physHome': (context) => PhysHome(),
         '/healthAnalysis': (context) => HealthAnalysis(),
+        '/healthAnalysisForm': (context) => HealthAnalysisForm(),
         '/cameraInput': (context) => CameraApp(),
         '/dataInput': (context) => DataInput(),
         '/settings': (context) => SettingsPage(),
