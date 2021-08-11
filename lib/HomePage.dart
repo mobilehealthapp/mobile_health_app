@@ -19,10 +19,10 @@ var avgGlucose;
 var avgPressureDia;
 var avgPressureSys;
 var avgHeartRate;
-final List<FlSpot> data1 = [];
-final List<FlSpot> data2 = [];
-final List<FlSpot> data2a = [];
-final List<FlSpot> data3 = [];
+List<FlSpot> data1 = [];
+List<FlSpot> data2 = [];
+List<FlSpot> data2a = [];
+List<FlSpot> data3 = [];
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -57,8 +57,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   getUploadedData() async {
-    final DocumentSnapshot uploadedData = await patientData
-        .get();
+    final DocumentSnapshot uploadedData = await patientData.get();
     setState(
       () {
         avgGlucose = uploadedData.get('Average Blood Glucose (mmol|L)');
@@ -70,6 +69,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<List<FlSpot>> getHRData() async {
+    data1 = [];
     final hrData = await patientData
         .collection('heartRate')
         .orderBy('uploaded')
@@ -85,6 +85,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<List<FlSpot>> getDiasData() async {
+    data2 = [];
     final bpData = await patientData
         .collection('bloodPressure')
         .orderBy('uploaded')
@@ -100,6 +101,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<List<FlSpot>> getSysData() async {
+    data2a = [];
     final bpData = await patientData
         .collection('bloodPressure')
         .orderBy('uploaded')
@@ -115,6 +117,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<List<FlSpot>> getBGData() async {
+    data3 = [];
     final bgData = await patientData
         .collection('bloodGlucose')
         .orderBy('uploaded')
@@ -259,39 +262,38 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-}
 
-Widget extractDataV2() {
-  return Charts(
-    units: 'BPM',
-    yStart: 30,
-    bool1: true,
-    yLength: 200,
-    xLength: 6,
-    list: data1,
-  );
-}
+  Widget extractDataV2() {
+    return Charts(
+      units: 'BPM',
+      yStart: 30,
+      bool1: true,
+      yLength: 200,
+      xLength: 6,
+      list: data1,
+    );
+  }
 
-Widget extractData2V2() {
-  return Charts2(
-    units: 'mmHg',
-    yStart: 30,
-    bool1: true,
-    yLength: 180,
-    xLength: 6,
-    list: data2,
-    list2: data2a,
-  );
-}
+  Widget extractData2V2() {
+    return Charts2(
+      units: 'mmHg',
+      yStart: 30,
+      bool1: true,
+      yLength: 180,
+      xLength: 6,
+      list: data2,
+      list2: data2a,
+    );
+  }
 
-Widget extractData3V2() {
-  return Charts3(
-    units: 'mmol/L',
-    yStart: 0,
-    bool1: true,
-    yLength: 10,
-    xLength: 6,
-    list: data3,
-  );
+  Widget extractData3V2() {
+    return Charts3(
+      units: 'mmol/L',
+      yStart: 0,
+      bool1: true,
+      yLength: 10,
+      xLength: 6,
+      list: data3,
+    );
+  }
 }
-

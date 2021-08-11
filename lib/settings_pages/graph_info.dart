@@ -143,8 +143,6 @@ class Charts extends StatelessWidget {
           minX: 1,
           maxY: yLength,
           minY: yStart,
-
-          // backgroundColor: Colors.green,
           lineBarsData: [
             LineChartBarData(
               preventCurveOverShooting: true,
