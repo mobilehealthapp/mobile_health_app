@@ -55,6 +55,7 @@ class FullSummaryCard extends StatelessWidget {
     required this.sdType,
     required this.avgType,
     required this.varType,
+    required this.range,
   });
 
   final String avgType;
@@ -63,6 +64,7 @@ class FullSummaryCard extends StatelessWidget {
   final String avgValue;
   final String varValue;
   final String sdValue;
+  final String range;
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +114,19 @@ class FullSummaryCard extends StatelessWidget {
                   ),
                   Text(
                     sdValue,
+                    style: kTextLabel2,
+                  )
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    'Range',
+                    style: kTextLabel2,
+                  ),
+                  Text(
+                    '$range',
                     style: kTextLabel2,
                   )
                 ],

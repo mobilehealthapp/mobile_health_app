@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/graphData.dart';
+import 'package:mobile_health_app/stats.dart';
 import 'settings_pages/settings_constants.dart';
 import 'drawers.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -49,7 +50,6 @@ class HealthAnalysis extends StatefulWidget {
 }
 
 class _HealthAnalysisState extends State<HealthAnalysis> {
-
   bgGet() async {
     bg = [];
     final bgData = await bloodGlucose.get();
@@ -58,8 +58,21 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
       double bgGet = val.get('blood glucose (mmol|L)');
       bg.add(bgGet.toDouble());
     }
+
+    var doubles = bg.map((e) => e as double).toList();
+
+    final sdv = doubles.standardDeviation();
+    print('sdv for bg is $sdv');
+    setState(() {
+      standardDeviationBG = sdv.toStringAsFixed(3);
+      var sdv2 = sdv;
+      varianceBG = sqrt(sdv2).toStringAsFixed(3);
+    });
+    bg.sort();
+    print(standardDeviationBG);
+    print(varianceBG);
     print('blood glucose: $bg');
-    return bg;
+    return [standardDeviationBG, varianceBG];
   }
 
   hrGet() async {
@@ -70,8 +83,19 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
       int hrGet = val.get('heart rate');
       hr.add(hrGet.toDouble());
     }
-    print('heart rate: $hr');
-    return hr;
+
+    var doubles = hr.map((e) => e as double).toList();
+
+    final sdv = doubles.standardDeviation().toDouble();
+    print('sdv for hr is $sdv');
+
+    setState(() {
+      standardDeviationHR = sdv.truncateToDouble();
+      varianceHR = sqrt(standardDeviationHR).toStringAsFixed(3);
+    });
+    hr.sort();
+    print('heart rate : $hr');
+    return [standardDeviationHR, varianceHR];
   }
 
   sysGet() async {
@@ -82,8 +106,19 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
       double bpGet = val.get('systolic');
       sys.add(bpGet.toDouble());
     }
-    print('systolic: $sys');
-    return sys;
+    sys.sort();
+    var doubles = sys.map((e) => e as double).toList();
+
+    final sdv = doubles.standardDeviation().toDouble();
+    print('sdv for hr is $sdv');
+
+    setState(() {
+      standardDeviationSys = sdv.truncateToDouble();
+      variancePressureSys = sqrt(standardDeviationSys).toStringAsFixed(3);
+    });
+    sys.sort();
+    print('heart rate : $hr');
+    return [standardDeviationSys, variancePressureSys];
   }
 
   diaGet() async {
@@ -94,8 +129,18 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
       double bpGet = val.get('diastolic');
       dia.add(bpGet.toDouble());
     }
-    print('diastolic: $dia');
-    return dia;
+    var doubles = dia.map((e) => e as double).toList();
+
+    final sdv = doubles.standardDeviation().toDouble();
+    print('sdv for hr is $sdv');
+
+    setState(() {
+      standardDeviationDia = sdv.truncateToDouble();
+      variancePressureDia = sqrt(standardDeviationDia).toStringAsFixed(3);
+    });
+    dia.sort();
+    print('heart rate : $hr');
+    return [standardDeviationDia, variancePressureDia];
   }
 
   getNumberOfBGPoints() async {
@@ -117,10 +162,9 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   }
 
   getUploadedData() async {
-    final DocumentSnapshot uploadedData = await patientData
-        .get();
+    final DocumentSnapshot uploadedData = await patientData.get();
     setState(
-          () {
+      () {
         avgGlucose = uploadedData.get('Average Blood Glucose (mmol|L)');
         avgPressureDia = uploadedData.get('Average Blood Pressure (diastolic)');
         avgPressureSys = uploadedData.get('Average Blood Pressure (systolic)');
@@ -235,11 +279,12 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           ),
           FullSummaryCard(
             avgValue: '$avgPressureSys/$avgPressureDia mmHg',
-            varValue: 'mmHg',
-            sdValue: 'mmHg',
+            varValue: '$variancePressureSys/$variancePressureDia mmHg',
+            sdValue: '$standardDeviationSys/$standardDeviationDia mmHg',
             sdType: 'Standard Deviation:',
             avgType: 'Average:',
             varType: 'Variance:',
+            range: '${sys.first} - ${sys.last}/' '${dia.first} - ${dia.last}',
           ),
           SizedBox(
             height: 25.0,
@@ -254,11 +299,12 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           ),
           FullSummaryCard(
             avgValue: '$avgGlucose mmol/L',
-            varValue: 'mmol/L',
-            sdValue: 'mmol/L',
+            varValue: '$varianceBG mmol/L',
+            sdValue: '$standardDeviationBG mmol/L',
             sdType: 'Standard Deviation:',
             avgType: 'Average:',
             varType: 'Variance:',
+            range: '${bg.first} - ${bg.last}',
           ),
           SizedBox(
             height: 25.0,
@@ -273,16 +319,22 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           ),
           FullSummaryCard(
             avgValue: '$avgHeartRate BPM',
-            varValue: 'BPM',
-            sdValue: ' BPM',
+            varValue: '$varianceHR BPM',
+            sdValue: '  $standardDeviationHR BPM',
             sdType: 'Standard Deviation:',
             avgType: 'Average:',
             varType: 'Variance:',
+            range: '${hr.first} - ${hr.last}',
           ),
+
+          // Text('${hr.first}'),
+          // Text('${sys.first}'),
+          // Text('${sys.last}'),
         ],
       ),
     );
   }
+
   Widget extractData() {
     return Charts(
       units: 'BPM',
