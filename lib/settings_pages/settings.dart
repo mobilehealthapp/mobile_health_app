@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'package:mobile_health_app/settings_pages/settings_constants.dart';
-import 'settings_card.dart';
 import 'package:mobile_health_app/drawers.dart';
+import 'package:mobile_health_app/settings_pages/settings_constants.dart';
+
 import 'delete_data_or_account.dart';
+import 'settings_card.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -35,7 +36,8 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () {
                 setState(
                   () {
-                    Navigator.of(context).pushNamed('/profile'); // navigate to profile page
+                    Navigator.of(context)
+                        .pushNamed('/profile'); // navigate to profile page
                   },
                 );
               },
@@ -46,7 +48,7 @@ class _SettingsPageState extends State<SettingsPage> {
           Padding(
             padding: EdgeInsets.all(10.0),
             child: ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 setState(() {});
               },
               child: TabContent(label: 'Province/Territory'),
@@ -59,7 +61,8 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () {
                 setState(
                   () {
-                    Navigator.of(context).pushNamed('/myDoctors'); // navigate to doctors page
+                    Navigator.of(context)
+                        .pushNamed('/myDoctors'); // navigate to doctors page
                   },
                 );
               },
@@ -73,7 +76,8 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () {
                 setState(
                   () {
-                    Navigator.of(context).pushNamed('/privacyPolicy');// navigate to privacy policy page
+                    Navigator.of(context).pushNamed(
+                        '/privacyPolicy'); // navigate to privacy policy page
                   },
                 );
               },
@@ -87,7 +91,8 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () {
                 setState(
                   () {
-                    Navigator.of(context).pushNamed('/termsAndConditions'); // navigate to terms and conditions page
+                    Navigator.of(context).pushNamed(
+                        '/termsAndConditions'); // navigate to terms and conditions page
                   },
                 );
               },
@@ -101,7 +106,8 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () {
                 setState(
                   () {
-                    Navigator.of(context).pushNamed('/medicalDisclaimer'); // navigate to medical disclaimer page
+                    Navigator.of(context).pushNamed(
+                        '/medicalDisclaimer'); // navigate to medical disclaimer page
                   },
                 );
               },
@@ -117,7 +123,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   context: context,
                   builder: (BuildContext context) {
                     return new Alert(
-                      widget: AlertPatientData(), // navigates to alert where user can input credentials and delete data
+                      widget:
+                          AlertPatientData(), // navigates to alert where user can input credentials and delete data
                       alertBody:
                           'This will erase all of your data except for your email address and your account type.',
                     );
@@ -136,7 +143,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   context: context,
                   builder: (BuildContext context) {
                     return new Alert(
-                      widget: AlertPatientAccount(), // navigates to alert where user can input credentials and delete account
+                      widget:
+                          AlertPatientAccount(), // navigates to alert where user can input credentials and delete account
                       alertBody: 'This will completely delete your account.',
                     );
                   },

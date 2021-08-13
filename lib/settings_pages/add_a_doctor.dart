@@ -3,8 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'settings_constants.dart';
+
 import 'settings_card.dart';
+import 'settings_constants.dart';
 
 class AddDoctors extends StatefulWidget {
   @override
@@ -81,7 +82,7 @@ class _AddDoctorsState extends State<AddDoctors> {
                   inputtedCode = value;
                 },
                 decoration: kTextFieldDecoration.copyWith(
-                    hintText: 'Doctor\'s Numerical Code'),
+                    hintText: 'Doctor\'s Access Code'),
               ),
             ),
             Container(
@@ -192,7 +193,7 @@ class _AddDoctorsState extends State<AddDoctors> {
                             .doc(doctorUID)
                             .collection('doctorPatients')
                             .doc(patientUID)
-                            .set({'patientUID': patientUID});
+                            .update({'patientUID': patientUID});
                       });
 
                       Navigator.pop(context);
