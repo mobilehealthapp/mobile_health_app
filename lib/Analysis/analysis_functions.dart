@@ -69,6 +69,7 @@ Future<String> getAverageResults(uid) async {
   int avgPercentageBP =
       int.parse(((percentageDia + percentageSys) / 2).toStringAsFixed(0));
 
+  warning = false;
   if (patientSystolic >= 150 || patientDiastolic >= 90) {
     print("warning");
     warning = true;
