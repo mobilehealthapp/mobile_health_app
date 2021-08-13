@@ -4,17 +4,17 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:mobile_health_app/HomePage.dart';
+import 'package:flutter/services.dart';
+import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/settings_pages/delete_data_or_account.dart';
 import 'package:mobile_health_app/settings_pages/my_doctor_profile.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/splashscreen.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
-import 'package:mobile_health_app/health_analysis.dart';
+import 'package:mobile_health_app/Analysis/health_analysis.dart';
 
 import 'Camera/camera_input.dart';
 import 'Camera/data_input_page.dart';
-import 'health_analysis.dart';
-import 'physHome.dart';
+import 'package:mobile_health_app/Physician side/physHome.dart';
 import 'settings_pages/add_a_doctor.dart';
 import 'settings_pages/dr_profile.dart';
 import 'settings_pages/dr_profileEdit.dart';
@@ -26,6 +26,10 @@ import 'settings_pages/profile_edit.dart';
 import 'settings_pages/profile_tab.dart';
 import 'settings_pages/settings.dart';
 import 'settings_pages/terms_and_conditions.dart';
+
+import 'package:mobile_health_app/Home page/HomePage.dart';
+import 'package:mobile_health_app/Analysis/health_analysis_form.dart';
+import 'Physician side/physHome.dart';
 import 'welcome_authentication_pages/loginpage.dart';
 import 'welcome_authentication_pages/passwordreset.dart';
 import 'welcome_authentication_pages/signup.dart';
@@ -47,11 +51,16 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-late List<CameraDescription> cameras;
+List<CameraDescription> cameras = [];
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  cameras = await availableCameras();
+  try {
+    cameras = await availableCameras();
+  } catch (e) {
+    cameras = [];
+    print(e);
+  }
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -97,6 +106,16 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Mobile Health App',
       theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          backwardsCompatibility: false,
+          systemOverlayStyle: SystemUiOverlayStyle.light,
+          iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
+          titleTextStyle: kAppBarLabelStyle,
+          backgroundColor: kPrimaryColour,
+          centerTitle: true,
+        ),
         primaryColor: Color(0xFF00BCD4),
         primaryColorDark: Color(0xFF0097A7),
         primaryColorLight: Color(0xFFB2EBF2),
@@ -118,6 +137,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomePage(),
         '/physHome': (context) => PhysHome(),
         '/healthAnalysis': (context) => HealthAnalysis(),
+        '/healthAnalysisForm': (context) => HealthAnalysisForm(),
         '/cameraInput': (context) => CameraApp(),
         '/dataInput': (context) => DataInput(),
         '/settings': (context) => SettingsPage(),

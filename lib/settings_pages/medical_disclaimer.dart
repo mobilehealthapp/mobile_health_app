@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'settings_constants.dart';
 
 class MedicalDisclaimer extends StatefulWidget {
   const MedicalDisclaimer({Key? key}) : super(key: key);
@@ -15,12 +14,7 @@ class _MedicalDisclaimerState extends State<MedicalDisclaimer> {
     return Scaffold(
       backgroundColor: kSecondaryColour,
       appBar: AppBar(
-        title: Text(
-          'Medical Disclaimer',
-          style: kAppBarLabelStyle,
-        ),
-        centerTitle: true,
-        backgroundColor: kPrimaryColour,
+        title: Text('Medical Disclaimer'),
       ),
       body: ListView(
         scrollDirection: Axis.vertical,

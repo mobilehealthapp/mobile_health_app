@@ -10,6 +10,9 @@ import 'package:flutter/foundation.dart';
 import 'OCR_text_overlay.dart';
 import 'dart:ui';
 import 'input_constants.dart';
+import 'package:image_picker/image_picker.dart';
+
+Data ocrData = Data(null, null, null);
 
 final windowSize =
     Size(window.physicalSize.width / 2, window.physicalSize.height / 2);
@@ -24,47 +27,85 @@ class _CameraAppState extends State<CameraApp> {
   late Future<void> _initializeControllerFuture;
   final textDetector = GoogleMlKit.vision.textDetector();
   bool showImage = false;
+  bool camera = true;
   bool isBusy = false;
   String pathToImage = '';
   List<InputImage> lastImage = [];
   bool isStreamingImages = false;
-  String alertText = 'Nothing Found!';
   RecognisedText? ocrText;
   Size? imageSize;
   InputImageRotation imageRotation = InputImageRotation.Rotation_0deg;
+  File? _image;
+  final ImagePicker _picker = ImagePicker();
+  bool initCamera = cameras.isNotEmpty;
+
+  Container uninitializedCamera = Container(
+    color: Colors.black,
+    constraints: BoxConstraints.expand(),
+    child: Center(
+      child: Text(
+        "The camera cannot be accessed. \n\nPlease ensure that camera access permissions have been enabled in the settings.",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 30.0,
+          color: Colors.white,
+        ),
+      ),
+    ),
+  );
 
   @override
   void initState() {
     super.initState();
-    controller = CameraController(cameras[0], ResolutionPreset.high);
-    controller.initialize().then((_) {
-      controller.startImageStream(_processCameraImage);
-      isStreamingImages = true;
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
-    });
-    _initializeControllerFuture = controller.initialize();
+    if (initCamera) {
+      controller = CameraController(cameras[0], ResolutionPreset.high);
+      controller.initialize().then((_) {
+        controller.startImageStream(_processCameraImage);
+        isStreamingImages = true;
+        if (!mounted) {
+          return;
+        }
+        setState(() {});
+      });
+      _initializeControllerFuture = controller.initialize();
+    }
   }
 
   @override
   void dispose() {
-    controller.dispose();
-    textDetector.close();
-    // File(pathToImage).delete();
-    imageCache!.clear();
+    if (initCamera) {
+      controller.dispose();
+      textDetector.close();
+      imageCache!.clear();
+    }
+    ocrData = Data(null, null, null);
+    selected = [];
     super.dispose();
+  }
+
+  Future<void> _imgFromGallery() async {
+    XFile? image =
+        await _picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
+
+    while (image == null) {
+      await Future.delayed(const Duration(milliseconds: 500), () {});
+    }
+
+    setState(() {
+      _image = File(image.path);
+      camera = false;
+    });
+    final inputImage = InputImage.fromFilePath(image.path);
+    lastImage = [inputImage];
   }
 
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;
     isBusy = true;
     final recognisedText = await textDetector.processImage(inputImage);
-    // print('Found ${recognisedText.blocks.length} textBlocks');
 
     ocrText = recognisedText;
-    alertText = recognisedText.text;
+    //(recognisedText.text);
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
       imageSize = inputImage.inputImageData!.size;
@@ -146,57 +187,105 @@ class _CameraAppState extends State<CameraApp> {
             pathToImage = image.path;
             setState(() {
               showImage = true;
+              camera = true;
             });
             isStreamingImages = false;
-            // showDialog(
-            //     context: context,
-            //     builder: (BuildContext context) {
-            //       return AlertDialog(
-            //         title: Text('OCR output'),
-            //         content: Text(alertText),
-            //         actions: [
-            //           TextButton(
-            //             child: Text("OK"),
-            //             onPressed: () {
-            //               Navigator.pop(context);
-            //             },
-            //           )
-            //         ],
-            //       );
-            //     });
           } else {
+            if (dataType == "Blood Glucose") {
+              ocrData = Data(dataType, (selected.isEmpty) ? null : selected[0],
+                  glucoseUnit);
+            } else {
+              ocrData = Data(dataType, selected[0],
+                  (selected.length == 2) ? selected[1] : null);
+            }
+
             showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('Selected value(s)'),
-                    content: selected.isEmpty
-                        ? Text('Please select a measurement')
-                        : Text((dataType == 'Blood Glucose')
-                            ? ocrAlertText(
-                                dataType, selected[0], bloodGlucoseUnit)
-                            : ocrAlertText(dataType, selected[0],
-                                (selected.length == 2) ? selected[1] : null)),
-                    actions: [
-                      TextButton(
-                        child: Text(
-                            isValid ? 'Yes, submit this measurement' : 'Ok'),
-                        onPressed: () {
-                          if (isValid) {
-                            processData(dataType, selected[0],
-                                (selected.length == 2) ? selected[1] : null);
+                  String alertText = ocrData.ocrAlertText();
+                  if (selected.isEmpty) {
+                    return AlertDialog(
+                        title: Text('Selected value(s)'),
+                        content: Text('Please select a measurement'),
+                        actions: [
+                          TextButton(
+                            child: Text('Ok'),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          )
+                        ]);
+                  } else if (!ocrData.isValid) {
+                    return AlertDialog(
+                      title: Text('Selected value(s)'),
+                      content: Text(alertText),
+                      actions: [
+                        TextButton(
+                          child: Text('Cancel'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        TextButton(
+                          child: Text('Ok'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        )
+                      ],
+                    );
+                  } else if (!ocrData.isSame(inputtedData)) {
+                    return AlertDialog(
+                      title: Text('Selected value(s)'),
+                      content: Text(
+                          'The recorded value(s) from the image does not match the value(s) you entered. If you choose to submit anyways, the value(s) obtained from the image will be uploaded for your physician, the image will be saved for your physician to view, and the data point will be flagged in case the text detection was incorrect. \nWould you like to submit anyways?'),
+                      actions: [
+                        TextButton(
+                          child: Text('No, retake the image'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        TextButton(
+                          child: Text('Yes, submit anyways'),
+                          onPressed: () {
+                            ocrData.processData();
                             Navigator.pop(context);
                             Navigator.pop(context);
                             Navigator.pop(context);
-                            recalculateAverage(dataType);
+                            inputtedData = Data(null, null, null);
+                            ocrData.recalculateAverage();
                             File(pathToImage).delete();
-                          } else {
+                          },
+                        )
+                      ],
+                    );
+                  } else {
+                    return AlertDialog(
+                      title: Text('Selected value(s)'),
+                      content: Text(ocrData.ocrAlertText()),
+                      actions: [
+                        TextButton(
+                          child: Text('Cancel'),
+                          onPressed: () {
                             Navigator.pop(context);
-                          }
-                        },
-                      )
-                    ],
-                  );
+                          },
+                        ),
+                        TextButton(
+                          child: Text('Yes, submit this measurement'),
+                          onPressed: () {
+                            ocrData.processData();
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            inputtedData = Data(null, null, null);
+                            ocrData.recalculateAverage();
+                            File(pathToImage).delete();
+                          },
+                        )
+                      ],
+                    );
+                  }
                 });
           }
         } catch (e) {
@@ -205,6 +294,27 @@ class _CameraAppState extends State<CameraApp> {
         }
         break;
       case 2:
+        try {
+          if (initCamera) {
+            await _initializeControllerFuture;
+            if (isStreamingImages) {
+              await controller.stopImageStream();
+            }
+          }
+          await _imgFromGallery();
+          print(3);
+          if (lastImage.isNotEmpty) {
+            print(4);
+            await processImage(lastImage[0]);
+          }
+          setState(() {
+            isStreamingImages = false;
+            showImage = true;
+            camera = false;
+          });
+        } catch (e) {
+          print(e);
+        }
         break;
     }
   }
@@ -213,13 +323,9 @@ class _CameraAppState extends State<CameraApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (!controller.value.isInitialized) {
-      return Container();
-    }
     return Scaffold(
       appBar: AppBar(
         title: Text('Take an image'),
-        backgroundColor: kPrimaryColour,
       ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: kPrimaryColour,
@@ -234,7 +340,7 @@ class _CameraAppState extends State<CameraApp> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.crop_square),
-            label: 'from photos',
+            label: 'From Photos',
           ),
         ],
         currentIndex: _selectedIndex,
@@ -250,7 +356,7 @@ class _CameraAppState extends State<CameraApp> {
                 clipBehavior: Clip.none,
                 fit: StackFit.loose,
                 children: [
-                  Image.file(File(pathToImage)),
+                  Image.file(camera ? File(pathToImage) : _image!),
                   Container(
                     child: CameraOverlay(
                       ocrText,
@@ -266,7 +372,7 @@ class _CameraAppState extends State<CameraApp> {
                   ),
                 ],
               )
-            : CameraPreview(controller),
+            : (initCamera ? CameraPreview(controller) : uninitializedCamera),
       ),
       extendBody: true,
     );

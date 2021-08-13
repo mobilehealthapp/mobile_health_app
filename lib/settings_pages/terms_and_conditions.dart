@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'settings_constants.dart';
 
 class TermsAndConditions extends StatefulWidget {
   const TermsAndConditions({Key? key}) : super(key: key);
@@ -15,12 +14,7 @@ class _TermsAndConditionsState extends State<TermsAndConditions> {
     return Scaffold(
       backgroundColor: kSecondaryColour,
       appBar: AppBar(
-        title: Text(
-          'Terms and Conditions',
-          style: kAppBarLabelStyle,
-        ),
-        centerTitle: true,
-        backgroundColor: kPrimaryColour,
+        title: Text('Terms and Conditions'),
       ),
       body: ListView(
         scrollDirection: Axis.vertical,

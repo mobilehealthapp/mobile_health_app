@@ -3,12 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:mobile_health_app/Constants.dart';
+import 'package:mobile_health_app/Drawers/drawers.dart';
 import 'package:mobile_health_app/graphs/graphData.dart';
-import 'settings_pages/settings_constants.dart';
-import 'drawers.dart';
+import '/Drawers/drawers.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'graphs/graph_info.dart';
+import '/graphs/graph_info.dart';
 import 'package:calc/calc.dart';
 
 var patientData = FirebaseFirestore.instance
@@ -269,10 +269,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
       appBar: AppBar(
         title: Text(
           'Health Analysis',
-          style: kAppBarLabelStyle,
         ),
-        centerTitle: true,
-        backgroundColor: kPrimaryColour,
       ),
       body: ListView(
         shrinkWrap: true,

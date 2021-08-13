@@ -76,12 +76,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       backgroundColor: kSecondaryColour,
       appBar: AppBar(
-        title: Text(
-          'My Profile',
-          style: kAppBarLabelStyle,
-        ),
-        centerTitle: true,
-        backgroundColor: kPrimaryColour,
+        title: Text('My Profile'),
       ),
       body: ListView(
         children: [

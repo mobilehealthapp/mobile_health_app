@@ -29,14 +29,6 @@ final kLabelStyle = GoogleFonts.rubik(
     color: Colors.white,
   ),
 );
-
-final kAppBarLabelStyle = GoogleFonts.rubik(
-  textStyle: TextStyle(
-    color: Colors.white,
-    fontSize: 25.0,
-  ),
-);
-
 final kRedButtonStyle = ElevatedButton.styleFrom(
   primary: Colors.red[900],
   padding: EdgeInsets.all(10.0),

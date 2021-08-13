@@ -1,11 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/Drawers/PhysDrawer.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'package:mobile_health_app/PhysDrawer.dart';
-
 import 'input_file.dart';
-import 'settings_pages/settings_constants.dart';
 
 var loggedInUser;
 var uid;
@@ -95,11 +93,6 @@ class _PhysHomeState extends State<PhysHome> {
       backgroundColor: kSecondaryColour,
       drawer: PhysDrawers(),
       appBar: AppBar(
-        backgroundColor: kPrimaryColour,
-        centerTitle: true,
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),
@@ -109,10 +102,7 @@ class _PhysHomeState extends State<PhysHome> {
             },
           )
         ],
-        title: Text(
-          'Physician Home Page',
-          style: kAppBarLabelStyle,
-        ),
+        title: Text('Physician Home Page'),
       ),
       body: ListView(
         shrinkWrap: true,

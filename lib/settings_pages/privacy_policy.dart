@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'settings_constants.dart';
 
 class PrivacyPolicy extends StatefulWidget {
   @override
@@ -13,12 +12,7 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
     return Scaffold(
       backgroundColor: kSecondaryColour,
       appBar: AppBar(
-        title: Text(
-          'Privacy Policy',
-          style: kAppBarLabelStyle,
-        ),
-        centerTitle: true,
-        backgroundColor: kPrimaryColour,
+        title: Text('Privacy Policy'),
       ),
       body: ListView(
         scrollDirection: Axis.vertical,

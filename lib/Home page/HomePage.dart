@@ -3,10 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/graphs/graph_info.dart';
 import 'package:mobile_health_app/stats.dart';
-import 'drawers.dart';
-import 'package:mobile_health_app/drawers.dart';
+import 'package:mobile_health_app/Drawers/drawers.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'package:mobile_health_app/graphs/graphData.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -158,9 +156,6 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: kSecondaryColour,
       drawer: Drawers(),
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -176,10 +171,8 @@ class _HomePageState extends State<HomePage> {
             ),
           )
         ],
-        backgroundColor: kPrimaryColour,
         title: Text(
           'Hello, $name',
-          style: kAppBarLabelStyle,
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

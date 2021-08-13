@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'package:mobile_health_app/drawers.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
+import 'settings_card.dart';
+import 'package:mobile_health_app/Drawers/drawers.dart';
 
 import 'delete_data_or_account.dart';
-import 'settings_card.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -17,15 +17,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       backgroundColor: kSecondaryColour,
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
-        title: Text(
-          'Settings',
-          style: kAppBarLabelStyle,
-        ),
-        centerTitle: true,
-        backgroundColor: kPrimaryColour,
+        title: Text('Settings'),
       ),
       drawer: Drawers(),
       body: ListView(
