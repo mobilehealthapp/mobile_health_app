@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'package:mobile_health_app/Physician%20side/physHome.dart';
 
 import 'accountcheck.dart';
 import 'database_auth_services.dart';
@@ -100,8 +99,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                 actions: [
                   TextButton(
                       onPressed: () {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (context) => PhysHome()));
+                        Navigator.of(context).pushReplacementNamed('/physHome');
                       },
                       child: Text('Dismiss'))
                 ],
@@ -110,7 +108,6 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     'Your physician access code is $physicianCode, please write this code down and keep it secure. Provide it to your patients so they can add you to their list of approved physicians'),
               );
             });
-        Navigator.of(context).pushReplacementNamed('/physHome');
         setState(() {
           showSpinner = false;
         });

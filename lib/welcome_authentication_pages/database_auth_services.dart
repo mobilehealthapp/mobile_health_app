@@ -12,8 +12,19 @@ class DatabaseAuth {
   final CollectionReference patientProfileCollection =
       FirebaseFirestore.instance.collection('patientprofile');
 
+  final CollectionReference patientDataCollection =
+      FirebaseFirestore.instance.collection('patientData');
+
+  final CollectionReference patientDoctorsCollection = FirebaseFirestore
+      .instance
+      .collection('patientprofile')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('patientDoctors');
+
   final CollectionReference doctorProfileCollection =
       FirebaseFirestore.instance.collection('doctorprofile');
+
+  final CollectionReference doctorPatientsCollection = FirebaseFirestore.instance.collection('doctorprofile');
 
   Future setPatientData(String firstName, String lastName, String email,
       String accountType) async {
@@ -28,7 +39,7 @@ class DatabaseAuth {
         'tele': '',
         'meds': '',
         'conds': '',
-        'sex': 'Sex',
+        'sex': '',
         'wt': '',
         'ht': '',
         'dob': '',
@@ -98,6 +109,14 @@ class DatabaseAuth {
           EmailAuthProvider.credential(email: email, password: password);
       print(user);
       await user!.reauthenticateWithCredential(credentials);
+      await patientDataCollection.doc(_auth.currentUser!.uid).delete();
+      await patientDoctorsCollection.get().then(
+            (snapshot) {
+          for (DocumentSnapshot ds in snapshot.docs) {
+            ds.reference.delete();
+          }
+        },
+      );
       await patientProfileCollection.doc(_auth.currentUser!.uid).update(
         {
           'first name': '',
@@ -107,21 +126,10 @@ class DatabaseAuth {
           'tele': '',
           'meds': '',
           'conds': '',
-          'sex': 'Sex',
+          'sex': '',
           'wt': '',
           'ht': '',
           'dob': '',
-          // 'first name': FieldValue.delete(),
-          // 'last name': FieldValue.delete(),
-          // 'address': FieldValue.delete(),
-          // 'age': FieldValue.delete(),
-          // 'tele': FieldValue.delete(),
-          // 'meds': FieldValue.delete(),
-          // 'conds': FieldValue.delete(),
-          // 'sex': FieldValue.delete(),
-          // 'wt': FieldValue.delete(),
-          // 'ht': FieldValue.delete(),
-          // 'dob': FieldValue.delete(),
         },
       );
       Navigator.of(context)
@@ -222,10 +230,18 @@ class DatabaseAuth {
   }
 
   Future erasePatientDocument() async {
-    return await patientProfileCollection.doc(_auth.currentUser!.uid).delete();
+    await patientProfileCollection.doc(_auth.currentUser!.uid).delete();
+    await patientDataCollection.doc(_auth.currentUser!.uid).delete();
+    await patientDoctorsCollection.get().then(
+      (snapshot) {
+        for (DocumentSnapshot ds in snapshot.docs) {
+          ds.reference.delete();
+        }
+      },
+    );
   }
 
   Future eraseDoctorDocument() async {
-    return await doctorProfileCollection.doc(_auth.currentUser!.uid).delete();
+    await doctorProfileCollection.doc(_auth.currentUser!.uid).delete();
   }
 }

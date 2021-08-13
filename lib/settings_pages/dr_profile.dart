@@ -13,6 +13,7 @@ var quali;
 var drTele;
 var fax;
 var clinicAdr;
+var doctorCode;
 
 class DrProfilePage extends StatefulWidget {
   const DrProfilePage({Key? key}) : super(key: key);
@@ -56,6 +57,7 @@ class _DrProfilePageState extends State<DrProfilePage> {
         quali = doctorInfo.get('quali');
         fax = doctorInfo.get('fax');
         clinicAdr = doctorInfo.get('clinicAddress');
+        doctorCode = doctorInfo.get('access code');
       },
     );
   }
@@ -74,6 +76,9 @@ class _DrProfilePageState extends State<DrProfilePage> {
           ),
           ProfileTab(
             editAnswer: 'Qualifications: $quali',
+          ),
+          ProfileTab(
+            editAnswer: 'Unique Code: $doctorCode',
           ),
           ProfileTab(
             editAnswer: 'Telephone Number: $drTele',

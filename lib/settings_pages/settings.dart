@@ -3,6 +3,7 @@ import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
 import 'settings_card.dart';
 import 'package:mobile_health_app/Drawers/drawers.dart';
+
 import 'delete_data_or_account.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -39,7 +40,7 @@ class _SettingsPageState extends State<SettingsPage> {
           Padding(
             padding: EdgeInsets.all(10.0),
             child: ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 setState(() {});
               },
               child: TabContent(label: 'Province/Territory'),

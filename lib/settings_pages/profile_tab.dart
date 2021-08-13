@@ -89,9 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ProfileTab(
             editAnswer: 'Date of Birth: $dob',
           ),
-          ProfileTab(
-            editAnswer: 'Sex: $sex',
-          ),
+          ProfileTab(editAnswer: 'Sex: $sex'),
           ProfileTab(
             editAnswer: 'Height: $ht',
           ),

@@ -3,8 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'settings_constants.dart';
+
 import 'settings_card.dart';
+import 'settings_constants.dart';
 
 class AddDoctors extends StatefulWidget {
   @override
@@ -17,6 +18,7 @@ class _AddDoctorsState extends State<AddDoctors> {
   var lastName;
   var label;
   var email;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,7 +78,7 @@ class _AddDoctorsState extends State<AddDoctors> {
                   inputtedCode = value;
                 },
                 decoration: kTextFieldDecoration.copyWith(
-                    hintText: 'Doctor\'s Numerical Code'),
+                    hintText: 'Doctor\'s Access Code'),
               ),
             ),
             Container(
@@ -89,12 +91,14 @@ class _AddDoctorsState extends State<AddDoctors> {
                       'What is this?',
                       style: TextStyle(color: Colors.grey[800], fontSize: 17),
                     ),
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Alert3(),
-                      ),
-                    ),
+                    onPressed: () async {
+                      return showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return new Alert3();
+                        },
+                      );
+                    },
                     padding: EdgeInsets.only(bottom: 20.0, top: 5.0),
                   ),
                 ],
@@ -120,12 +124,14 @@ class _AddDoctorsState extends State<AddDoctors> {
                       'What is this?',
                       style: TextStyle(color: Colors.grey[800], fontSize: 17),
                     ),
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Alert4(),
-                      ),
-                    ),
+                    onPressed: () async {
+                      return showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return new Alert4();
+                        },
+                      );
+                    },
                     padding: EdgeInsets.only(bottom: 20.0, top: 5.0),
                   ),
                 ],
@@ -187,7 +193,7 @@ class _AddDoctorsState extends State<AddDoctors> {
                             .doc(doctorUID)
                             .collection('doctorPatients')
                             .doc(patientUID)
-                            .set({'patientUID': patientUID});
+                            .update({'patientUID': patientUID});
                       });
 
                       Navigator.pop(context);

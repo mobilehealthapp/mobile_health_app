@@ -21,3 +21,10 @@ const Color1 = Colors.grey;
 
 const kPrimaryColour = Color(0xFF1B4DA8);
 const kSecondaryColour = Color(0xFFe6f3fc);
+
+const kGraphTitleTextStyle =
+TextStyle(
+  color: Colors.black,
+  fontWeight: FontWeight.bold,
+  fontSize: 17.0,
+);

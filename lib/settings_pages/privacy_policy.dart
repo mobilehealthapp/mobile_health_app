@@ -16,7 +16,8 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
       ),
       body: ListView(
         scrollDirection: Axis.vertical,
-        children: [],
+        children: [
+        ],
       ),
     );
   }
