@@ -31,6 +31,7 @@ dependencies:
   get_it: ^7.2.0
   fluttertoast: ^8.0.7 # used for 'wrong email/password' notices in the deletion alerts
   fl_chart: ^0.36.3
+  flutter_spinkit: ^5.0.0
   calc: ^0.2.1 # used for health analysis (variance, standard deviation)
   statistics: ^1.0.3
   stats: ^2.0.0
