@@ -178,6 +178,7 @@ class _HomePageState extends State<HomePage> {
           style: kAppBarLabelStyle,
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.grey[600],
         onPressed: () {

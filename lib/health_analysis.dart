@@ -1,12 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
+
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/graphData.dart';
-import 'package:mobile_health_app/stats.dart';
 import 'settings_pages/settings_constants.dart';
 import 'drawers.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'settings_pages/graph_info.dart';
 import 'package:calc/calc.dart';
 
@@ -367,5 +368,6 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
       xLength: numberOfBGPoints.toDouble(),
       list: data3,
     );
+    // DoctorList()
   }
 }

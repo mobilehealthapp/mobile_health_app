@@ -25,33 +25,21 @@ class PhysDrawers extends StatelessWidget {
 
               SizedBox(height: 10),
               addItem(
-                text: 'Health Analysis',
+                text: 'Settings',
                 icon: Icons.health_and_safety,
                 onClicked: () => select(context, 2),
               ),
               SizedBox(height: 10),
               addItem(
-                text: 'More Information',
+                text: 'Home',
                 icon: Icons.info,
                 onClicked: () => select(context, 3),
               ),
               SizedBox(height: 10),
               addItem(
-                text: 'Contact Patient',
-                icon: Icons.contacts,
-                onClicked: () => select(context, 1),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Settings',
-                icon: Icons.settings,
-                onClicked: () => select(context, 2),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Logout ',
-                icon: Icons.logout,
-                onClicked: () => select(context, 3),
+                text: 'Home',
+                icon: Icons.info,
+                onClicked: () => select(context, 4),
               ),
 
               // SizedBox
@@ -78,19 +66,20 @@ class PhysDrawers extends StatelessWidget {
     Navigator.of(context).pop();
     switch (i) {
       case 0:
-        Navigator.of(context)
-            .pushNamed('/physHome');
+        Navigator.of(context).pushNamed('/physHome');
         break;
       case 1:
-        Navigator.of(context)
-            .pushNamed('/physHome');
+        Navigator.of(context).pushNamed('/physHome');
         break;
       case 2:
-        Navigator.of(context)
-            .pushNamed('/drSettings');
+        Navigator.of(context).pushNamed('/drSettings');
         break;
       case 3:
-        Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+        Navigator.of(context).pushNamed('/home');
+        break;
+      case 4:
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
         break;
     }
   }
