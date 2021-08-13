@@ -175,7 +175,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   }
 
   Future<List<FlSpot>> getHRData() async {
-    // gets list of HR points to use in graphs
+    // gets list of HR points to use in Graphs
     data1 = [];
     final hrData =
         await patientData.collection('heartRate').orderBy('uploaded').get();
@@ -197,7 +197,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   }
 
   Future<List<FlSpot>> getDiasData() async {
-    // gets list of BP (diastolic) points to use in graphs
+    // gets list of BP (diastolic) points to use in Graphs
     data2 = [];
     final bpData =
         await patientData.collection('bloodPressure').orderBy('uploaded').get();
@@ -213,7 +213,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   }
 
   Future<List<FlSpot>> getSysData() async {
-    // gets list of BP (systolic) points to use in graphs
+    // gets list of BP (systolic) points to use in Graphs
     data2a = [];
     final bpData =
         await patientData.collection('bloodPressure').orderBy('uploaded').get();
@@ -229,7 +229,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   }
 
   Future<List<FlSpot>> getBGData() async {
-    // gets list of BG points to use in graphs
+    // gets list of BG points to use in Graphs
     data3 = [];
     final bgData =
         await patientData.collection('bloodGlucose').orderBy('uploaded').get();

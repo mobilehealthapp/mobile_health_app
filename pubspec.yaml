@@ -9,10 +9,10 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # firebase packages
+  # Firebase packages
   firebase_core: ^1.3.0
-  firebase_auth: ^2.0.0 # firestore authentication
-  cloud_firestore: ^2.3.0 # firestore cloud storage
+  firebase_auth: ^2.0.0 # Firestore authentication
+  cloud_firestore: ^2.3.0 # Firestore cloud storage
   firebase_messaging: ^10.0.4
 
   # Fonts + visuals

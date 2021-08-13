@@ -2,7 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:mobile_health_app/welcome_authentication_pages/authentication_button.dart';
+import 'package:mobile_health_app/Authentication/authentication_button.dart';
 import 'package:mobile_health_app/main.dart';
 import '../main.dart';
 import 'package:mobile_health_app/Constants.dart';

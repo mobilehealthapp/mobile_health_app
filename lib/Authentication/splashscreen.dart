@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:mobile_health_app/welcome_authentication_pages/accountcheck.dart';
+import 'package:mobile_health_app/Authentication/accountcheck.dart';
 
 class SplashScreen extends StatefulWidget {
   @override

@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // ignore: unused_import
-import 'package:mobile_health_app/welcome_authentication_pages/authentication_button.dart';
+import 'package:mobile_health_app/Authentication/authentication_button.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
-import 'package:mobile_health_app/welcome_authentication_pages/database_auth_services.dart';
+import 'package:mobile_health_app/Authentication/database_auth_services.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:mobile_health_app/Constants.dart';
 
@@ -207,7 +207,10 @@ class _SignupPageState extends State<SignupPage> {
                 TextButton(
                   child: Text(
                     'Already registered? Log in!',
-                    style: TextStyle(fontSize: 20, color: kPrimaryColour,),
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: kPrimaryColour,
+                    ),
                   ),
                   onPressed: () {
                     Navigator.of(context).pushReplacementNamed('/login');
