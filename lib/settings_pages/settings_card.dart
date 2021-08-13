@@ -2,9 +2,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'settings_constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 GlobalKey<FormState> formKey = GlobalKey<FormState>();
 bool checkCurrentPasswordValid = true;
+
+final patientRef = FirebaseFirestore.instance
+    .collection('patientprofile'); // create this as global variable
+
+var sex;
+
+getUserData(uid) async {
+  final DocumentSnapshot patientInfo =
+  await patientRef.doc(FirebaseAuth.instance.currentUser!.uid).get();
+      sex = patientInfo.get('sex');
+}
 
 class SettingsCard extends StatelessWidget {
   SettingsCard({required this.settingsTab});
@@ -182,7 +195,7 @@ class Alert3 extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        'When signing up, your physician was assigned a 12-digit code that is unique to them. Please contact your physician for this code if you have not yet received it.',
+        'When signing up, your physician was assigned a 16-character code that is unique to them. Please contact your physician for this code if you have not yet received it.',
         textAlign: TextAlign.center,
         style: TextStyle(
           fontSize: 20.0,
@@ -249,7 +262,9 @@ class CancelButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       style: TextButton.styleFrom(minimumSize: Size(20.0, 20.0)),
-      onPressed: () => Navigator.of(context)..pop()..pop(),
+      onPressed: () =>
+      Navigator.of(context)
+        ..pop()..pop(),
       child: Text(
         'Cancel',
         style: kAlertTextStyle,

@@ -82,6 +82,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kSecondaryColour,
       body: SafeArea(
         child: Container(
           width: double.infinity,

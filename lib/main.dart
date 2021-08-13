@@ -1,36 +1,35 @@
 import 'package:camera/camera.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:mobile_health_app/HomePage.dart';
+import 'package:mobile_health_app/settings_pages/delete_data_or_account.dart';
+import 'package:mobile_health_app/settings_pages/my_doctor_profile.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/splashscreen.dart';
+import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
+import 'package:mobile_health_app/health_analysis.dart';
 
 import 'Camera/camera_input.dart';
 import 'Camera/data_input_page.dart';
-
-import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
-import 'welcome_authentication_pages/loginpage.dart';
-import 'welcome_authentication_pages/signup.dart';
-import 'welcome_authentication_pages/verify.dart';
-import 'welcome_authentication_pages/passwordreset.dart';
-
-import 'settings_pages/settings.dart';
-import 'settings_pages/dr_settings.dart';
-import 'settings_pages/profile_edit.dart';
-import 'settings_pages/profile_tab.dart';
-import 'settings_pages/dr_profileEdit.dart';
-import 'settings_pages/dr_profile.dart';
-import 'settings_pages/privacy_policy.dart';
-import 'settings_pages/terms_and_conditions.dart';
-import 'settings_pages/my_doctors.dart';
-import 'settings_pages/add_a_doctor.dart';
-import 'package:mobile_health_app/settings_pages/delete_data_or_account.dart';
-import 'settings_pages/medical_disclaimer.dart';
-
-import 'package:mobile_health_app/HomePage.dart';
 import 'health_analysis.dart';
 import 'physHome.dart';
+import 'settings_pages/add_a_doctor.dart';
+import 'settings_pages/dr_profile.dart';
+import 'settings_pages/dr_profileEdit.dart';
+import 'settings_pages/dr_settings.dart';
+import 'settings_pages/medical_disclaimer.dart';
+import 'settings_pages/my_doctors.dart';
+import 'settings_pages/privacy_policy.dart';
+import 'settings_pages/profile_edit.dart';
+import 'settings_pages/profile_tab.dart';
+import 'settings_pages/settings.dart';
+import 'settings_pages/terms_and_conditions.dart';
+import 'welcome_authentication_pages/loginpage.dart';
+import 'welcome_authentication_pages/passwordreset.dart';
+import 'welcome_authentication_pages/signup.dart';
+import 'welcome_authentication_pages/verify.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -107,8 +106,10 @@ class MyApp extends StatelessWidget {
           displayColor: Color(0xFF757575),
         ),
       ),
-      initialRoute: FirebaseAuth.instance.currentUser != null ? '/home' : '/',
+      initialRoute:
+          '/splash', //FirebaseAuth.instance.currentUser != null ? '/home' : '/',
       routes: {
+        "/splash": (context) => SplashScreen(),
         '/': (context) => WelcomeScreen(),
         '/login': (context) => LoginPage(),
         '/signup': (context) => SignupPage(),
@@ -127,6 +128,7 @@ class MyApp extends StatelessWidget {
         '/drProfileEdit': (context) => DrProfileEdit(),
         '/myDoctors': (context) => MyDoctors(),
         '/addDoctors': (context) => AddDoctors(),
+        '/myDoctorProfile': (context) => MyDoctorProfile(),
         '/privacyPolicy': (context) => PrivacyPolicy(),
         '/termsAndConditions': (context) => TermsAndConditions(),
         '/medicalDisclaimer': (context) => MedicalDisclaimer(),
