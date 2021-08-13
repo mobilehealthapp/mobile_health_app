@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/settings_pages/graph_info.dart';
+import 'package:mobile_health_app/graphs/graph_info.dart';
 import 'drawers.dart';
 import 'package:mobile_health_app/drawers.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
-import 'package:mobile_health_app/graphData.dart';
+import 'package:mobile_health_app/graphs/graphData.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 final patientData = FirebaseFirestore.instance
@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<List<FlSpot>> getHRData() async {
+  Future<List<FlSpot>> getHRData() async { // gets list of 6 most recent HR points to use in graphs
     data1 = [];
     final hrData = await patientData
         .collection('heartRate')
@@ -84,7 +84,7 @@ class _HomePageState extends State<HomePage> {
     return data1;
   }
 
-  Future<List<FlSpot>> getDiasData() async {
+  Future<List<FlSpot>> getDiasData() async { // gets list of 6 most recent BP (diastolic) points to use in graphs
     data2 = [];
     final bpData = await patientData
         .collection('bloodPressure')
@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage> {
     return data2;
   }
 
-  Future<List<FlSpot>> getSysData() async {
+  Future<List<FlSpot>> getSysData() async { // gets list of 6 most recent BP (systolic) points to use in graphs
     data2a = [];
     final bpData = await patientData
         .collection('bloodPressure')
@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage> {
     return data2a;
   }
 
-  Future<List<FlSpot>> getBGData() async {
+  Future<List<FlSpot>> getBGData() async { // gets list of 6 most recent BG points to use in graphs
     data3 = [];
     final bgData = await patientData
         .collection('bloodGlucose')

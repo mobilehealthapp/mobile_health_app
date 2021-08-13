@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'package:mobile_health_app/graphData.dart';
+import 'package:mobile_health_app/graphs/graphData.dart';
 import 'settings_pages/settings_constants.dart';
 import 'drawers.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'settings_pages/graph_info.dart';
+import 'graphs/graph_info.dart';
 import 'package:calc/calc.dart';
 
 var patientData = FirebaseFirestore.instance
@@ -49,6 +49,9 @@ class HealthAnalysis extends StatefulWidget {
 }
 
 class _HealthAnalysisState extends State<HealthAnalysis> {
+  bool isBGFilled = true;
+  bool isBPFilled = true;
+  bool isHRFilled = true;
 
   bgGet() async {
     bg = [];
@@ -58,8 +61,19 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
       double bgGet = val.get('blood glucose (mmol|L)');
       bg.add(bgGet.toDouble());
     }
-    print('blood glucose: $bg');
-    return bg;
+
+    var doubles = bg.map((e) => e as double).toList();
+
+    final sdv = doubles.standardDeviation();
+
+    setState(() {
+      standardDeviationBG = sdv.toStringAsFixed(3);
+      var sdv2 = sdv;
+      varianceBG = sqrt(sdv2).toStringAsFixed(3);
+    });
+    bg.sort();
+
+    return [standardDeviationBG, varianceBG, bg];
   }
 
   hrGet() async {
@@ -70,8 +84,17 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
       int hrGet = val.get('heart rate');
       hr.add(hrGet.toDouble());
     }
-    print('heart rate: $hr');
-    return hr;
+
+    var doubles = hr.map((e) => e as double).toList();
+
+    final sdv = doubles.standardDeviation().toDouble();
+
+    setState(() {
+      standardDeviationHR = sdv.truncateToDouble();
+      varianceHR = sqrt(standardDeviationHR).toStringAsFixed(3);
+    });
+    hr.sort();
+    return [standardDeviationHR, varianceHR, hr];
   }
 
   sysGet() async {
@@ -82,8 +105,18 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
       double bpGet = val.get('systolic');
       sys.add(bpGet.toDouble());
     }
-    print('systolic: $sys');
-    return sys;
+    sys.sort();
+
+    var doubles = sys.map((e) => e as double).toList();
+
+    final sdv = doubles.standardDeviation().toDouble();
+
+    setState(() {
+      standardDeviationSys = sdv.truncateToDouble();
+      variancePressureSys = sqrt(standardDeviationSys).toStringAsFixed(3);
+    });
+    sys.sort();
+    return [standardDeviationSys, variancePressureSys, sys];
   }
 
   diaGet() async {
@@ -94,31 +127,42 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
       double bpGet = val.get('diastolic');
       dia.add(bpGet.toDouble());
     }
-    print('diastolic: $dia');
-    return dia;
+    var doubles = dia.map((e) => e as double).toList();
+
+    final sdv = doubles.standardDeviation().toDouble();
+
+    setState(() {
+      standardDeviationDia = sdv.truncateToDouble();
+      variancePressureDia = sqrt(standardDeviationDia).toStringAsFixed(3);
+    });
+    dia.sort();
+    return [standardDeviationDia, variancePressureDia, dia];
   }
 
   getNumberOfBGPoints() async {
+    // gets length of list of BG points uploaded for user
     QuerySnapshot<Map<String, dynamic>> getBG = await bloodGlucose.get();
     numberOfBGPoints = getBG.docs.length;
     return numberOfBGPoints;
   }
 
   getNumberOfBPPoints() async {
+    // gets length of list of BP points uploaded for user
     QuerySnapshot<Map<String, dynamic>> getBP = await bloodPressure.get();
     numberOfBPPoints = getBP.docs.length;
     return numberOfBPPoints;
   }
 
   getNumberOfHRPoints() async {
+    // gets length of list of HR points uploaded for user
     QuerySnapshot<Map<String, dynamic>> getHR = await heartRate.get();
     numberOfHRPoints = getHR.docs.length;
     return numberOfHRPoints;
   }
 
   getUploadedData() async {
-    final DocumentSnapshot uploadedData = await patientData
-        .get();
+    // gets averages of each data type for user
+    final DocumentSnapshot uploadedData = await patientData.get();
     setState(
           () {
         avgGlucose = uploadedData.get('Average Blood Glucose (mmol|L)');
@@ -130,9 +174,10 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   }
 
   Future<List<FlSpot>> getHRData() async {
+    // gets list of HR points to use in graphs
     data1 = [];
     final hrData =
-        await patientData.collection('heartRate').orderBy('uploaded').get();
+    await patientData.collection('heartRate').orderBy('uploaded').get();
     final value = hrData.docs;
     double index = 1.0;
     for (var val in value) {
@@ -144,10 +189,17 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     return data1;
   }
 
+  hrFilledYN() {
+    if (data1 == []) {
+      isHRFilled = false;
+    }
+  }
+
   Future<List<FlSpot>> getDiasData() async {
+    // gets list of BP (diastolic) points to use in graphs
     data2 = [];
     final bpData =
-        await patientData.collection('bloodPressure').orderBy('uploaded').get();
+    await patientData.collection('bloodPressure').orderBy('uploaded').get();
     final value = bpData.docs;
     double index = 1.0;
     for (var val in value) {
@@ -160,9 +212,10 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   }
 
   Future<List<FlSpot>> getSysData() async {
+    // gets list of BP (systolic) points to use in graphs
     data2a = [];
     final bpData =
-        await patientData.collection('bloodPressure').orderBy('uploaded').get();
+    await patientData.collection('bloodPressure').orderBy('uploaded').get();
     final value = bpData.docs;
     double index2 = 1.0;
     for (var val in value) {
@@ -175,9 +228,10 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   }
 
   Future<List<FlSpot>> getBGData() async {
+    // gets list of BG points to use in graphs
     data3 = [];
     final bgData =
-        await patientData.collection('bloodGlucose').orderBy('uploaded').get();
+    await patientData.collection('bloodGlucose').orderBy('uploaded').get();
     final value = bgData.docs;
     double index = 1.0;
     for (var val in value) {
@@ -235,11 +289,11 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           ),
           FullSummaryCard(
             avgValue: '$avgPressureSys/$avgPressureDia mmHg',
-            varValue: 'mmHg',
-            sdValue: 'mmHg',
-            sdType: 'Standard Deviation:',
-            avgType: 'Average:',
-            varType: 'Variance:',
+            varValue: '$variancePressureSys/$variancePressureDia mmHg',
+            sdValue: '$standardDeviationSys/$standardDeviationDia mmHg',
+            range: 'range',
+            // range: '${sys[0]}/${dia[0]} - ${sys[numberOfBPPoints -
+            //     1]}/${dia[numberOfBPPoints - 1]}',
           ),
           SizedBox(
             height: 25.0,
@@ -254,47 +308,54 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           ),
           FullSummaryCard(
             avgValue: '$avgGlucose mmol/L',
-            varValue: 'mmol/L',
-            sdValue: 'mmol/L',
-            sdType: 'Standard Deviation:',
-            avgType: 'Average:',
-            varType: 'Variance:',
+            varValue: '$varianceBG mmol/L',
+            sdValue: '$standardDeviationBG mmol/L',
+            range: 'range',
+            // range: '${bg[0]} - ${bg[numberOfBGPoints - 1]}',
           ),
           SizedBox(
             height: 25.0,
           ),
-          Text(
-            'Pulse Rate',
-            style: kGraphTitleTextStyle,
-            textAlign: TextAlign.center,
-          ),
-          Container(
-            child: extractData(),
-          ),
-          FullSummaryCard(
-            avgValue: '$avgHeartRate BPM',
-            varValue: 'BPM',
-            sdValue: ' BPM',
-            sdType: 'Standard Deviation:',
-            avgType: 'Average:',
-            varType: 'Variance:',
-          ),
+          Container(child: isHRFilled
+              ? extractData()
+              : Text(
+              'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.')
+              ),
         ],
       ),
     );
   }
+
   Widget extractData() {
-    return Charts(
-      units: 'BPM',
-      yStart: 30,
-      bool1: false,
-      yLength: 200,
-      xLength: numberOfHRPoints.toDouble(),
-      list: data1,
+    // graph of HR data
+    return Column(
+      children: [
+        Text(
+          'Pulse Rate',
+          style: kGraphTitleTextStyle,
+          textAlign: TextAlign.center,
+        ),
+        Charts(
+          units: 'BPM',
+          yStart: 30,
+          bool1: false,
+          yLength: 200,
+          xLength: numberOfHRPoints.toDouble(),
+          list: data1,
+        ),
+        FullSummaryCard(
+          avgValue: '$avgHeartRate BPM',
+          varValue: '$varianceHR BPM',
+          sdValue: '  $standardDeviationHR BPM',
+          range: 'range',
+          // range: '${hr[0]} - ${hr[numberOfHRPoints - 1]}',
+        ),
+      ],
     );
   }
 
   Widget extractData2() {
+    // graph of BP data
     return Charts2(
       units: 'mmHg',
       yStart: 10,
@@ -307,6 +368,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   }
 
   Widget extractData3() {
+    // graph of BG data
     return Charts3(
       units: 'mmol/L',
       yStart: 0,
@@ -317,3 +379,12 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     );
   }
 }
+
+
+//
+// hrWidget() {
+//   isHRFilled
+//       ? extractData()
+//       : Text(
+//       'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.');
+// }

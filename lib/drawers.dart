@@ -21,13 +21,6 @@ class Drawers extends StatelessWidget {
               ),
               SizedBox(height: 10),
               addItem(
-                text: 'Settings',
-                icon: Icons.settings,
-                onClicked: () => select(context, 1),
-              ),
-
-              SizedBox(height: 10),
-              addItem(
                 text: 'Health Analysis',
                 icon: Icons.health_and_safety,
                 onClicked: () => select(context, 2),
@@ -38,7 +31,12 @@ class Drawers extends StatelessWidget {
                 icon: Icons.contacts,
                 onClicked: () => select(context, 5),
               ),
-
+              SizedBox(height: 10),
+              addItem(
+                text: 'Settings',
+                icon: Icons.settings,
+                onClicked: () => select(context, 1),
+              ),
               SizedBox(height: 10),
               ListTile(
                 onTap: () {
