@@ -29,7 +29,7 @@ class _SignupPageState extends State<SignupPage> {
     return ModalProgressHUD(
       inAsyncCall: showSpinner,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: kSecondaryColour,
         appBar: AppBar(
           backgroundColor: kPrimaryColour,
           title: Text(
@@ -211,7 +211,7 @@ class _SignupPageState extends State<SignupPage> {
                 TextButton(
                   child: Text(
                     'Already registered? Log in!',
-                    style: TextStyle(fontSize: 20),
+                    style: TextStyle(fontSize: 20, color: kPrimaryColour,),
                   ),
                   onPressed: () {
                     Navigator.of(context).pushReplacementNamed('/login');

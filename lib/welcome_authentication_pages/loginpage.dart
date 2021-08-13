@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
               style: TextStyle(
                 color: Colors.white,
               ))),
-      backgroundColor: Colors.white,
+      backgroundColor: kSecondaryColour,
       body: Center(
         child: SingleChildScrollView(
           child: Center(
@@ -77,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: kSecondaryColour,
                             icon: Icon(
                               FontAwesomeIcons.envelope,
                               color: Colors.black,
@@ -91,13 +91,13 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                  color: Color(0xFF0097A7), width: 1.0),
+                                  color: kPrimaryColour, width: 1.0),
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10.0)),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                  color: Color(0xFF0097A7), width: 2.0),
+                                  color: kPrimaryColour, width: 2.0),
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10.0)),
                             ),
@@ -119,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: kSecondaryColour,
                             icon: Icon(
                               FontAwesomeIcons.key,
                               color: Colors.black,
@@ -133,13 +133,13 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                  color: Color(0xFF0097A7), width: 1.0),
+                                  color: kPrimaryColour, width: 1.0),
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10.0)),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                  color: Color(0xFF0097A7), width: 2.0),
+                                  color: kPrimaryColour, width: 2.0),
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10.0)),
                             ),
@@ -155,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: Text(
                                 'Forgot Password?',
                                 style: TextStyle(
-                                    color: Colors.lightBlue, fontSize: 17),
+                                    color: kPrimaryColour, fontSize: 17),
                               ),
                               onPressed: () =>
                                   Navigator.of(context).pushNamed('/reset'),
@@ -217,7 +217,7 @@ class _LoginPageState extends State<LoginPage> {
                       TextButton(
                         child: Text(
                           'New user? Sign up!',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(color: kPrimaryColour, fontSize: 20),
                         ),
                         onPressed: () {
                           Navigator.of(context).pushReplacementNamed('/signup');

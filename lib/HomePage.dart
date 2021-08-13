@@ -1,16 +1,29 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/Graph/ExtractData.dart';
+import 'package:mobile_health_app/settings_pages/graph_info.dart';
+import 'package:mobile_health_app/stats.dart';
 import 'drawers.dart';
 import 'package:mobile_health_app/drawers.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/settings_pages/settings_constants.dart';
+import 'package:mobile_health_app/graphData.dart';
+import 'package:fl_chart/fl_chart.dart';
 
+final patientData = FirebaseFirestore.instance
+    .collection('patientData')
+    .doc(FirebaseAuth.instance.currentUser!.uid);
 final patientRef = FirebaseFirestore.instance
     .collection('patientprofile'); //declare reference high up in file
-var name;
-//declare variable high up in file
+var name; //declare variable high up in file
+var avgGlucose;
+var avgPressureDia;
+var avgPressureSys;
+var avgHeartRate;
+List<FlSpot> data1 = [];
+List<FlSpot> data2 = [];
+List<FlSpot> data2a = [];
+List<FlSpot> data3 = [];
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -44,14 +57,97 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  getUploadedData() async {
+    final DocumentSnapshot uploadedData = await patientData.get();
+    setState(
+      () {
+        avgGlucose = uploadedData.get('Average Blood Glucose (mmol|L)');
+        avgPressureDia = uploadedData.get('Average Blood Pressure (diastolic)');
+        avgPressureSys = uploadedData.get('Average Blood Pressure (systolic)');
+        avgHeartRate = uploadedData.get('Average Heart Rate');
+      },
+    );
+  }
+
+  Future<List<FlSpot>> getHRData() async {
+    data1 = [];
+    final hrData = await patientData
+        .collection('heartRate')
+        .orderBy('uploaded')
+        .limitToLast(6)
+        .get();
+    final value = hrData.docs;
+    double index = 1.0;
+    for (var val in value) {
+      int heartRate = val.get('heart rate');
+      data1.add(FlSpot(index++, heartRate.toDouble()));
+    }
+    return data1;
+  }
+
+  Future<List<FlSpot>> getDiasData() async {
+    data2 = [];
+    final bpData = await patientData
+        .collection('bloodPressure')
+        .orderBy('uploaded')
+        .limitToLast(6)
+        .get();
+    final value = bpData.docs;
+    double index = 1.0;
+    for (var val in value) {
+      double dias = val.get('diastolic');
+      data2.add(FlSpot(index++, dias.toDouble()));
+    }
+    return data2;
+  }
+
+  Future<List<FlSpot>> getSysData() async {
+    data2a = [];
+    final bpData = await patientData
+        .collection('bloodPressure')
+        .orderBy('uploaded')
+        .limitToLast(6)
+        .get();
+    final value = bpData.docs;
+    double index2 = 1.0;
+    for (var val in value) {
+      double sys = val.get('systolic');
+      data2a.add(FlSpot(index2++, sys.toDouble()));
+    }
+
+    return data2a;
+  }
+
+  Future<List<FlSpot>> getBGData() async {
+    data3 = [];
+    final bgData = await patientData
+        .collection('bloodGlucose')
+        .orderBy('uploaded')
+        .limitToLast(4)
+        .get();
+    final value = bgData.docs;
+    double index = 1.0;
+    for (var val in value) {
+      double glucose = val.get('blood glucose (mmol|L)');
+      data3.add(FlSpot(index++, glucose.toDouble()));
+    }
+    return data3;
+  }
+
   @override
   void initState() {
     getCurrentUser();
     getUserData(uid);
-
+    getUploadedData();
+    getBGData();
+    getSysData();
+    getDiasData();
+    getHRData();
+    getHR();
     super.initState();
   }
 
+  var data;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,68 +189,120 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: ListView(
+        shrinkWrap: true,
         children: [
           SizedBox(
-            height: 30.0,
+            height: 10.0,
           ),
-          Text(
-            ' Recent Analysis',
-            style: TextStyle(
-              fontSize: 40,
+          Padding(
+            padding: EdgeInsets.only(left: 10.0),
+            child: Text(
+              'Recent Analysis',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 40,
+                decoration: TextDecoration.underline,
+              ),
             ),
           ),
           SizedBox(
             height: 30.0,
           ),
           Text(
-            'Blood pressure for this week',
+            'Blood Pressure',
+            style: kGraphTitleTextStyle,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
           ),
           Container(
-            // height: 400,
-            // width: 400,
-            child: ExtractData2V2(),
-          ),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //   children: <Widget>[
-          //     Legend(
-          //       text: 'Systolic',
-          //       color: Colors.black,
-          //     ),
-          //     Legend(
-          //       text: 'Diastolic',
-          //       color: Colors.red,
-          //     ),
-          //   ],
-          // ),
-
-          // Text(
-          //   'Blood Sugar for this week',
-          //   textAlign: TextAlign.center,
-          //   style: TextStyle(fontSize: 20.0),
-          // ),
-          // Chart2(),
-          // SummaryCard(value: '3.4', type: 'Average Blood Sugar'),
-          // Text(
-          //   'Heart pulse for this week',
-          //   textAlign: TextAlign.center,
-          //   style: TextStyle(fontSize: 20.0),
-          // ),
-          // Chart3(),
-          // SummaryCard(value: '25', type: 'Average Pulse'),
-          Container(
-            child: ExtractDataV2(),
-          ),
-          Container(
-            height: 400,
             width: 400,
-            child: ExtractData3V2(),
+            height: 500,
+            child: extractData2V2(),
           ),
-          // ExtractDataCard()
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Legend(
+                text: 'Systolic',
+                color: Colors.black,
+              ),
+              Legend(
+                text: 'Diastolic',
+                color: Colors.red,
+              ),
+            ],
+          ),
+          SummaryCard(
+            type: 'Average Blood Pressure:',
+            value: '$avgPressureSys/$avgPressureDia mmHg',
+          ),
+          SizedBox(
+            height: 25.0,
+          ),
+          Text(
+            'Blood Glucose',
+            style: kGraphTitleTextStyle,
+            textAlign: TextAlign.center,
+          ),
+          Container(
+            child: extractData3V2(),
+          ),
+          SummaryCard(
+              value: '$avgGlucose mmol/L', type: 'Average Blood Glucose:'),
+          SizedBox(
+            height: 25.0,
+          ),
+          Text(
+            'Pulse Rate',
+            style: kGraphTitleTextStyle,
+            textAlign: TextAlign.center,
+          ),
+          Container(
+            child: extractDataV2(),
+          ),
+          SummaryCard(value: '$avgHeartRate bpm', type: 'Average Pulse Rate:'),
+          // SummaryCard(
+          //     value: '${hr.first} bpm', type: "Smallest value in the list : "),
+          // SummaryCard(
+          //     value: '${hr.last} bpm', type: "Biggest value in the list"),
+          SizedBox(
+            height: 70.0,
+          ),
         ],
       ),
+    );
+  }
+
+  Widget extractDataV2() {
+    return Charts(
+      units: 'BPM',
+      yStart: 30,
+      bool1: true,
+      yLength: 200,
+      xLength: 6,
+      list: data1,
+    );
+  }
+
+  Widget extractData2V2() {
+    return Charts2(
+      units: 'mmHg',
+      yStart: 30,
+      bool1: true,
+      yLength: 180,
+      xLength: 6,
+      list: data2,
+      list2: data2a,
+    );
+  }
+
+  Widget extractData3V2() {
+    return Charts3(
+      units: 'mmol/L',
+      yStart: 0,
+      bool1: true,
+      yLength: 10,
+      xLength: 6,
+      list: data3,
     );
   }
 }
