@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
 
 class SummaryCard extends StatelessWidget {
+  // used on home page to only display average value
   SummaryCard({
     required this.value,
     required this.type,
@@ -48,19 +49,14 @@ class SummaryCard extends StatelessWidget {
 }
 
 class FullSummaryCard extends StatelessWidget {
+  // used on health analysis page to display more than just average value
   FullSummaryCard({
     required this.avgValue,
     required this.varValue,
     required this.sdValue,
-    required this.sdType,
-    required this.avgType,
-    required this.varType,
     required this.range,
   });
 
-  final String avgType;
-  final String varType;
-  final String sdType;
   final String avgValue;
   final String varValue;
   final String sdValue;
@@ -83,7 +79,7 @@ class FullSummaryCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
-                    avgType,
+                    'Average: ',
                     style: kTextLabel2,
                   ),
                   Text(
@@ -96,7 +92,7 @@ class FullSummaryCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
-                    varType,
+                    'Variance: ',
                     style: kTextLabel2,
                   ),
                   Text(
@@ -109,7 +105,7 @@ class FullSummaryCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
-                    sdType,
+                    'Standard Deviation: ',
                     style: kTextLabel2,
                   ),
                   Text(
@@ -143,6 +139,7 @@ class FullSummaryCard extends StatelessWidget {
 }
 
 class Legend extends StatelessWidget {
+  // differentiates between which line is systolic and which line is diastolic on BP graph
   Legend({required this.text, required this.color});
 
   final String text;
