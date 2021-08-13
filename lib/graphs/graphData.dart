@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
 
-class SummaryCard extends StatelessWidget { // used on home page to only display average value
+class SummaryCard extends StatelessWidget {
+  // used on home page to only display average value
   SummaryCard({
     required this.value,
     required this.type,
@@ -47,7 +48,8 @@ class SummaryCard extends StatelessWidget { // used on home page to only display
   }
 }
 
-class FullSummaryCard extends StatelessWidget { // used on health analysis page to display more than just average value
+class FullSummaryCard extends StatelessWidget {
+  // used on health analysis page to display more than just average value
   FullSummaryCard({
     required this.avgValue,
     required this.varValue,
@@ -112,7 +114,8 @@ class FullSummaryCard extends StatelessWidget { // used on health analysis page 
                   )
                 ],
               ),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
                     'Range',
@@ -135,7 +138,8 @@ class FullSummaryCard extends StatelessWidget { // used on health analysis page 
   }
 }
 
-class Legend extends StatelessWidget { // differentiates between which line is systolic and which line is diastolic on BP graph
+class Legend extends StatelessWidget {
+  // differentiates between which line is systolic and which line is diastolic on BP graph
   Legend({required this.text, required this.color});
 
   final String text;

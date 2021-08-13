@@ -1,11 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
+
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/graphs/graphData.dart';
 import 'settings_pages/settings_constants.dart';
 import 'drawers.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'graphs/graph_info.dart';
 import 'package:calc/calc.dart';
 
@@ -65,14 +67,13 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     var doubles = bg.map((e) => e as double).toList();
 
     final sdv = doubles.standardDeviation();
-
+    print('sdv for bg is $sdv');
     setState(() {
       standardDeviationBG = sdv.toStringAsFixed(3);
       var sdv2 = sdv;
       varianceBG = sqrt(sdv2).toStringAsFixed(3);
     });
     bg.sort();
-
     return [standardDeviationBG, varianceBG, bg];
   }
 
@@ -164,7 +165,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     // gets averages of each data type for user
     final DocumentSnapshot uploadedData = await patientData.get();
     setState(
-          () {
+      () {
         avgGlucose = uploadedData.get('Average Blood Glucose (mmol|L)');
         avgPressureDia = uploadedData.get('Average Blood Pressure (diastolic)');
         avgPressureSys = uploadedData.get('Average Blood Pressure (systolic)');
@@ -177,7 +178,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     // gets list of HR points to use in graphs
     data1 = [];
     final hrData =
-    await patientData.collection('heartRate').orderBy('uploaded').get();
+        await patientData.collection('heartRate').orderBy('uploaded').get();
     final value = hrData.docs;
     double index = 1.0;
     for (var val in value) {
@@ -199,7 +200,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     // gets list of BP (diastolic) points to use in graphs
     data2 = [];
     final bpData =
-    await patientData.collection('bloodPressure').orderBy('uploaded').get();
+        await patientData.collection('bloodPressure').orderBy('uploaded').get();
     final value = bpData.docs;
     double index = 1.0;
     for (var val in value) {
@@ -215,7 +216,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     // gets list of BP (systolic) points to use in graphs
     data2a = [];
     final bpData =
-    await patientData.collection('bloodPressure').orderBy('uploaded').get();
+        await patientData.collection('bloodPressure').orderBy('uploaded').get();
     final value = bpData.docs;
     double index2 = 1.0;
     for (var val in value) {
@@ -231,7 +232,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     // gets list of BG points to use in graphs
     data3 = [];
     final bgData =
-    await patientData.collection('bloodGlucose').orderBy('uploaded').get();
+        await patientData.collection('bloodGlucose').orderBy('uploaded').get();
     final value = bgData.docs;
     double index = 1.0;
     for (var val in value) {
@@ -294,6 +295,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
             range: 'range',
             // range: '${sys[0]}/${dia[0]} - ${sys[numberOfBPPoints -
             //     1]}/${dia[numberOfBPPoints - 1]}',
+            //range: '${sys.first} - ${sys.last}/' '${dia.first} - ${dia.last}',
           ),
           SizedBox(
             height: 25.0,
@@ -312,15 +314,16 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
             sdValue: '$standardDeviationBG mmol/L',
             range: 'range',
             // range: '${bg[0]} - ${bg[numberOfBGPoints - 1]}',
+            //range: '${bg.first} - ${bg.last}',
           ),
           SizedBox(
             height: 25.0,
           ),
-          Container(child: isHRFilled
-              ? extractData()
-              : Text(
-              'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.')
-              ),
+          Container(
+              child: isHRFilled
+                  ? extractData()
+                  : Text(
+                      'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.')),
         ],
       ),
     );
@@ -377,14 +380,6 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
       xLength: numberOfBGPoints.toDouble(),
       list: data3,
     );
+    // DoctorList()
   }
 }
-
-
-//
-// hrWidget() {
-//   isHRFilled
-//       ? extractData()
-//       : Text(
-//       'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.');
-// }

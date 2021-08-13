@@ -1,8 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/Constants.dart';
 
 class Drawers extends StatelessWidget {
-  final _auth = FirebaseAuth.instance;
+  // final _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +39,15 @@ class Drawers extends StatelessWidget {
                 onClicked: () => select(context, 1),
               ),
               SizedBox(height: 10),
-              ListTile(
-                onTap: () {
-                  _auth.signOut();
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/', (Route<dynamic> route) => false);
-                },
-                leading: Icon(Icons.logout),
-                title: Text('Logout'),
-              ),
+              // ListTile(
+              //   onTap: () {
+              //     _auth.signOut();
+              //     Navigator.of(context).pushNamedAndRemoveUntil(
+              //         '/', (Route<dynamic> route) => false);
+              //   },
+              //   leading: Icon(Icons.logout),
+              //   title: Text('Logout'),
+              // ),
               SizedBox(height: 10),
               addItem(
                 text: 'Physician Side ',

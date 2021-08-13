@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:mobile_health_app/health_analysis.dart';
 
 import 'Camera/camera_input.dart';
 import 'Camera/data_input_page.dart';
@@ -29,7 +30,7 @@ import 'package:mobile_health_app/settings_pages/delete_data_or_account.dart';
 import 'settings_pages/medical_disclaimer.dart';
 
 import 'package:mobile_health_app/HomePage.dart';
-import 'health_analysis.dart';
+
 import 'physHome.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -64,6 +65,7 @@ Future<void> main() async {
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel!);
+
     /// Update the iOS foreground notification presentation options to allow
     /// heads up notifications.
     await FirebaseMessaging.instance
