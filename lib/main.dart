@@ -37,9 +37,16 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Handling a background message ${message.messageId}');
 }
 
-AndroidNotificationChannel? channel;
+final GlobalKey<NavigatorState> navigator = new GlobalKey<NavigatorState>();
 
-FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  'high_importance_channel', // id
+  'High Importance Notifications', // title
+  'This channel is used for important notifications.', // description
+  importance: Importance.high,
+);
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 late List<CameraDescription> cameras;
 
@@ -48,32 +55,38 @@ Future<void> main() async {
   cameras = await availableCameras();
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  FirebaseMessaging.onMessage;
 
-  if (!kIsWeb) {
-    channel = const AndroidNotificationChannel(
-      'high_importance_channel', // id
-      'High Importance Notifications', // title
-      'This channel is used for important notifications.', // description
-      importance: Importance.high,
-    );
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('companyicon2');
 
-    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  /// Note: permissions aren't requested here just to demonstrate that can be
+  /// done later
+  final IOSInitializationSettings initializationSettingsIOS =
+      IOSInitializationSettings(
+    requestAlertPermission: false,
+    requestBadgePermission: false,
+    requestSoundPermission: false,
+  );
+  final InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsIOS,
+  );
 
-    await flutterLocalNotificationsPlugin!
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel!);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+      onSelectNotification: (String? payload) async {
+    debugPrint('payload: $payload');
+    navigator.currentState!.pushNamed('/' + '$payload');
+  });
 
-    /// Update the iOS foreground notification presentation options to allow
-    /// heads up notifications.
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-  }
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
 
   runApp(MyApp());
 }
@@ -121,8 +134,9 @@ class MyApp extends StatelessWidget {
         '/alertPatientData': (context) => AlertPatientData(),
         '/alertDoctorAcc': (context) => AlertDoctorAccount(),
         '/alertDoctorData': (context) => AlertDoctorData(),
-        '/green': (context) => ResetScreen(),
+        '/resetpass': (context) => ResetScreen(),
       },
+      navigatorKey: navigator,
     );
   }
 }

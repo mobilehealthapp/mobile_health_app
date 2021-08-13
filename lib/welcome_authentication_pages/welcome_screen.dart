@@ -6,6 +6,9 @@ import 'package:mobile_health_app/authentication_button.dart';
 import 'package:mobile_health_app/main.dart';
 import '../main.dart';
 import 'package:mobile_health_app/Constants.dart';
+import 'dart:io';
+
+// final GlobalKey<NavigatorState> _navigator = new GlobalKey<NavigatorState>();
 
 class MyApp extends StatelessWidget {
   @override
@@ -30,47 +33,49 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
     super.initState();
-
-    FirebaseMessaging.instance.getInitialMessage();
-    // .then(
-    //   (RemoteMessage? message) {
-    //     if (message != null) {
-    //       Navigator.pushNamed(context, 'green',
-    //           arguments: MessageArguments(message, true));
-    //     }
-    //   },
-    // );
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      final routeFromMessage = message.data['route'];
-      print('A new onMessage event was published!');
-      Navigator.of(context).pushNamed(routeFromMessage);
-
-      RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification?.android;
-      if (notification != null && android != null && !kIsWeb) {
-        flutterLocalNotificationsPlugin!.show(
-          notification.hashCode,
-          notification.title,
-          notification.body,
-          NotificationDetails(
-            android: AndroidNotificationDetails(
-              channel!.id,
-              channel!.name,
-              channel!.description,
-              //      one that already exists in example app.
-              icon: 'launch_background',
-            ),
-          ),
-          payload: message.data['route'],
-        );
+    if (Platform.isIOS) {
+      FirebaseMessaging.instance.requestPermission();
+    }
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage? message) {
+      if (message != null) {
+        navigator.currentState!.pushNamed('/' + message.data['view']);
       }
     });
 
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null) {
+        flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                channel.id,
+                channel.name,
+                channel.description,
+                icon: 'companyicon2',
+                playSound: true,
+              ),
+            ),
+            payload: message.data["view"]);
+      }
+    });
+    FirebaseMessaging.instance.subscribeToTopic('test');
+
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      final routeFromMessage = message.data['route'];
-      print('A new onMessageOpenedApp event was published!');
-      Navigator.of(context).pushNamed(routeFromMessage);
+      debugPrint('A new onMessageOpenedApp event was published!');
+      navigator.currentState!.pushNamed('/' + message.data['view']);
+    });
+    getToken();
+  }
+
+  void getToken() {
+    FirebaseMessaging.instance.getToken.call().then((token) {
+      debugPrint('Token: $token');
     });
   }
 
