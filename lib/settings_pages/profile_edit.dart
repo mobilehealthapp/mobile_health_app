@@ -210,6 +210,7 @@ class _ProfileEditState extends State<ProfileEdit> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                textFieldLabel('Sex:    '),
                 DropdownButton<String>(
                   iconDisabledColor: Colors.black,
                   iconEnabledColor: Colors.black,
@@ -226,8 +227,8 @@ class _ProfileEditState extends State<ProfileEdit> {
                   ),
                   items: [
                     DropdownMenuItem(
-                      child: Text('Sex'),
-                      value: 'Sex',
+                      child: Text(''),
+                      value: '',
                     ),
                     DropdownMenuItem(
                       child: Text('M'),

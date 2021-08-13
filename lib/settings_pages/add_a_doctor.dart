@@ -18,6 +18,7 @@ class _AddDoctorsState extends State<AddDoctors> {
   var lastName;
   var label;
   var email;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,12 +96,14 @@ class _AddDoctorsState extends State<AddDoctors> {
                       'What is this?',
                       style: TextStyle(color: Colors.grey[800], fontSize: 17),
                     ),
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Alert3(),
-                      ),
-                    ),
+                    onPressed: () async {
+                      return showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return new Alert3();
+                        },
+                      );
+                    },
                     padding: EdgeInsets.only(bottom: 20.0, top: 5.0),
                   ),
                 ],
@@ -126,12 +129,14 @@ class _AddDoctorsState extends State<AddDoctors> {
                       'What is this?',
                       style: TextStyle(color: Colors.grey[800], fontSize: 17),
                     ),
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Alert4(),
-                      ),
-                    ),
+                    onPressed: () async {
+                      return showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return new Alert4();
+                        },
+                      );
+                    },
                     padding: EdgeInsets.only(bottom: 20.0, top: 5.0),
                   ),
                 ],

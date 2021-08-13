@@ -5,7 +5,7 @@ const kTextLabel1 = TextStyle(
   fontWeight: FontWeight.w400,
 );
 const kTextLabel2 = TextStyle(
-  fontSize: 25.0,
+  fontSize: 20.0,
   fontWeight: FontWeight.w400,
 );
 
@@ -13,3 +13,10 @@ const Color1 = Colors.grey;
 
 const kPrimaryColour = Color(0xFF1B4DA8);
 const kSecondaryColour = Color(0xFFe6f3fc);
+
+const kGraphTitleTextStyle =
+TextStyle(
+  color: Colors.black,
+  fontWeight: FontWeight.bold,
+  fontSize: 17.0,
+);

@@ -9,6 +9,7 @@ import 'package:mobile_health_app/settings_pages/delete_data_or_account.dart';
 import 'package:mobile_health_app/settings_pages/my_doctor_profile.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/splashscreen.dart';
 import 'package:mobile_health_app/welcome_authentication_pages/welcome_screen.dart';
+import 'package:mobile_health_app/health_analysis.dart';
 
 import 'Camera/camera_input.dart';
 import 'Camera/data_input_page.dart';
