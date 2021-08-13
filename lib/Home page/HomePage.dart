@@ -148,6 +148,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   var data;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -203,62 +204,75 @@ class _HomePageState extends State<HomePage> {
           SizedBox(
             height: 30.0,
           ),
-          Text(
-            'Blood Pressure',
-            style: kGraphTitleTextStyle,
-            textAlign: TextAlign.center,
-          ),
           Container(
-            width: 400,
-            height: 500,
-            child: extractData2V2(),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Legend(
-                text: 'Systolic',
-                color: Colors.black,
-              ),
-              Legend(
-                text: 'Diastolic',
-                color: Colors.red,
-              ),
-            ],
-          ),
-          SummaryCard(
-            type: 'Average Blood Pressure:',
-            value: '$avgPressureSys/$avgPressureDia mmHg',
+            child: data2.isNotEmpty
+                ? extractData2V2()
+                : Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Center(
+                      child: Card(
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Text(
+                            'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.',
+                            textAlign: TextAlign.center,
+                            style: kGraphTitleTextStyle.copyWith(
+                              fontSize: 20.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
           ),
           SizedBox(
             height: 25.0,
           ),
-          Text(
-            'Blood Glucose',
-            style: kGraphTitleTextStyle,
-            textAlign: TextAlign.center,
-          ),
           Container(
-            child: extractData3V2(),
+            child: data3.isNotEmpty
+                ? extractData3V2()
+                : Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Center(
+                      child: Card(
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Text(
+                            'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.',
+                            textAlign: TextAlign.center,
+                            style: kGraphTitleTextStyle.copyWith(
+                              fontSize: 20.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
           ),
-          SummaryCard(
-              value: '$avgGlucose mmol/L', type: 'Average Blood Glucose:'),
           SizedBox(
             height: 25.0,
           ),
-          Text(
-            'Pulse Rate',
-            style: kGraphTitleTextStyle,
-            textAlign: TextAlign.center,
-          ),
           Container(
-            child: extractDataV2(),
+            child: data1.isNotEmpty
+                ? extractDataV2()
+                : Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Center(
+                      child: Card(
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Text(
+                            'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.',
+                            textAlign: TextAlign.center,
+                            style: kGraphTitleTextStyle.copyWith(
+                              fontSize: 20.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
           ),
-          SummaryCard(value: '$avgHeartRate bpm', type: 'Average Pulse Rate:'),
-          // SummaryCard(
-          //     value: '${hr.first} bpm', type: "Smallest value in the list : "),
-          // SummaryCard(
-          //     value: '${hr.last} bpm', type: "Biggest value in the list"),
           SizedBox(
             height: 70.0,
           ),
@@ -268,36 +282,83 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget extractDataV2() {
-    return Charts(
-      units: 'BPM',
-      yStart: 30,
-      bool1: true,
-      yLength: 200,
-      xLength: 6,
-      list: data1,
+    return Column(
+      children: [
+        Text(
+          'Pulse Rate',
+          style: kGraphTitleTextStyle,
+          textAlign: TextAlign.center,
+        ),
+        Charts(
+          units: 'BPM',
+          yStart: 30,
+          bool1: true,
+          yLength: 200,
+          xLength: 6,
+          list: data1,
+        ),
+        SummaryCard(value: '$avgHeartRate bpm', type: 'Average Pulse Rate:'),
+      ],
     );
   }
 
   Widget extractData2V2() {
-    return Charts2(
-      units: 'mmHg',
-      yStart: 30,
-      bool1: true,
-      yLength: 180,
-      xLength: 6,
-      list: data2,
-      list2: data2a,
+    return Column(
+      children: [
+        Text(
+          'Blood Pressure',
+          style: kGraphTitleTextStyle,
+          textAlign: TextAlign.center,
+        ),
+        Charts2(
+          units: 'mmHg',
+          yStart: 30,
+          bool1: true,
+          yLength: 180,
+          xLength: 6,
+          list: data2,
+          list2: data2a,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Legend(
+              text: 'Systolic',
+              color: Colors.black,
+            ),
+            Legend(
+              text: 'Diastolic',
+              color: Colors.red,
+            ),
+          ],
+        ),
+        SummaryCard(
+          type: 'Average Blood Pressure:',
+          value: '$avgPressureSys/$avgPressureDia mmHg',
+        ),
+      ],
     );
   }
 
   Widget extractData3V2() {
-    return Charts3(
-      units: 'mmol/L',
-      yStart: 0,
-      bool1: true,
-      yLength: 10,
-      xLength: 6,
-      list: data3,
+    return Column(
+      children: [
+        Text(
+          'Blood Glucose',
+          style: kGraphTitleTextStyle,
+          textAlign: TextAlign.center,
+        ),
+        Charts3(
+          units: 'mmol/L',
+          yStart: 0,
+          bool1: true,
+          yLength: 10,
+          xLength: 6,
+          list: data3,
+        ),
+        SummaryCard(
+            value: '$avgGlucose mmol/L', type: 'Average Blood Glucose:'),
+      ],
     );
   }
 }

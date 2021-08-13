@@ -190,12 +190,6 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     return data1;
   }
 
-  hrFilledYN() {
-    if (data1 == []) {
-      isHRFilled = false;
-    }
-  }
-
   Future<List<FlSpot>> getDiasData() async {
     // gets list of BP (diastolic) points to use in Graphs
     data2 = [];
@@ -271,56 +265,94 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           'Health Analysis',
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.grey[600],
+        onPressed: () {
+          Navigator.of(context).pushNamed('/dataInput');
+        },
+        child: Icon(
+          Icons.camera_alt_rounded,
+        ),
+      ),
       body: ListView(
         shrinkWrap: true,
         children: [
           SizedBox(
             height: 30.0,
           ),
-          Text(
-            'Blood Pressure',
-            style: kGraphTitleTextStyle,
-            textAlign: TextAlign.center,
-          ),
           Container(
-            child: extractData2(),
-          ),
-          FullSummaryCard(
-            avgValue: '$avgPressureSys/$avgPressureDia mmHg',
-            varValue: '$variancePressureSys/$variancePressureDia mmHg',
-            sdValue: '$standardDeviationSys/$standardDeviationDia mmHg',
-            range: 'range',
-            // range: '${sys[0]}/${dia[0]} - ${sys[numberOfBPPoints -
-            //     1]}/${dia[numberOfBPPoints - 1]}',
-            //range: '${sys.first} - ${sys.last}/' '${dia.first} - ${dia.last}',
-          ),
-          SizedBox(
-            height: 25.0,
-          ),
-          Text(
-            'Blood Glucose',
-            style: kGraphTitleTextStyle,
-            textAlign: TextAlign.center,
-          ),
-          Container(
-            child: extractData3(),
-          ),
-          FullSummaryCard(
-            avgValue: '$avgGlucose mmol/L',
-            varValue: '$varianceBG mmol/L',
-            sdValue: '$standardDeviationBG mmol/L',
-            range: 'range',
-            // range: '${bg[0]} - ${bg[numberOfBGPoints - 1]}',
-            //range: '${bg.first} - ${bg.last}',
+            child: data2.isNotEmpty
+                ? extractData()
+                : Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Center(
+                      child: Card(
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Text(
+                            'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.',
+                            textAlign: TextAlign.center,
+                            style: kGraphTitleTextStyle.copyWith(
+                              fontSize: 20.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
           ),
           SizedBox(
             height: 25.0,
           ),
           Container(
-              child: isHRFilled
-                  ? extractData()
-                  : Text(
-                      'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.')),
+            child: data3.isNotEmpty
+                ? extractData()
+                : Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Center(
+                      child: Card(
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Text(
+                            'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.',
+                            textAlign: TextAlign.center,
+                            style: kGraphTitleTextStyle.copyWith(
+                              fontSize: 20.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+          ),
+          SizedBox(
+            height: 25.0,
+          ),
+          Container(
+            child: data1.isNotEmpty
+                ? extractData()
+                : Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Center(
+                      child: Card(
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Text(
+                            'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.',
+                            textAlign: TextAlign.center,
+                            style: kGraphTitleTextStyle.copyWith(
+                              fontSize: 20.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+          ),
+          SizedBox(
+            height: 70.0,
+          ),
         ],
       ),
     );
@@ -356,26 +388,61 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
 
   Widget extractData2() {
     // graph of BP data
-    return Charts2(
-      units: 'mmHg',
-      yStart: 10,
-      bool1: false,
-      yLength: 180,
-      xLength: numberOfBPPoints.toDouble(),
-      list: data2,
-      list2: data2a,
+    return Column(
+      children: [
+        Text(
+          'Blood Pressure',
+          style: kGraphTitleTextStyle,
+          textAlign: TextAlign.center,
+        ),
+        Charts2(
+          units: 'mmHg',
+          yStart: 10,
+          bool1: false,
+          yLength: 180,
+          xLength: numberOfBPPoints.toDouble(),
+          list: data2,
+          list2: data2a,
+        ),
+        FullSummaryCard(
+          avgValue: '$avgPressureSys/$avgPressureDia mmHg',
+          varValue: '$variancePressureSys/$variancePressureDia mmHg',
+          sdValue: '$standardDeviationSys/$standardDeviationDia mmHg',
+          range: 'range',
+          // range: '${sys[0]}/${dia[0]} - ${sys[numberOfBPPoints -
+          //     1]}/${dia[numberOfBPPoints - 1]}',
+          //range: '${sys.first} - ${sys.last}/' '${dia.first} - ${dia.last}',
+        ),
+      ],
     );
   }
 
   Widget extractData3() {
     // graph of BG data
-    return Charts3(
-      units: 'mmol/L',
-      yStart: 0,
-      bool1: false,
-      yLength: 10,
-      xLength: numberOfBGPoints.toDouble(),
-      list: data3,
+    return Column(
+      children: [
+        Text(
+          'Blood Glucose',
+          style: kGraphTitleTextStyle,
+          textAlign: TextAlign.center,
+        ),
+        Charts3(
+          units: 'mmol/L',
+          yStart: 0,
+          bool1: false,
+          yLength: 10,
+          xLength: numberOfBGPoints.toDouble(),
+          list: data3,
+        ),
+        FullSummaryCard(
+          avgValue: '$avgGlucose mmol/L',
+          varValue: '$varianceBG mmol/L',
+          sdValue: '$standardDeviationBG mmol/L',
+          range: 'range',
+          // range: '${bg[0]} - ${bg[numberOfBGPoints - 1]}',
+          //range: '${bg.first} - ${bg.last}',
+        ),
+      ],
     );
     // DoctorList()
   }
