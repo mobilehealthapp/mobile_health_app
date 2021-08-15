@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:flutter/material.dart';
-
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/Drawers/drawers.dart';
 import 'package:mobile_health_app/graphs/graphData.dart';
@@ -11,36 +9,41 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '/graphs/graph_info.dart';
 import 'package:calc/calc.dart';
 
-var patientData = FirebaseFirestore.instance
-    .collection('patientData')
-    .doc(FirebaseAuth.instance.currentUser!.uid);
-var bloodGlucose = patientData.collection('bloodGlucose');
-var bloodPressure = patientData.collection('bloodPressure');
-var heartRate = patientData.collection('heartRate');
-List<FlSpot> data1 = [];
-List<FlSpot> data2 = [];
-List<FlSpot> data2a = [];
-List<FlSpot> data3 = [];
+var patientData = FirebaseFirestore.instance.collection('patientData').doc(
+    FirebaseAuth.instance.currentUser!
+        .uid); // DocumentReference used to access patient's uploaded medical data on Firestore
+var bloodGlucose = patientData.collection(
+    'bloodGlucose'); // CollectionReference used to access patient's BG data
+var bloodPressure = patientData.collection(
+    'bloodPressure'); // CollectionReference used to access patient's BP data
+var heartRate = patientData.collection(
+    'heartRate'); // CollectionReference used to access patient's HR data
+
+List<FlSpot> data1 = []; // used for systolic BP in fl_chart
+List<FlSpot> data1a = []; // used for diastolic BP in fl_chart
+List<FlSpot> data2 = []; // used for BG in fl_chart
+List<FlSpot> data3 = []; // used for HR in fl_chart
+
 late int numberOfBGPoints = 0;
 late int numberOfBPPoints = 0;
 late int numberOfHRPoints = 0;
 
-var varianceBG;
+var varianceBG; // BG variables
 var standardDeviationBG;
 var avgGlucose;
 List bg = [];
 
-var varianceHR;
+var varianceHR; // HR variables
 var standardDeviationHR;
 var avgHeartRate;
 List hr = [];
 
-var variancePressureSys;
+var variancePressureSys; // systolic BP variables
 var standardDeviationSys;
 var avgPressureSys;
 List sys = [];
 
-var variancePressureDia;
+var variancePressureDia; // diastolic BP variables
 var standardDeviationDia;
 var avgPressureDia;
 List dia = [];
@@ -56,6 +59,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   bool isHRFilled = true;
 
   bgGet() async {
+    // get BG info (used to calculate variance, standard dev, and range)
     bg = [];
     final bgData = await bloodGlucose.get();
     final value = bgData.docs;
@@ -78,6 +82,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   }
 
   hrGet() async {
+    // get HR info (used to calculate variance, standard dev, and range)
     hr = [];
     final hrData = await heartRate.get();
     final value = hrData.docs;
@@ -99,6 +104,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   }
 
   sysGet() async {
+    // get BP (systolic) info (used to calculate variance, standard dev, and range)
     sys = [];
     final bpData = await bloodPressure.get();
     final value = bpData.docs;
@@ -121,6 +127,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   }
 
   diaGet() async {
+    // get BP (diastolic) info (used to calculate variance, standard dev, and range)
     dia = [];
     final bpData = await bloodPressure.get();
     final value = bpData.docs;
@@ -174,17 +181,17 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     );
   }
 
-  Future<List<FlSpot>> getHRData() async {
-    // gets list of HR points to use in Graphs
+  Future<List<FlSpot>> getSysData() async {
+    // gets list of BP (systolic) points to use in Graphs
     data1 = [];
-    final hrData =
-        await patientData.collection('heartRate').orderBy('uploaded').get();
-    final value = hrData.docs;
-    double index = 1.0;
+    final bpData =
+    await patientData.collection('bloodPressure').orderBy('uploaded').get();
+    final value = bpData.docs;
+    double index2 = 1.0;
     for (var val in value) {
-      int heartrate = val.get('heart rate');
+      double sys = val.get('systolic');
       setState(() {
-        data1.add(FlSpot(index++, heartrate.toDouble()));
+        data1.add(FlSpot(index2++, sys.toDouble()));
       });
     }
     return data1;
@@ -192,7 +199,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
 
   Future<List<FlSpot>> getDiasData() async {
     // gets list of BP (diastolic) points to use in Graphs
-    data2 = [];
+    data1a = [];
     final bpData =
         await patientData.collection('bloodPressure').orderBy('uploaded').get();
     final value = bpData.docs;
@@ -200,31 +207,15 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     for (var val in value) {
       double dias = val.get('diastolic');
       setState(() {
-        data2.add(FlSpot(index++, dias.toDouble()));
+        data1a.add(FlSpot(index++, dias.toDouble()));
       });
     }
-    return data2;
-  }
-
-  Future<List<FlSpot>> getSysData() async {
-    // gets list of BP (systolic) points to use in Graphs
-    data2a = [];
-    final bpData =
-        await patientData.collection('bloodPressure').orderBy('uploaded').get();
-    final value = bpData.docs;
-    double index2 = 1.0;
-    for (var val in value) {
-      double sys = val.get('systolic');
-      setState(() {
-        data2a.add(FlSpot(index2++, sys.toDouble()));
-      });
-    }
-    return data2a;
+    return data1a;
   }
 
   Future<List<FlSpot>> getBGData() async {
     // gets list of BG points to use in Graphs
-    data3 = [];
+    data2 = [];
     final bgData =
         await patientData.collection('bloodGlucose').orderBy('uploaded').get();
     final value = bgData.docs;
@@ -232,7 +223,22 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     for (var val in value) {
       double glucose = val.get('blood glucose (mmol|L)');
       setState(() {
-        data3.add(FlSpot(index++, glucose.toDouble()));
+        data2.add(FlSpot(index++, glucose.toDouble()));
+      });
+    }
+    return data2;
+  }
+  Future<List<FlSpot>> getHRData() async {
+    // gets list of HR points to use in Graphs
+    data3 = [];
+    final hrData =
+    await patientData.collection('heartRate').orderBy('uploaded').get();
+    final value = hrData.docs;
+    double index = 1.0;
+    for (var val in value) {
+      int heartrate = val.get('heart rate');
+      setState(() {
+        data3.add(FlSpot(index++, heartrate.toDouble()));
       });
     }
     return data3;
@@ -240,6 +246,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
 
   @override
   void initState() {
+    // initialize functions
     bgGet();
     hrGet();
     diaGet();
@@ -279,22 +286,24 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
         shrinkWrap: true,
         children: [
           SizedBox(
-            height: 30.0,
+            height: 20.0,
           ),
           Container(
-            child: data2.isNotEmpty
+            child: data1.isNotEmpty
+                // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
                 ? extractData()
                 : Padding(
                     padding: EdgeInsets.all(10.0),
                     child: Center(
-                      child: Card(
+                      child: NoDataCard(
                         child: Padding(
                           padding: EdgeInsets.all(10.0),
                           child: Text(
                             'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.',
                             textAlign: TextAlign.center,
-                            style: kGraphTitleTextStyle.copyWith(
+                            style: TextStyle(
                               fontSize: 20.0,
+                              color: Colors.white,
                             ),
                           ),
                         ),
@@ -302,23 +311,22 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                     ),
                   ),
           ),
-          SizedBox(
-            height: 25.0,
-          ),
           Container(
-            child: data3.isNotEmpty
-                ? extractData()
+            child: data2.isNotEmpty
+                // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
+                ? extractData2()
                 : Padding(
                     padding: EdgeInsets.all(10.0),
                     child: Center(
-                      child: Card(
+                      child: NoDataCard(
                         child: Padding(
                           padding: EdgeInsets.all(10.0),
                           child: Text(
                             'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.',
                             textAlign: TextAlign.center,
-                            style: kGraphTitleTextStyle.copyWith(
+                            style: TextStyle(
                               fontSize: 20.0,
+                              color: Colors.white,
                             ),
                           ),
                         ),
@@ -326,23 +334,22 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                     ),
                   ),
           ),
-          SizedBox(
-            height: 25.0,
-          ),
           Container(
-            child: data1.isNotEmpty
-                ? extractData()
+            child: data3.isNotEmpty
+                // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
+                ? extractData3()
                 : Padding(
                     padding: EdgeInsets.all(10.0),
                     child: Center(
-                      child: Card(
+                      child: NoDataCard(
                         child: Padding(
                           padding: EdgeInsets.all(10.0),
                           child: Text(
                             'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.',
                             textAlign: TextAlign.center,
-                            style: kGraphTitleTextStyle.copyWith(
+                            style: TextStyle(
                               fontSize: 20.0,
+                              color: Colors.white,
                             ),
                           ),
                         ),
@@ -359,34 +366,6 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   }
 
   Widget extractData() {
-    // graph of HR data
-    return Column(
-      children: [
-        Text(
-          'Pulse Rate',
-          style: kGraphTitleTextStyle,
-          textAlign: TextAlign.center,
-        ),
-        Charts(
-          units: 'BPM',
-          yStart: 30,
-          bool1: false,
-          yLength: 200,
-          xLength: numberOfHRPoints.toDouble(),
-          list: data1,
-        ),
-        FullSummaryCard(
-          avgValue: '$avgHeartRate BPM',
-          varValue: '$varianceHR BPM',
-          sdValue: '  $standardDeviationHR BPM',
-          range: 'range',
-          // range: '${hr[0]} - ${hr[numberOfHRPoints - 1]}',
-        ),
-      ],
-    );
-  }
-
-  Widget extractData2() {
     // graph of BP data
     return Column(
       children: [
@@ -401,8 +380,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           bool1: false,
           yLength: 180,
           xLength: numberOfBPPoints.toDouble(),
-          list: data2,
-          list2: data2a,
+          list: data1,
+          list2: data1a,
         ),
         FullSummaryCard(
           avgValue: '$avgPressureSys/$avgPressureDia mmHg',
@@ -417,7 +396,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     );
   }
 
-  Widget extractData3() {
+  Widget extractData2() {
     // graph of BG data
     return Column(
       children: [
@@ -432,7 +411,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           bool1: false,
           yLength: 10,
           xLength: numberOfBGPoints.toDouble(),
-          list: data3,
+          list: data2,
         ),
         FullSummaryCard(
           avgValue: '$avgGlucose mmol/L',
@@ -444,6 +423,55 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
         ),
       ],
     );
-    // DoctorList()
+  }
+
+  Widget extractData3() {
+    // graph of HR data
+    return Column(
+      children: [
+        Text(
+          'Pulse Rate',
+          style: kGraphTitleTextStyle,
+          textAlign: TextAlign.center,
+        ),
+        Charts(
+          units: 'BPM',
+          yStart: 30,
+          bool1: false,
+          yLength: 200,
+          xLength: numberOfHRPoints.toDouble(),
+          list: data3,
+        ),
+        FullSummaryCard(
+          avgValue: '$avgHeartRate BPM',
+          varValue: '$varianceHR BPM',
+          sdValue: '  $standardDeviationHR BPM',
+          range: 'range',
+          // range: '${hr[0]} - ${hr[numberOfHRPoints - 1]}',
+        ),
+      ],
+    );
+  }
+}
+
+class NoDataCard extends StatelessWidget {
+  // card to show if user has no data of specific type
+  final Widget child;
+
+  NoDataCard({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: child,
+      ),
+      margin: EdgeInsets.all(15.0),
+      decoration: BoxDecoration(
+        color: Color(0xFF607D8B),
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+    );
   }
 }

@@ -20,6 +20,7 @@ getUserData(uid) async {
 }
 
 class SettingsCard extends StatelessWidget {
+  // used as buttons that can take user to another page
   SettingsCard({required this.settingsTab});
 
   final Widget settingsTab;
@@ -38,6 +39,7 @@ class SettingsCard extends StatelessWidget {
 }
 
 class TabContent extends StatelessWidget {
+  // used on buttons which show a chevron > meaning it will navigate to another page
   TabContent({required this.label});
 
   final String label;
@@ -64,6 +66,7 @@ class TabContent extends StatelessWidget {
 }
 
 class TabContent2 extends StatelessWidget {
+  // used on delete my data/account buttons as they don't need a chevron (to go to another page)
   TabContent2({required this.label});
 
   final String label;
@@ -86,6 +89,7 @@ class TabContent2 extends StatelessWidget {
 }
 
 class ProfileTab extends StatelessWidget {
+  // used as card to display user's profile information
   ProfileTab({required this.editAnswer});
 
   final String editAnswer;
@@ -113,6 +117,7 @@ class ProfileTab extends StatelessWidget {
 }
 
 class Alert extends StatelessWidget {
+  // used when user first presses on the delete my data/account button(s) (first alert to show up)
   Alert({required this.alertBody, required this.widget});
 
   final String alertBody;
@@ -163,6 +168,7 @@ class Alert extends StatelessWidget {
 }
 
 class CancelOrConfirm extends StatelessWidget {
+  // used when editing information; can either be a button which cancels or confirms changes
   CancelOrConfirm({required this.whichOne, required this.colour});
 
   final String whichOne;
@@ -191,6 +197,7 @@ class CancelOrConfirm extends StatelessWidget {
 }
 
 class Alert3 extends StatelessWidget {
+  // used when user asks 'what is this?' on doctor's access code section in add a doctor
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -215,6 +222,7 @@ class Alert3 extends StatelessWidget {
 }
 
 class Alert4 extends StatelessWidget {
+  // used when user asks 'what is this?' on the doctor's label section in add a doctor
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -239,6 +247,7 @@ class Alert4 extends StatelessWidget {
 }
 
 class ConfirmButton extends StatelessWidget {
+  // used to press confirm on an alert
   final String label;
   final VoidCallback onPressed;
 
@@ -258,6 +267,7 @@ class ConfirmButton extends StatelessWidget {
 }
 
 class CancelButton extends StatelessWidget {
+  // used to press cancel on an alert
   @override
   Widget build(BuildContext context) {
     return TextButton(

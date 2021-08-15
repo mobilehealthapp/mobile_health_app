@@ -9,17 +9,17 @@ import 'package:mobile_health_app/Authentication/database_auth_services.dart';
 
 final patientRef = FirebaseFirestore.instance
     .collection('patientprofile'); // create this as global variable
-var first;
-var last;
-var adr;
-var age;
-var dob;
-var wt;
-var ht;
-var meds;
-var conds;
-var tele;
-var sex;
+var first; // first name
+var last; // last name
+var adr; // home address
+var age; // age
+var dob; // date of birth
+var wt; // weight
+var ht; // height
+var meds; // medications that the patient is on
+var conds; // medical conditions that the patient has
+var tele; // telephone number
+var sex; // sex of patient
 
 class ProfileEdit extends StatefulWidget {
   const ProfileEdit({Key? key}) : super(key: key);
@@ -46,7 +46,8 @@ class _ProfileEditState extends State<ProfileEdit> {
   TextEditingController adrTEC = TextEditingController();
 
   void updateProfile() {
-    // this function tells code that if the user does not enter anything in a specific text field, don't change it
+    // this function tells code that if the user does not enter anything
+    // in a specific text field, don't change it in Firestore
     setState(
       () {
         if (firstTEC.text == '') {
@@ -123,7 +124,7 @@ class _ProfileEditState extends State<ProfileEdit> {
   }
 
   getUserData(uid) async {
-    // calls on specific fields from the patient's document to display their profile info
+    // retrieve patient's data from Firestore
     final DocumentSnapshot patientInfo = await patientRef.doc(uid).get();
     setState(
       () {
@@ -324,6 +325,8 @@ class _ProfileEditState extends State<ProfileEdit> {
                     onPressed: () async {
                       setState(
                         () {
+                          // if the user presses 'cancel', do not change any values
+                          // in Firestore, even if there are new values in some text fields and exit page
                           first = first;
                           last = last;
                           age = age;
@@ -353,6 +356,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                     onPressed: () async {
                       setState(
                         () {
+                          // if the user presses confirm, update info in Firestore and exit page
                           showSpinner = true;
                           updateProfile();
                           DatabaseAuth(uid: loggedInUser.uid).updatePatientData(

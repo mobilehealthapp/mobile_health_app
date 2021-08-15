@@ -49,7 +49,7 @@ class SummaryCard extends StatelessWidget {
 }
 
 class FullSummaryCard extends StatelessWidget {
-  // used on health analysis page to display more than just average value
+  // used on health analysis page to display average, variance, standard deviation, and range of data type
   FullSummaryCard({
     required this.avgValue,
     required this.varValue,

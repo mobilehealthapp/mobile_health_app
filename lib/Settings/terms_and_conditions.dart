@@ -9,6 +9,8 @@ class TermsAndConditions extends StatefulWidget {
 }
 
 class _TermsAndConditionsState extends State<TermsAndConditions> {
+  // this page is where terms and conditions will be displayed; need to be written by future students
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -96,6 +96,7 @@ class _AddDoctorsState extends State<AddDoctors> {
                         context: context,
                         builder: (BuildContext context) {
                           return new Alert3();
+                          // displays alert explaining how doctors receive a unique access code when they sign up
                         },
                       );
                     },
@@ -129,6 +130,8 @@ class _AddDoctorsState extends State<AddDoctors> {
                         context: context,
                         builder: (BuildContext context) {
                           return new Alert4();
+                          // displays alert explaining that the user can create any label for the doctor
+                          // that they'd like to help them remember who the doctor is to them (specialist, family physician, etc.)
                         },
                       );
                     },

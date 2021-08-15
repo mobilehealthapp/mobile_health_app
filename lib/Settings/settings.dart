@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'package:mobile_health_app/Settings/settings_constants.dart';
-import 'settings_card.dart';
 import 'package:mobile_health_app/Drawers/drawers.dart';
-
 import 'delete_data_or_account.dart';
+import 'settings_card.dart';
+import 'settings_constants.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -15,11 +14,11 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawers(),
       backgroundColor: kSecondaryColour,
       appBar: AppBar(
         title: Text('Settings'),
       ),
-      drawer: Drawers(),
       body: ListView(
         children: <Widget>[
           Padding(
@@ -115,8 +114,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   context: context,
                   builder: (BuildContext context) {
                     return new Alert(
-                      widget:
-                          AlertPatientData(), // navigates to alert where user can input credentials and delete data
+                      widget: AlertPatientData(),
+                      // navigates to alert where user can input credentials and delete data
                       alertBody:
                           'This will erase all of your data except for your email address and your account type.',
                     );
@@ -135,8 +134,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   context: context,
                   builder: (BuildContext context) {
                     return new Alert(
-                      widget:
-                          AlertPatientAccount(), // navigates to alert where user can input credentials and delete account
+                      widget: AlertPatientAccount(),
+                      // navigates to alert where user can input credentials and delete account
                       alertBody: 'This will completely delete your account.',
                     );
                   },

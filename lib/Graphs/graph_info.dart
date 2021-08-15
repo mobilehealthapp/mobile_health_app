@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class LineTitles {
+  // used for y-axis line titles on BP and HR graphs
   static getTitleData() {
     return FlTitlesData(
       show: true,
@@ -63,6 +64,7 @@ class LineTitles {
 }
 
 class LineTitles2 {
+  // used for y-axis line titles on BG graphs
   static getTitleData() {
     return FlTitlesData(
       show: true,
@@ -106,6 +108,7 @@ class LineTitles2 {
 }
 
 class Charts extends StatelessWidget {
+  // used for HR graph
   Charts(
       {required this.list,
       required this.xLength,
@@ -172,6 +175,7 @@ class Charts extends StatelessWidget {
 }
 
 class Charts2 extends StatelessWidget {
+  // used for BP graph
   Charts2(
       {required this.list,
       required this.list2,
@@ -258,6 +262,7 @@ class Charts2 extends StatelessWidget {
 }
 
 class Charts3 extends StatelessWidget {
+  // used for BG graph
   Charts3({
     required this.list,
     required this.xLength,

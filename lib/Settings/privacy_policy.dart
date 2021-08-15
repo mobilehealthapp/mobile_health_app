@@ -7,6 +7,8 @@ class PrivacyPolicy extends StatefulWidget {
 }
 
 class _PrivacyPolicyState extends State<PrivacyPolicy> {
+  // this page is where privacy policy will be displayed; needs to be written by future students
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,8 +18,7 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
       ),
       body: ListView(
         scrollDirection: Axis.vertical,
-        children: [
-        ],
+        children: [],
       ),
     );
   }

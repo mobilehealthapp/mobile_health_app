@@ -1,20 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/Drawers/PhysDrawer.dart';
-import 'package:mobile_health_app/Settings/delete_data_or_account.dart';
+import 'delete_data_or_account.dart';
 import 'settings_card.dart';
 import 'settings_constants.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
-final doctorRef = FirebaseFirestore.instance
-    .collection('doctorprofile'); // create this as global variable
-var drFirst; // these variables will represent the info in firebase
-var drLast;
-var quali;
-var drTele;
-var fax;
-var clinicAdr;
 
 class DrSettingsPage extends StatefulWidget {
   @override
@@ -22,29 +11,6 @@ class DrSettingsPage extends StatefulWidget {
 }
 
 class _DrSettingsPageState extends State<DrSettingsPage> {
-  final _auth = FirebaseAuth.instance;
-  var loggedInUser;
-  var uid;
-
-  @override
-  void initState() {
-    super.initState();
-    getCurrentUser();
-  }
-
-  void getCurrentUser() async {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        loggedInUser = user;
-        print(loggedInUser.email);
-        uid = user.uid.toString(); //convert uid to String
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,6 +100,7 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
                   builder: (BuildContext context) {
                     return new Alert(
                       widget: AlertDoctorData(),
+                      // navigates to alert where user can input credentials and delete data
                       alertBody:
                           'This will erase all of your data except for your email address and your account type.',
                     );
@@ -153,6 +120,7 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
                   builder: (BuildContext context) {
                     return new Alert(
                       widget: AlertDoctorAccount(),
+                      // navigates to alert where user can input credentials and delete account
                       alertBody: 'This will completely delete your account.',
                     );
                   },

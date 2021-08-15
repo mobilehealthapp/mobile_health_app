@@ -6,21 +6,23 @@ import 'package:mobile_health_app/Drawers/drawers.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/graphs/graphData.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:mobile_health_app/Analysis/health_analysis.dart';
 
-final patientData = FirebaseFirestore.instance
-    .collection('patientData')
-    .doc(FirebaseAuth.instance.currentUser!.uid);
-final patientRef = FirebaseFirestore.instance
-    .collection('patientprofile'); //declare reference high up in file
+final patientData = FirebaseFirestore.instance.collection('patientData').doc(
+    FirebaseAuth.instance.currentUser!
+        .uid); // DocumentReference used to access patient's uploaded medical data on Firestore
+final patientRef = FirebaseFirestore.instance.collection(
+    'patientprofile'); // CollectionReference used to access patient's profile data on Firestore
 var name; //declare variable high up in file
 var avgGlucose;
 var avgPressureDia;
 var avgPressureSys;
 var avgHeartRate;
-List<FlSpot> data1 = [];
-List<FlSpot> data2 = [];
-List<FlSpot> data2a = [];
-List<FlSpot> data3 = [];
+
+List<FlSpot> data1 = []; // used for systolic BP in fl_chart
+List<FlSpot> data1a = []; // used for diastolic BP in fl_chart
+List<FlSpot> data2 = []; // used for BG in fl_chart
+List<FlSpot> data3 = []; // used for HR in fl_chart
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -66,43 +68,9 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<List<FlSpot>> getHRData() async {
-    // gets list of 6 most recent HR points to use in Graphs
-    data1 = [];
-    final hrData = await patientData
-        .collection('heartRate')
-        .orderBy('uploaded')
-        .limitToLast(6)
-        .get();
-    final value = hrData.docs;
-    double index = 1.0;
-    for (var val in value) {
-      int heartRate = val.get('heart rate');
-      data1.add(FlSpot(index++, heartRate.toDouble()));
-    }
-    return data1;
-  }
-
-  Future<List<FlSpot>> getDiasData() async {
-    // gets list of 6 most recent BP (diastolic) points to use in Graphs
-    data2 = [];
-    final bpData = await patientData
-        .collection('bloodPressure')
-        .orderBy('uploaded')
-        .limitToLast(6)
-        .get();
-    final value = bpData.docs;
-    double index = 1.0;
-    for (var val in value) {
-      double dias = val.get('diastolic');
-      data2.add(FlSpot(index++, dias.toDouble()));
-    }
-    return data2;
-  }
-
   Future<List<FlSpot>> getSysData() async {
     // gets list of 6 most recent BP (systolic) points to use in Graphs
-    data2a = [];
+    data1 = [];
     final bpData = await patientData
         .collection('bloodPressure')
         .orderBy('uploaded')
@@ -112,15 +80,32 @@ class _HomePageState extends State<HomePage> {
     double index2 = 1.0;
     for (var val in value) {
       double sys = val.get('systolic');
-      data2a.add(FlSpot(index2++, sys.toDouble()));
+      data1.add(FlSpot(index2++, sys.toDouble()));
     }
 
-    return data2a;
+    return data1;
+  }
+
+  Future<List<FlSpot>> getDiasData() async {
+    // gets list of 6 most recent BP (diastolic) points to use in Graphs
+    data1a = [];
+    final bpData = await patientData
+        .collection('bloodPressure')
+        .orderBy('uploaded')
+        .limitToLast(6)
+        .get();
+    final value = bpData.docs;
+    double index = 1.0;
+    for (var val in value) {
+      double dias = val.get('diastolic');
+      data1a.add(FlSpot(index++, dias.toDouble()));
+    }
+    return data1a;
   }
 
   Future<List<FlSpot>> getBGData() async {
     // gets list of 6 most recent BG points to use in Graphs
-    data3 = [];
+    data2 = [];
     final bgData = await patientData
         .collection('bloodGlucose')
         .orderBy('uploaded')
@@ -130,7 +115,24 @@ class _HomePageState extends State<HomePage> {
     double index = 1.0;
     for (var val in value) {
       double glucose = val.get('blood glucose (mmol|L)');
-      data3.add(FlSpot(index++, glucose.toDouble()));
+      data2.add(FlSpot(index++, glucose.toDouble()));
+    }
+    return data2;
+  }
+
+  Future<List<FlSpot>> getHRData() async {
+    // gets list of 6 most recent HR points to use in Graphs
+    data3 = [];
+    final hrData = await patientData
+        .collection('heartRate')
+        .orderBy('uploaded')
+        .limitToLast(6)
+        .get();
+    final value = hrData.docs;
+    double index = 1.0;
+    for (var val in value) {
+      int heartRate = val.get('heart rate');
+      data3.add(FlSpot(index++, heartRate.toDouble()));
     }
     return data3;
   }
@@ -146,8 +148,6 @@ class _HomePageState extends State<HomePage> {
     getHRData();
     super.initState();
   }
-
-  var data;
 
   @override
   Widget build(BuildContext context) {
@@ -202,55 +202,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           SizedBox(
-            height: 30.0,
-          ),
-          Container(
-            child: data2.isNotEmpty
-                ? extractData2V2()
-                : Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Center(
-                      child: Card(
-                        child: Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Text(
-                            'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.',
-                            textAlign: TextAlign.center,
-                            style: kGraphTitleTextStyle.copyWith(
-                              fontSize: 20.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-          ),
-          SizedBox(
-            height: 25.0,
-          ),
-          Container(
-            child: data3.isNotEmpty
-                ? extractData3V2()
-                : Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Center(
-                      child: Card(
-                        child: Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Text(
-                            'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.',
-                            textAlign: TextAlign.center,
-                            style: kGraphTitleTextStyle.copyWith(
-                              fontSize: 20.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-          ),
-          SizedBox(
-            height: 25.0,
+            height: 20.0,
           ),
           Container(
             child: data1.isNotEmpty
@@ -258,14 +210,59 @@ class _HomePageState extends State<HomePage> {
                 : Padding(
                     padding: EdgeInsets.all(10.0),
                     child: Center(
-                      child: Card(
+                      child: NoDataCard(
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Text(
+                            'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+          ),
+          Container(
+            child: data2.isNotEmpty
+                ? extractData2V2()
+                : Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Center(
+                      child: NoDataCard(
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Text(
+                            'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+          ),
+          Container(
+            child: data3.isNotEmpty
+                ? extractData3V2()
+                : Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Center(
+                      child: NoDataCard(
                         child: Padding(
                           padding: EdgeInsets.all(10.0),
                           child: Text(
                             'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.',
                             textAlign: TextAlign.center,
-                            style: kGraphTitleTextStyle.copyWith(
+                            style: TextStyle(
                               fontSize: 20.0,
+                              color: Colors.white,
                             ),
                           ),
                         ),
@@ -285,27 +282,6 @@ class _HomePageState extends State<HomePage> {
     return Column(
       children: [
         Text(
-          'Pulse Rate',
-          style: kGraphTitleTextStyle,
-          textAlign: TextAlign.center,
-        ),
-        Charts(
-          units: 'BPM',
-          yStart: 30,
-          bool1: true,
-          yLength: 200,
-          xLength: 6,
-          list: data1,
-        ),
-        SummaryCard(value: '$avgHeartRate bpm', type: 'Average Pulse Rate:'),
-      ],
-    );
-  }
-
-  Widget extractData2V2() {
-    return Column(
-      children: [
-        Text(
           'Blood Pressure',
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
@@ -316,8 +292,8 @@ class _HomePageState extends State<HomePage> {
           bool1: true,
           yLength: 180,
           xLength: 6,
-          list: data2,
-          list2: data2a,
+          list: data1a,
+          list2: data1,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -336,11 +312,14 @@ class _HomePageState extends State<HomePage> {
           type: 'Average Blood Pressure:',
           value: '$avgPressureSys/$avgPressureDia mmHg',
         ),
+        SizedBox(
+          height: 25.0,
+        ),
       ],
     );
   }
 
-  Widget extractData3V2() {
+  Widget extractData2V2() {
     return Column(
       children: [
         Text(
@@ -354,10 +333,42 @@ class _HomePageState extends State<HomePage> {
           bool1: true,
           yLength: 10,
           xLength: 6,
+          list: data2,
+        ),
+        SummaryCard(
+          value: '$avgGlucose mmol/L',
+          type: 'Average Blood Glucose:',
+        ),
+        SizedBox(
+          height: 25.0,
+        ),
+      ],
+    );
+  }
+
+  Widget extractData3V2() {
+    return Column(
+      children: [
+        Text(
+          'Pulse Rate',
+          style: kGraphTitleTextStyle,
+          textAlign: TextAlign.center,
+        ),
+        Charts(
+          units: 'BPM',
+          yStart: 30,
+          bool1: true,
+          yLength: 200,
+          xLength: 6,
           list: data3,
         ),
         SummaryCard(
-            value: '$avgGlucose mmol/L', type: 'Average Blood Glucose:'),
+          value: '$avgHeartRate bpm',
+          type: 'Average Pulse Rate:',
+        ),
+        SizedBox(
+          height: 25.0,
+        ),
       ],
     );
   }

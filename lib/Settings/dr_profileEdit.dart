@@ -8,12 +8,12 @@ import 'package:mobile_health_app/Authentication/database_auth_services.dart';
 
 final doctorRef = FirebaseFirestore.instance
     .collection('doctorprofile'); // create this as global variable
-var drFirst;
-var drLast;
-var quali;
-var drTele;
-var fax;
-var clinicAdr;
+var drFirst; // first name
+var drLast; // last name
+var quali; // qualifications
+var drTele; // telephone number (clinic)
+var fax; // fax number (clinic)
+var clinicAdr; // clinic address
 
 class DrProfileEdit extends StatefulWidget {
   @override
@@ -33,6 +33,8 @@ class _DrProfileEditState extends State<DrProfileEdit> {
   TextEditingController clinicAdrTEC = TextEditingController();
 
   void drUpdateProfile() {
+    // this function tells code that if the user does not enter anything
+    // in a specific text field, don't change it in Firestore
     if (drFirstTEC.text == '') {
       drFirst = drFirst;
     } else
@@ -66,12 +68,14 @@ class _DrProfileEditState extends State<DrProfileEdit> {
 
   @override
   void initState() {
+    // initialize functions
     super.initState();
     getCurrentUser();
     getUserData(uid);
   }
 
   void getCurrentUser() async {
+    // find uid
     try {
       final user = _auth.currentUser;
       if (user != null) {
@@ -85,6 +89,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
   }
 
   getUserData(uid) async {
+    // retrieve doctor's data from Firestore
     final DocumentSnapshot doctorInfo = await doctorRef.doc(uid).get();
     setState(
       () {
@@ -188,6 +193,8 @@ class _DrProfileEditState extends State<DrProfileEdit> {
                     onPressed: () async {
                       setState(
                         () {
+                          // if the user presses 'cancel', do not change any values
+                          // in Firestore, even if there are new values in some text fields and exit page
                           drFirst = drFirst;
                           drLast = drLast;
                           quali = quali;
@@ -213,6 +220,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
                     onPressed: () async {
                       setState(
                         () {
+                          // if the user presses confirm, update info in Firestore and exit page
                           drUpdateProfile();
                           DatabaseAuth(uid: loggedInUser.uid).updateDoctorData(
                             drFirst,

@@ -24,7 +24,8 @@ class DatabaseAuth {
   final CollectionReference doctorProfileCollection =
       FirebaseFirestore.instance.collection('doctorprofile');
 
-  final CollectionReference doctorPatientsCollection = FirebaseFirestore.instance.collection('doctorprofile');
+  final CollectionReference doctorPatientsCollection =
+      FirebaseFirestore.instance.collection('doctorprofile');
 
   Future setPatientData(String firstName, String lastName, String email,
       String accountType) async {
@@ -81,12 +82,20 @@ class DatabaseAuth {
           'fax': '',
         },
       );
+      /*
+      when the user inputs the correct credentials and they are verified by Firebase Auth,
+      they will delete all of their data from Firestore except for their account type and email address
+      the document itself is not deleted as it is still attached to their uid, but all fields being
+      deleted within the document are set to blank (set to ' ')
+       */
       Navigator.of(context).pushNamedAndRemoveUntil(
           '/physHome', (Route<dynamic> route) => false);
     } catch (e) {
       Fluttertoast.showToast(
         msg:
             'The email address and/or password is incorrect. Please try again.',
+        // if the credentials are not correct, a fluttertoast message explaining the error shows up
+        // to ask the user to reenter the correct email and password
         gravity: ToastGravity.TOP,
         backgroundColor: Colors.red,
         toastLength: Toast.LENGTH_LONG,
@@ -111,7 +120,7 @@ class DatabaseAuth {
       await user!.reauthenticateWithCredential(credentials);
       await patientDataCollection.doc(_auth.currentUser!.uid).delete();
       await patientDoctorsCollection.get().then(
-            (snapshot) {
+        (snapshot) {
           for (DocumentSnapshot ds in snapshot.docs) {
             ds.reference.delete();
           }
@@ -132,12 +141,20 @@ class DatabaseAuth {
           'dob': '',
         },
       );
+      /*
+      when the user inputs the correct credentials and they are verified by Firebase Auth,
+      they will delete all of their data from Firestore except for their account type and email address
+      the document itself is not deleted as it is still attached to their uid, but all fields being
+      deleted within the document are set to blank (set to ' ')
+       */
       Navigator.of(context)
           .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
     } catch (e) {
       Fluttertoast.showToast(
         msg:
             'The email address and/or password is incorrect. Please try again.',
+        // if the credentials are not correct, a fluttertoast message explaining the error shows up
+        // to ask the user to reenter the correct email and password
         gravity: ToastGravity.TOP,
         backgroundColor: Colors.red,
         toastLength: Toast.LENGTH_LONG,
@@ -155,12 +172,18 @@ class DatabaseAuth {
       var result = await user!.reauthenticateWithCredential(credentials);
       await erasePatientDocument();
       await result.user!.delete();
+      /*
+      when the user inputs the correct credentials and they are verified by Firebase Auth,
+      all of the data attached to their uid will be deleted, along with their account itself
+       */
       Navigator.of(context)
           .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
     } catch (e) {
       Fluttertoast.showToast(
         msg:
             'The email address and/or password is incorrect. Please try again.',
+        // if the credentials are not correct, a fluttertoast message explaining the error shows up
+        // to ask the user to reenter the correct email and password
         gravity: ToastGravity.TOP,
         backgroundColor: Colors.red,
         toastLength: Toast.LENGTH_LONG,
@@ -178,12 +201,18 @@ class DatabaseAuth {
       var result = await user!.reauthenticateWithCredential(credentials);
       await eraseDoctorDocument();
       await result.user!.delete();
+      /*
+      when the user inputs the correct credentials and they are verified by Firebase Auth,
+      all of the data attached to their uid will be deleted, along with their account itself
+       */
       Navigator.of(context)
           .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
     } catch (e) {
       Fluttertoast.showToast(
         msg:
             'The email address and/or password is incorrect. Please try again.',
+        // if the credentials are not correct, a fluttertoast message explaining the error shows up
+        // to ask the user to reenter the correct email and password
         gravity: ToastGravity.TOP,
         backgroundColor: Colors.red,
         toastLength: Toast.LENGTH_LONG,
@@ -213,6 +242,9 @@ class DatabaseAuth {
         'address': adr,
       },
     );
+    /* used in patient profile edit page to update their data in Firestore once they
+    press confirm
+     */
   }
 
   Future updateDoctorData(
@@ -227,6 +259,9 @@ class DatabaseAuth {
         'fax': fax,
       },
     );
+    /* used in doctor profile edit page to update their data in Firestore once they
+    press confirm
+     */
   }
 
   Future erasePatientDocument() async {
@@ -239,9 +274,15 @@ class DatabaseAuth {
         }
       },
     );
+    /* used in the delete my account function to delete document associated with
+    patient's uid
+     */
   }
 
   Future eraseDoctorDocument() async {
     await doctorProfileCollection.doc(_auth.currentUser!.uid).delete();
+    /* used in the delete my account function to delete document associated with
+    doctor's uid
+     */
   }
 }
