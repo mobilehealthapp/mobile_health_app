@@ -52,7 +52,7 @@ class Data {
   bool isSame(Data inputtedData) {
     var d1 = data1;
     var d2 = data2;
-    if (data2 != null) {
+    if (data2 != null && type != "Blood Glucose") {
       d2 = filterAlpha(data2);
     }
     if (data1 != null) {

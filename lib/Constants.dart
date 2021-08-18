@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+// This file is used for universal constants that are used throughout
+// the app
+
+//////// TEXT STYLES ////////
+
+// Used for the Physician home page for patient cards
 const kTextLabel1 = TextStyle(
   fontSize: 30.0,
   fontWeight: FontWeight.w400,
 );
+
+// Used for the graphs
 const kTextLabel2 = TextStyle(
   fontSize: 20.0,
   fontWeight: FontWeight.w400,
 );
 
+// AppBar text style
 final kAppBarLabelStyle = GoogleFonts.rubik(
   textStyle: TextStyle(
     color: Colors.white,
@@ -17,14 +26,15 @@ final kAppBarLabelStyle = GoogleFonts.rubik(
   ),
 );
 
-const Color1 = Colors.grey;
-
-const kPrimaryColour = Color(0xFF1B4DA8);
-const kSecondaryColour = Color(0xFFe6f3fc);
-
-const kGraphTitleTextStyle =
-TextStyle(
+// Graph title text style
+const kGraphTitleTextStyle = TextStyle(
   color: Colors.black,
   fontWeight: FontWeight.bold,
   fontSize: 17.0,
 );
+
+//////// COLOURS ////////
+
+// Theme colours (these were obtained from the BC LTD logo)
+const kPrimaryColour = Color(0xFF1B4DA8);
+const kSecondaryColour = Color(0xFFe6f3fc);

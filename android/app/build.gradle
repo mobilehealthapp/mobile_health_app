@@ -34,7 +34,6 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "ca.healthcaresystems.mobile_health_app"
         minSdkVersion 21
         targetSdkVersion 30

@@ -114,7 +114,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         ),
                       ),
                       Text(
-                        'AppName',
+                        'MedScan',
                         style: TextStyle(
                             fontSize: 35, fontWeight: FontWeight.bold),
                       )
