@@ -5,6 +5,12 @@ import 'package:mobile_health_app/Drawers/drawers.dart';
 import 'analysis_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+// This page is primarily used as a proof of concept and thus requires more work
+// it essentially allows the user to fill out their information and receive
+// a summary comparing their data to what would be considered ideal for their
+// demographic
+
+// General constants used on the page
 TextStyle kTempTextStyle = TextStyle(color: Colors.white);
 Color kActiveRadioColour = Colors.cyan;
 bool warning = false;
@@ -38,6 +44,8 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      // This allows for the number keyboard to be dismissed if the user
+      // taps anywhere on the screen
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
         if (!currentFocus.hasPrimaryFocus &&
@@ -59,6 +67,7 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
           child: Container(
             child: ListView(
               children: <Widget>[
+                // Age card
                 ReusableCard(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -102,6 +111,7 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
                     ],
                   ),
                 ),
+                // Biological sex card
                 ReusableCard(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -171,6 +181,7 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
                     ],
                   ),
                 ),
+                // Diabetic card
                 ReusableCard(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -241,6 +252,7 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
                     ],
                   ),
                 ),
+                // Calculate button
                 Center(
                   child: CupertinoButton(
                     child: Text(
@@ -250,10 +262,12 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
                     color: kPrimaryColour,
                     onPressed: () async {
                       calculate = true;
+                      // Calls getIdealBP first then getAverageResults
                       getIdealBP(_age!, _sex!, (_diabetic != 'No'));
                       String results = await getAverageResults(
                           FirebaseAuth.instance.currentUser!.uid.toString());
                       setState(() {
+                        // changes the resultsMessage and potentially the warningMessage
                         resultsMessage = results;
                         warningMessage = warningText;
                         warning = warning;
@@ -263,6 +277,7 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
                 ),
                 calculate
                     ? ReusableCard(
+                        // Summary card
                         color: kPrimaryColour,
                         child: Text(
                           resultsMessage,
@@ -272,9 +287,10 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
                           ),
                           textAlign: TextAlign.left,
                         ))
-                    : Container(),
+                    : Container(), // empty container if there's no summary to show
                 warning
                     ? ReusableCard(
+                        // Warning card
                         color: Colors.red,
                         child: Column(
                           children: [
@@ -289,7 +305,7 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
                             ),
                           ],
                         ))
-                    : Container()
+                    : Container() // empty container if there's no warning to show
               ],
             ),
           ),
@@ -299,6 +315,7 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
   }
 }
 
+// Class used to display the components on the page
 class ReusableCard extends StatelessWidget {
   final Widget child;
   final Color? color;

@@ -1,12 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'health_analysis_form.dart';
 
+// These are the functions used in the health analysis form
+// Be warned: the numbers used are not reputable, this was mostly
+// a proof-of-concept feature and should be expanded on properly
+
 String idealBP = '';
 double idealBG = 0.0;
 bool? diabetes;
 
+// Current user's patientData folder
 final patientData = FirebaseFirestore.instance.collection('patientData');
 
+// getIdealBP sets the constant idealBP to be the ideal blood pressure
+// given the inputted age, sex, and whether or not the patient is diabetic
 void getIdealBP(int age, String sex, bool diabetic) {
   if (diabetic) {
     diabetes = true;
@@ -49,15 +56,20 @@ void getIdealBP(int age, String sex, bool diabetic) {
   }
 }
 
+// getAverageResults retrieves the user's average blood pressure from
+// the database and calculates the percent different (w/ respect to the
+// idealBP) and also determines if the patient is hypertensive
 Future<String> getAverageResults(uid) async {
   final DocumentSnapshot patientDoc =
       await FirebaseFirestore.instance.collection("patientData").doc(uid).get();
+
+  // get average values
   int patientSystolic = patientDoc.get('Average Blood Pressure (systolic)');
   int patientDiastolic = patientDoc.get('Average Blood Pressure (diastolic)');
-  //double patientGlucose = patientDoc.get('Average Blood Glucose (mmol|L)');
 
   List<String> idealBloodPressure = idealBP.split("/");
 
+  // percent difference calculations
   double percentageSys =
       (patientSystolic - int.parse(idealBloodPressure[0])).abs() /
           int.parse(idealBloodPressure[0]) *
@@ -69,6 +81,7 @@ Future<String> getAverageResults(uid) async {
   int avgPercentageBP =
       int.parse(((percentageDia + percentageSys) / 2).toStringAsFixed(0));
 
+  // warning will remain false unless the patient's average BP is above 150/90mmHg
   warning = false;
   if (patientSystolic >= 150 || patientDiastolic >= 90) {
     print("warning");
@@ -77,5 +90,6 @@ Future<String> getAverageResults(uid) async {
         'Warning: your average blood pressure is above 150/90 mmHg. This is considered to be hypertension, please contact your physician.';
   }
 
+  // Summary message for the summary card on the health analysis form
   return 'Your average blood pressure is $patientSystolic/$patientDiastolic mmHg \n\nThis is roughly $avgPercentageBP% away from the ideal blood pressure of $idealBP mmHg for your demographic.';
 }

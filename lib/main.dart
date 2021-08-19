@@ -51,9 +51,11 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
+// Constant for list of cameras
 List<CameraDescription> cameras = [];
 
 Future<void> main() async {
+  // Initializes cameras
   WidgetsFlutterBinding.ensureInitialized();
   try {
     cameras = await availableCameras();
@@ -61,6 +63,8 @@ Future<void> main() async {
     cameras = [];
     print(e);
   }
+
+  // Initializes firebase
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -105,6 +109,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Mobile Health App',
+      // Below is the App theme, if something is meant to be consistent
+      // throughout the entire app, please implement it here rather than
+      // everywhere it is used.
       theme: ThemeData(
         appBarTheme: AppBarTheme(
           backwardsCompatibility: false,

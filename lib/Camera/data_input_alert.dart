@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// DataInputAlert class object for easier formatting of a AlertDialog
 class DataInputAlert {
   DataInputAlert({
     @required this.onPressed,

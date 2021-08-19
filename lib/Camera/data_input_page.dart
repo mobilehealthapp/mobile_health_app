@@ -3,10 +3,13 @@ import 'input_constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'data_input_alert.dart';
 import 'data_transfer.dart';
+import 'package:mobile_health_app/Constants.dart';
 
 String dataType = '';
 Data inputtedData = Data(null, null, null);
 
+// This is the Data input page where users manually enter their data before
+// proceeding to the camera/OCR functionality part of the app
 class DataInput extends StatefulWidget {
   @override
   _DataInputState createState() => _DataInputState();
@@ -17,21 +20,22 @@ class _DataInputState extends State<DataInput> {
 
   String? selectedDataType = dataTypes[0];
 
-  DropdownButton<String> androidDropdown() {
+  // Dropdown menu for the data type selection
+  DropdownButton<String> dropdownMenu() {
+    // Below is the list of data types formatted as DropdownMenuItems
     List<DropdownMenuItem<String>> dropdownItems = [];
     for (String dataType in dataTypes) {
       var newItem = DropdownMenuItem(
         child: Text(
           dataType,
-          style: kTextStyle,
+          style: kDropdownTextStyle,
         ),
         value: dataType,
       );
       dropdownItems.add(newItem);
     }
-
     // Dropdown menu to select a data type
-    // once a type is selected, the corresponding text fields will appear
+    // Once a type is selected, the corresponding text fields will appear
     return DropdownButton<String>(
       value: selectedDataType,
       items: dropdownItems,
@@ -89,12 +93,12 @@ class _DataInputState extends State<DataInput> {
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Text(
                 'Data type:',
-                style: kTextStyle,
+                style: kDropdownTextStyle,
               ),
               SizedBox(
                 width: 15.0,
               ),
-              androidDropdown(),
+              dropdownMenu(),
             ]),
             textFields,
             // Elevated button below: the submit button for this page
