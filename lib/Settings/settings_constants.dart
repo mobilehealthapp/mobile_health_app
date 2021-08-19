@@ -32,6 +32,7 @@ final kLabelStyle = GoogleFonts.rubik(
     color: Colors.white,
   ),
 );
+
 final kRedButtonStyle = ElevatedButton.styleFrom(
   // used on delete my data/account buttons
   primary: Colors.red[900],
@@ -42,6 +43,7 @@ final kRedButtonStyle = ElevatedButton.styleFrom(
 );
 
 final kSettingsCardStyle = ElevatedButton.styleFrom(
+  // style of settings cards (buttons) that take user to another page upon being pressed
   primary: Color(0xFF607D8B),
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(10.0),
@@ -65,17 +67,25 @@ final kConfirm = ElevatedButton.styleFrom(
   fixedSize: Size.fromHeight(40.0),
 );
 
+final kTextStyle1 =
+    TextStyle(fontSize: 15.0, fontWeight: FontWeight.w400, color: Colors.black);
+
+final kTextStyle2 =
+TextStyle(fontSize: 20.0, fontWeight: FontWeight.w400, color: Colors.black);
+
 Widget textFieldLabel(label) {
   // label that appears above text fields
   return Text(
     label,
-    style: TextStyle(
-        fontSize: 15.0, fontWeight: FontWeight.w400, color: Colors.black),
+    style: kTextStyle1,
   );
 }
 
 final kAlertTextStyle = TextStyle(
-  // used as the text style for the actions on alerts (the 'confirm', 'okay', 'cancel', etc. buttons at the bottom)
+  /*
+ used as the text style for the actions on alerts (the 'confirm', 'okay',
+ 'cancel', etc. buttons at the bottom)
+  */
   fontSize: 16.0,
   color: kPrimaryColour,
 );

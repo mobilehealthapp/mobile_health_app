@@ -7,7 +7,7 @@ class PrivacyPolicy extends StatefulWidget {
 }
 
 class _PrivacyPolicyState extends State<PrivacyPolicy> {
-  // this page is where privacy policy will be displayed; needs to be written by future students
+  // TODO: Write Privacy Policy and display it here
 
   @override
   Widget build(BuildContext context) {

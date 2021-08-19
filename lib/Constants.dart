@@ -20,8 +20,6 @@ final kAppBarLabelStyle = GoogleFonts.rubik(
   ),
 );
 
-const Color1 = Colors.grey;
-
 const kPrimaryColour =
     Color(0xFF1B4DA8); // primary colour of app theme (app bars, accents, etc.)
 const kSecondaryColour =

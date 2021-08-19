@@ -7,19 +7,21 @@ import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/Settings/settings_constants.dart';
 import 'package:mobile_health_app/Authentication/database_auth_services.dart';
 
-final patientRef = FirebaseFirestore.instance
-    .collection('patientprofile'); // create this as global variable
-var first; // first name
-var last; // last name
+final patientRef = FirebaseFirestore.instance.collection(
+    'patientprofile'); // CollectionReference used to access patient's profile data on Firestore
+
 var adr; // home address
 var age; // age
-var dob; // date of birth
-var wt; // weight
-var ht; // height
-var meds; // medications that the patient is on
 var conds; // medical conditions that the patient has
-var tele; // telephone number
+var dob; // date of birth
+var first; // first name
+var ht; // height
+var last; // last name
+var meds; // medications that the patient is on
+var province; // province or territory
 var sex; // sex of patient
+var tele; // telephone number
+var wt; // weight
 
 class ProfileEdit extends StatefulWidget {
   const ProfileEdit({Key? key}) : super(key: key);
@@ -34,69 +36,71 @@ class _ProfileEditState extends State<ProfileEdit> {
   var uid;
   bool showSpinner = false;
 
-  TextEditingController firstTEC = TextEditingController();
-  TextEditingController lastTEC = TextEditingController();
-  TextEditingController ageTEC = TextEditingController();
-  TextEditingController dobTEC = TextEditingController();
-  TextEditingController medsTEC = TextEditingController();
-  TextEditingController condsTEC = TextEditingController();
-  TextEditingController wtTEC = TextEditingController();
-  TextEditingController htTEC = TextEditingController();
-  TextEditingController teleTEC = TextEditingController();
   TextEditingController adrTEC = TextEditingController();
+  TextEditingController ageTEC = TextEditingController();
+  TextEditingController condsTEC = TextEditingController();
+  TextEditingController dobTEC = TextEditingController();
+  TextEditingController firstTEC = TextEditingController();
+  TextEditingController htTEC = TextEditingController();
+  TextEditingController lastTEC = TextEditingController();
+  TextEditingController medsTEC = TextEditingController();
+  TextEditingController teleTEC = TextEditingController();
+  TextEditingController wtTEC = TextEditingController();
 
   void updateProfile() {
     // this function tells code that if the user does not enter anything
     // in a specific text field, don't change it in Firestore
     setState(
       () {
-        if (firstTEC.text == '') {
-          first = first;
+        if (adrTEC.text == '') {
+          adr = adr;
         } else
-          first = firstTEC.text;
-
-        if (lastTEC.text == '') {
-          last = last;
-        } else
-          last = lastTEC.text;
+          adr = adrTEC.text;
 
         if (ageTEC.text == '') {
           age = age;
         } else
           age = ageTEC.text;
 
+        if (condsTEC.text == '') {
+          conds = conds;
+        } else
+          conds = condsTEC.text;
+
         if (dobTEC.text == '') {
           dob = dob;
         } else
           dob = dobTEC.text;
+
+        if (firstTEC.text == '') {
+          first = first;
+        } else
+          first = firstTEC.text;
+
+        if (htTEC.text == '') {
+          ht = ht;
+        } else
+          ht = htTEC.text;
+
+        if (lastTEC.text == '') {
+          last = last;
+        } else
+          last = lastTEC.text;
 
         if (medsTEC.text == '') {
           meds = meds;
         } else
           meds = medsTEC.text;
 
-        if (condsTEC.text == '') {
-          conds = conds;
+        if (teleTEC.text == '') {
+          tele = tele;
         } else
-          conds = condsTEC.text;
+          tele = teleTEC.text;
 
         if (wtTEC.text == '') {
           wt = wt;
         } else
           wt = wtTEC.text;
-
-        if (htTEC.text == '') {
-          ht = ht;
-        } else
-          ht = htTEC.text;
-        if (teleTEC.text == '') {
-          tele = tele;
-        } else
-          tele = teleTEC.text;
-        if (adrTEC.text == '') {
-          adr = adr;
-        } else
-          adr = adrTEC.text;
       },
     );
   }
@@ -128,17 +132,18 @@ class _ProfileEditState extends State<ProfileEdit> {
     final DocumentSnapshot patientInfo = await patientRef.doc(uid).get();
     setState(
       () {
-        first = patientInfo.get('first name');
-        last = patientInfo.get('last name');
         adr = patientInfo.get('address');
         age = patientInfo.get('age');
-        dob = patientInfo.get('dob');
-        wt = patientInfo.get('wt');
-        ht = patientInfo.get('ht');
-        meds = patientInfo.get('meds');
         conds = patientInfo.get('conds');
-        tele = patientInfo.get('tele');
+        dob = patientInfo.get('dob');
+        first = patientInfo.get('first name');
+        ht = patientInfo.get('ht');
+        last = patientInfo.get('last name');
+        meds = patientInfo.get('meds');
+        province = patientInfo.get('province');
         sex = patientInfo.get('sex');
+        tele = patientInfo.get('tele');
+        wt = patientInfo.get('wt');
       },
     );
   }
@@ -207,21 +212,94 @@ class _ProfileEditState extends State<ProfileEdit> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                textFieldLabel('Province/Territory:    '),
+                DropdownButton<String>(
+                  iconDisabledColor: Colors.black,
+                  iconEnabledColor: Colors.black,
+                  value: province,
+                  hint: Text(''),
+                  style: kTextStyle2,
+                  items: [
+                    DropdownMenuItem(
+                      child: Text(''),
+                      value: '',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('AB'),
+                      value: 'AB',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('BC'),
+                      value: 'BC',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('MB'),
+                      value: 'MB',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('NB'),
+                      value: 'NB',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('NL'),
+                      value: 'NL',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('NS'),
+                      value: 'NS',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('NU'),
+                      value: 'NU',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('NWT'),
+                      value: 'NWT',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('ON'),
+                      value: 'ON',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('PEI'),
+                      value: 'PEI',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('QC'),
+                      value: 'QC',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('SK'),
+                      value: 'SK',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('YT'),
+                      value: 'YT',
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(
+                      () {
+                        province = value.toString();
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 textFieldLabel('Sex:    '),
                 DropdownButton<String>(
                   iconDisabledColor: Colors.black,
                   iconEnabledColor: Colors.black,
-                  hint: Text(
-                    'Sex',
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
                   value: sex,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.black,
-                  ),
+                  hint: Text(''),
+                  style: kTextStyle2,
                   items: [
                     DropdownMenuItem(
                       child: Text(''),
@@ -327,16 +405,16 @@ class _ProfileEditState extends State<ProfileEdit> {
                         () {
                           // if the user presses 'cancel', do not change any values
                           // in Firestore, even if there are new values in some text fields and exit page
-                          first = first;
-                          last = last;
-                          age = age;
-                          dob = dob;
-                          meds = meds;
-                          conds = conds;
-                          wt = wt;
-                          ht = ht;
-                          tele = tele;
                           adr = adr;
+                          age = age;
+                          conds = conds;
+                          dob = dob;
+                          first = first;
+                          ht = ht;
+                          last = last;
+                          meds = meds;
+                          tele = tele;
+                          wt = wt;
                           Navigator.pop(context);
                         },
                       );
@@ -360,32 +438,34 @@ class _ProfileEditState extends State<ProfileEdit> {
                           showSpinner = true;
                           updateProfile();
                           DatabaseAuth(uid: loggedInUser.uid).updatePatientData(
-                            first,
-                            last,
-                            age,
-                            dob,
-                            sex,
-                            ht,
-                            wt,
-                            conds,
-                            meds,
-                            tele,
                             adr,
+                            age,
+                            conds,
+                            dob,
+                            first,
+                            ht,
+                            last,
+                            meds,
+                            province,
+                            sex,
+                            tele,
+                            wt,
                           );
                           Navigator.pop(
                             context,
                             {
-                              first,
-                              last,
+                              adr,
                               age,
-                              dob,
-                              sex,
-                              ht,
-                              wt,
                               conds,
+                              dob,
+                              first,
+                              ht,
+                              last,
                               meds,
+                              province,
+                              sex,
                               tele,
-                              adr
+                              wt,
                             },
                           );
                           setState(

@@ -3,17 +3,19 @@ import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/Settings/settings_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'settings_card.dart';
+import 'settings_classes.dart';
 
-final doctorRef = FirebaseFirestore.instance
-    .collection('doctorprofile'); // CollectionReference used to access doctor's profile data on Firestore
-var drFirst; // first name
-var drLast; // last name
-var quali; // qualifications
-var drTele; // telephone number (clinic)
-var fax; // fax number (clinic)
+final doctorRef = FirebaseFirestore.instance.collection(
+    'doctorprofile'); // CollectionReference used to access doctor's profile data on Firestore
+
 var clinicAdr; // clinic address
 var doctorCode; // unique access code assigned to doctor when they sign up for app
+var drFirst; // first name
+var drLast; // last name
+var drTele; // telephone number (clinic)
+var fax; // fax number (clinic)
+var province; // province or territory
+var quali; // qualifications
 
 class DrProfilePage extends StatefulWidget {
   const DrProfilePage({Key? key}) : super(key: key);
@@ -54,13 +56,14 @@ class _DrProfilePageState extends State<DrProfilePage> {
     final DocumentSnapshot doctorInfo = await doctorRef.doc(uid).get();
     setState(
       () {
+        clinicAdr = doctorInfo.get('clinicAddress');
+        doctorCode = doctorInfo.get('access code');
         drFirst = doctorInfo.get('first name');
         drLast = doctorInfo.get('last name');
         drTele = doctorInfo.get('tele');
-        quali = doctorInfo.get('quali');
         fax = doctorInfo.get('fax');
-        clinicAdr = doctorInfo.get('clinicAddress');
-        doctorCode = doctorInfo.get('access code');
+        province = doctorInfo.get('province');
+        quali = doctorInfo.get('quali');
       },
     );
   }
@@ -80,6 +83,9 @@ class _DrProfilePageState extends State<DrProfilePage> {
           ),
           ProfileTab(
             editAnswer: 'Qualifications: $quali',
+          ),
+          ProfileTab(
+            editAnswer: 'Province/Territory: $province',
           ),
           ProfileTab(
             editAnswer: 'Unique Code: $doctorCode',

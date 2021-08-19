@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/Settings/my_doctor_profile.dart';
 
-import 'settings_card.dart';
+import 'settings_classes.dart';
 import 'settings_constants.dart';
 
 final _firestore = FirebaseFirestore.instance;

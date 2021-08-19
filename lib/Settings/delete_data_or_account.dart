@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'settings_constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_health_app/Authentication/database_auth_services.dart';
-import 'settings_card.dart';
+import 'settings_classes.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 var loggedInUser;

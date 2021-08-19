@@ -9,7 +9,7 @@ class MedicalDisclaimer extends StatefulWidget {
 }
 
 class _MedicalDisclaimerState extends State<MedicalDisclaimer> {
-  // this page is where medical disclaimer will be displayed; needs to be written by future students
+   // TODO: Write Medical Disclaimer and display it here
 
   @override
   Widget build(BuildContext context) {

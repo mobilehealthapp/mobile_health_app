@@ -1,3 +1,4 @@
+// flutter packages imports
 import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -5,16 +6,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/services.dart';
-import 'package:mobile_health_app/Constants.dart';
-import 'package:mobile_health_app/Settings/delete_data_or_account.dart';
-import 'package:mobile_health_app/Settings/my_doctor_profile.dart';
-import 'package:mobile_health_app/Authentication/splashscreen.dart';
-import 'package:mobile_health_app/Authentication/welcome_screen.dart';
-import 'package:mobile_health_app/Analysis/health_analysis.dart';
 
+// camera/data input imports
 import 'Camera/camera_input.dart';
 import 'Camera/data_input_page.dart';
-import 'package:mobile_health_app/Physician side/physHome.dart';
+
+// home page imports
+import 'Physician side/physHome.dart';
+import 'package:mobile_health_app/Home page/HomePage.dart';
+import 'Constants.dart';
+
+// settings imports
 import 'Settings/add_a_doctor.dart';
 import 'Settings/dr_profile.dart';
 import 'Settings/dr_profileEdit.dart';
@@ -26,14 +28,20 @@ import 'Settings/profile_edit.dart';
 import 'Settings/profile_tab.dart';
 import 'Settings/settings.dart';
 import 'Settings/terms_and_conditions.dart';
+import 'Settings/delete_data_or_account.dart';
+import 'Settings/my_doctor_profile.dart';
 
-import 'package:mobile_health_app/Home page/HomePage.dart';
+// analysis imports
 import 'package:mobile_health_app/Analysis/health_analysis_form.dart';
-import 'Physician side/physHome.dart';
+import 'Analysis/health_analysis.dart';
+
+// authentication imports
 import 'Authentication/loginpage.dart';
 import 'Authentication/passwordreset.dart';
 import 'Authentication/signup.dart';
 import 'Authentication/verify.dart';
+import 'Authentication/splashscreen.dart';
+import 'Authentication/welcome_screen.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -128,6 +136,10 @@ class MyApp extends StatelessWidget {
       initialRoute:
           '/splash', //FirebaseAuth.instance.currentUser != null ? '/home' : '/',
       routes: {
+        /*
+        named routes like these make it easier to navigate within the app and clean the code
+        they mean files require less imports as they are all named here
+         */
         "/splash": (context) => SplashScreen(),
         '/': (context) => WelcomeScreen(),
         '/login': (context) => LoginPage(),

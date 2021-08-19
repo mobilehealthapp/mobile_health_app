@@ -117,12 +117,12 @@ class Charts extends StatelessWidget {
       required this.yStart,
       required this.units});
 
-  List<FlSpot> list = [];
-  final double? xLength;
-  final double? yLength;
-  final double? yStart;
-  final bool bool1;
-  final String units;
+  List<FlSpot> list = []; // list of data to display as fl spots
+  final double? xLength; // length of x-axis
+  final double? yLength; // length of y-axis
+  final double? yStart; // at what value does the y-axis start?
+  final bool bool1; // show dots? yes (true) for home page, no (false) for health analysis
+  final String units; // units of measurement (display along y-axis)
 
   @override
   Widget build(BuildContext context) {
@@ -185,13 +185,13 @@ class Charts2 extends StatelessWidget {
       required this.yStart,
       required this.units});
 
-  List<FlSpot> list = [];
-  List<FlSpot> list2 = [];
-  final double? xLength;
-  final double? yLength;
-  final double? yStart;
-  final bool bool1;
-  final String units;
+  List<FlSpot> list = [];  // list of data to display as fl spots
+  List<FlSpot> list2 = [];  // another list of data to display as fl spots (need to for BP)
+  final double? xLength; // length of x-axis
+  final double? yLength; // length of y-axis
+  final double? yStart; // at what value does the y-axis start?
+  final bool bool1; // show dots? yes (true) for home page, no (false) for health analysis
+  final String units; // units of measurement (display along y-axis)
 
   @override
   Widget build(BuildContext context) {
@@ -273,11 +273,11 @@ class Charts3 extends StatelessWidget {
   });
 
   List<FlSpot> list = [];
-  final double? xLength;
-  final double? yLength;
-  final double? yStart;
-  final bool bool1;
-  final String units;
+  final double? xLength; // length of x-axis
+  final double? yLength; // length of y-axis
+  final double? yStart; // at what value does the y-axis start?
+  final bool bool1; // show dots? yes (true) for home page, no (false) for health analysis
+  final String units; // units of measurement (display along y-axis)
 
   @override
   Widget build(BuildContext context) {

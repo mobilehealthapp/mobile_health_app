@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/Drawers/drawers.dart';
-import 'package:mobile_health_app/graphs/graphData.dart';
+import 'package:mobile_health_app/Graphs/graphData.dart';
 import '/Drawers/drawers.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,21 +31,29 @@ late int numberOfHRPoints = 0;
 var varianceBG; // BG variables
 var standardDeviationBG;
 var avgGlucose;
+var firstBG;
+var lastBG;
 List bg = [];
 
 var varianceHR; // HR variables
 var standardDeviationHR;
 var avgHeartRate;
+var firstHR;
+var lastHR;
 List hr = [];
 
 var variancePressureSys; // systolic BP variables
 var standardDeviationSys;
 var avgPressureSys;
+var firstSys;
+var lastSys;
 List sys = [];
 
 var variancePressureDia; // diastolic BP variables
 var standardDeviationDia;
 var avgPressureDia;
+var firstDia;
+var lastDia;
 List dia = [];
 
 class HealthAnalysis extends StatefulWidget {
@@ -54,35 +62,44 @@ class HealthAnalysis extends StatefulWidget {
 }
 
 class _HealthAnalysisState extends State<HealthAnalysis> {
-  bool isBGFilled = true;
-  bool isBPFilled = true;
-  bool isHRFilled = true;
-
   bgGet() async {
-    // get BG info (used to calculate variance, standard dev, and range)
+    // calculates standard deviation, variance, and range of BG
     bg = [];
+
     final bgData = await bloodGlucose.get();
     final value = bgData.docs;
     for (var val in value) {
+      // fetch data from firestore - and add it in the dynamic array bg.
       double bgGet = val.get('blood glucose (mmol|L)');
       bg.add(bgGet.toDouble());
-    }
+    }bg.sort();
 
-    var doubles = bg.map((e) => e as double).toList();
+    var doubles = bg
+        .map((e) => e as double)
+        .toList(); // converts dynamic list to double list
 
-    final sdv = doubles.standardDeviation();
-    print('sdv for bg is $sdv');
     setState(() {
-      standardDeviationBG = sdv.toStringAsFixed(3);
-      var sdv2 = sdv;
-      varianceBG = sqrt(sdv2).toStringAsFixed(3);
+      if (bg.length > 1) {
+        final sdv = doubles.standardDeviation();
+        standardDeviationBG =
+            sdv.toStringAsFixed(3); // show only 3 digits after the comma.
+        var sdv2 = sdv;
+        varianceBG = sqrt(sdv2).toStringAsFixed(3);
+        firstBG = bg.first;
+        lastBG = bg.last;
+      } else {
+        standardDeviationBG = 0;
+        varianceBG = 0;
+        firstBG = 0;
+        lastBG = 0;
+      }
     });
     bg.sort();
     return [standardDeviationBG, varianceBG, bg];
   }
 
   hrGet() async {
-    // get HR info (used to calculate variance, standard dev, and range)
+    // calculates standard deviation, variance, and range of HR
     hr = [];
     final hrData = await heartRate.get();
     final value = hrData.docs;
@@ -90,21 +107,30 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
       int hrGet = val.get('heart rate');
       hr.add(hrGet.toDouble());
     }
+    hr.sort();
 
     var doubles = hr.map((e) => e as double).toList();
 
-    final sdv = doubles.standardDeviation().toDouble();
-
     setState(() {
-      standardDeviationHR = sdv.truncateToDouble();
-      varianceHR = sqrt(standardDeviationHR).toStringAsFixed(3);
+      if (hr.length > 1) {
+        final sdv = doubles.standardDeviation().toDouble();
+        standardDeviationHR = sdv.truncateToDouble();
+        varianceHR = sqrt(standardDeviationHR).toStringAsFixed(3);
+        firstHR = hr.first;
+        lastHR = hr.last;
+      } else {
+        standardDeviationHR = 0;
+        varianceHR = 0;
+        firstHR = 0;
+        lastHR = 0;
+      }
     });
     hr.sort();
     return [standardDeviationHR, varianceHR, hr];
   }
 
   sysGet() async {
-    // get BP (systolic) info (used to calculate variance, standard dev, and range)
+    // calculates standard deviation, variance, and range of systolic BP
     sys = [];
     final bpData = await bloodPressure.get();
     final value = bpData.docs;
@@ -116,18 +142,33 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
 
     var doubles = sys.map((e) => e as double).toList();
 
-    final sdv = doubles.standardDeviation().toDouble();
-
     setState(() {
-      standardDeviationSys = sdv.truncateToDouble();
-      variancePressureSys = sqrt(standardDeviationSys).toStringAsFixed(3);
+      if (sys.length > 1) {
+        final sdv = doubles.standardDeviation().toDouble();
+        standardDeviationSys = sdv.truncateToDouble();
+        variancePressureSys = sqrt(standardDeviationSys).toStringAsFixed(3);
+        firstSys = sys.first;
+        lastSys = sys.last;
+      } else {
+        standardDeviationSys = 0;
+        variancePressureSys = 0;
+        firstSys = 0;
+        lastSys = 0;
+      }
     });
+
     sys.sort();
-    return [standardDeviationSys, variancePressureSys, sys];
+    return [
+      standardDeviationSys,
+      variancePressureSys,
+      sys,
+      firstSys,
+      lastSys,
+    ];
   }
 
   diaGet() async {
-    // get BP (diastolic) info (used to calculate variance, standard dev, and range)
+    // calculates standard deviation, variance, and range of diastolic BP
     dia = [];
     final bpData = await bloodPressure.get();
     final value = bpData.docs;
@@ -135,16 +176,33 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
       double bpGet = val.get('diastolic');
       dia.add(bpGet.toDouble());
     }
+    dia.sort();
+
     var doubles = dia.map((e) => e as double).toList();
 
-    final sdv = doubles.standardDeviation().toDouble();
-
     setState(() {
-      standardDeviationDia = sdv.truncateToDouble();
-      variancePressureDia = sqrt(standardDeviationDia).toStringAsFixed(3);
+      if (dia.length > 1) {
+        final sdv = doubles.standardDeviation().toDouble();
+        standardDeviationDia = sdv.truncateToDouble();
+        variancePressureDia = sqrt(standardDeviationDia).toStringAsFixed(3);
+        firstDia = dia.first;
+        lastDia = dia.last;
+      } else {
+        standardDeviationDia = 0;
+        variancePressureDia = 0;
+        firstDia = 0;
+        lastDia = 0;
+      }
     });
     dia.sort();
-    return [standardDeviationDia, variancePressureDia, dia];
+
+    return [
+      standardDeviationDia,
+      variancePressureDia,
+      dia,
+      firstDia,
+      lastDia,
+    ];
   }
 
   getNumberOfBGPoints() async {
@@ -168,24 +226,11 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     return numberOfHRPoints;
   }
 
-  getUploadedData() async {
-    // gets averages of each data type for user
-    final DocumentSnapshot uploadedData = await patientData.get();
-    setState(
-      () {
-        avgGlucose = uploadedData.get('Average Blood Glucose (mmol|L)');
-        avgPressureDia = uploadedData.get('Average Blood Pressure (diastolic)');
-        avgPressureSys = uploadedData.get('Average Blood Pressure (systolic)');
-        avgHeartRate = uploadedData.get('Average Heart Rate');
-      },
-    );
-  }
-
   Future<List<FlSpot>> getSysData() async {
     // gets list of BP (systolic) points to use in Graphs
     data1 = [];
     final bpData =
-    await patientData.collection('bloodPressure').orderBy('uploaded').get();
+        await patientData.collection('bloodPressure').orderBy('uploaded').get();
     final value = bpData.docs;
     double index2 = 1.0;
     for (var val in value) {
@@ -200,8 +245,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   Future<List<FlSpot>> getDiasData() async {
     // gets list of BP (diastolic) points to use in Graphs
     data1a = [];
-    final bpData =
-        await patientData.collection('bloodPressure').orderBy('uploaded').get();
+    final bpData = await bloodPressure.orderBy('uploaded').get();
     final value = bpData.docs;
     double index = 1.0;
     for (var val in value) {
@@ -216,8 +260,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   Future<List<FlSpot>> getBGData() async {
     // gets list of BG points to use in Graphs
     data2 = [];
-    final bgData =
-        await patientData.collection('bloodGlucose').orderBy('uploaded').get();
+    final bgData = await bloodGlucose.orderBy('uploaded').get();
     final value = bgData.docs;
     double index = 1.0;
     for (var val in value) {
@@ -228,11 +271,11 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     }
     return data2;
   }
+
   Future<List<FlSpot>> getHRData() async {
     // gets list of HR points to use in Graphs
     data3 = [];
-    final hrData =
-    await patientData.collection('heartRate').orderBy('uploaded').get();
+    final hrData = await heartRate.orderBy('uploaded').get();
     final value = hrData.docs;
     double index = 1.0;
     for (var val in value) {
@@ -244,6 +287,52 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     return data3;
   }
 
+  getUploadedData() async {
+    // gets averages of each data type for user
+    final bpData = await bloodPressure
+        .orderBy(
+        'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
+        .get();
+    final bpData1 = bpData.docs;
+    final bgData = await bloodGlucose
+        .orderBy(
+        'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
+        .get();
+    final bgData1 = bgData.docs;
+    final hrData = await heartRate
+        .orderBy(
+        'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
+        .get();
+    final hrData1 = hrData.docs;
+    final DocumentSnapshot uploadedData = await patientData.get();
+    setState(
+          () {
+        if (bpData1.isNotEmpty) {
+          avgPressureSys =
+              uploadedData.get('Average Blood Pressure (systolic)');
+        } else {
+          avgPressureSys = 0;
+        }
+        if (bpData1.isNotEmpty) {
+          avgPressureDia =
+              uploadedData.get('Average Blood Pressure (diastolic)');
+        } else {
+          avgPressureDia = 0;
+        }
+        if (bgData1.isNotEmpty) {
+          avgGlucose = uploadedData.get('Average Blood Glucose (mmol|L)');
+        } else {
+          avgGlucose = 0;
+        }
+        if (hrData1.isNotEmpty) {
+          avgHeartRate = uploadedData.get('Average Heart Rate');
+        } else {
+          avgHeartRate = 0;
+        }
+      },
+    );
+  }
+
   @override
   void initState() {
     // initialize functions
@@ -251,11 +340,11 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     hrGet();
     diaGet();
     sysGet();
-    getUploadedData();
     getHRData();
     getSysData();
     getDiasData();
     getBGData();
+    getUploadedData();
     getNumberOfBPPoints();
     getNumberOfBGPoints();
     getNumberOfHRPoints();
@@ -292,69 +381,27 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
             child: data1.isNotEmpty
                 // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
                 ? extractData()
-                : Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Center(
-                      child: NoDataCard(
-                        child: Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Text(
-                            'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                : NoDataCard(
+                    textBody:
+                        'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.',
                   ),
           ),
           Container(
             child: data2.isNotEmpty
                 // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
                 ? extractData2()
-                : Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Center(
-                      child: NoDataCard(
-                        child: Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Text(
-                            'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                : NoDataCard(
+                    textBody:
+                        'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.',
                   ),
           ),
           Container(
             child: data3.isNotEmpty
                 // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
                 ? extractData3()
-                : Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Center(
-                      child: NoDataCard(
-                        child: Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Text(
-                            'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                : NoDataCard(
+                    textBody:
+                        'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.',
                   ),
           ),
           SizedBox(
@@ -383,14 +430,21 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           list: data1,
           list2: data1a,
         ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            NewLegend(name: 'Systolic', color: Colors.black),
+            NewLegend(name: 'Diastolic', color: Colors.red),
+          ],
+        ),
         FullSummaryCard(
           avgValue: '$avgPressureSys/$avgPressureDia mmHg',
           varValue: '$variancePressureSys/$variancePressureDia mmHg',
           sdValue: '$standardDeviationSys/$standardDeviationDia mmHg',
-          range: 'range',
-          // range: '${sys[0]}/${dia[0]} - ${sys[numberOfBPPoints -
-          //     1]}/${dia[numberOfBPPoints - 1]}',
-          //range: '${sys.first} - ${sys.last}/' '${dia.first} - ${dia.last}',
+          range: '$firstSys/$firstDia - $lastSys/$lastDia',
+        ),
+        SizedBox(
+          height: 20.0,
         ),
       ],
     );
@@ -417,9 +471,10 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           avgValue: '$avgGlucose mmol/L',
           varValue: '$varianceBG mmol/L',
           sdValue: '$standardDeviationBG mmol/L',
-          range: 'range',
-          // range: '${bg[0]} - ${bg[numberOfBGPoints - 1]}',
-          //range: '${bg.first} - ${bg.last}',
+          range: '$firstBG - $lastBG',
+        ),
+        SizedBox(
+          height: 20.0,
         ),
       ],
     );
@@ -446,8 +501,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           avgValue: '$avgHeartRate BPM',
           varValue: '$varianceHR BPM',
           sdValue: '  $standardDeviationHR BPM',
-          range: 'range',
-          // range: '${hr[0]} - ${hr[numberOfHRPoints - 1]}',
+          range: '$firstHR - $lastHR',
         ),
       ],
     );
@@ -455,22 +509,37 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
 }
 
 class NoDataCard extends StatelessWidget {
-  // card to show if user has no data of specific type
-  final Widget child;
+  // card to display when user has no data of certain (or all) type(s)
+  final String textBody;
 
-  NoDataCard({required this.child});
+  NoDataCard({required this.textBody});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: child,
-      ),
-      margin: EdgeInsets.all(15.0),
-      decoration: BoxDecoration(
-        color: Color(0xFF607D8B),
-        borderRadius: BorderRadius.circular(10.0),
+    return Padding(
+      padding: EdgeInsets.all(10.0),
+      child: Center(
+        child: Container(
+          child: Padding(
+            padding: EdgeInsets.all(15.0),
+            child: Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Text(
+                textBody,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20.0,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          margin: EdgeInsets.all(15.0),
+          decoration: BoxDecoration(
+            color: Color(0xFF607D8B),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+        ),
       ),
     );
   }

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_health_app/graphs/graph_info.dart';
 import 'package:mobile_health_app/Drawers/drawers.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'package:mobile_health_app/graphs/graphData.dart';
+import 'package:mobile_health_app/Graphs/graphData.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:mobile_health_app/Analysis/health_analysis.dart';
 
@@ -13,11 +13,18 @@ final patientData = FirebaseFirestore.instance.collection('patientData').doc(
         .uid); // DocumentReference used to access patient's uploaded medical data on Firestore
 final patientRef = FirebaseFirestore.instance.collection(
     'patientprofile'); // CollectionReference used to access patient's profile data on Firestore
-var name; //declare variable high up in file
-var avgGlucose;
-var avgPressureDia;
-var avgPressureSys;
-var avgHeartRate;
+var bloodGlucose = patientData.collection(
+    'bloodGlucose'); // CollectionReference used to access patient's BG data
+var bloodPressure = patientData.collection(
+    'bloodPressure'); // CollectionReference used to access patient's BP data
+var heartRate = patientData.collection(
+    'heartRate'); // CollectionReference used to access patient's HR data
+
+var name; // patient's name
+var avgGlucose; // average BG
+var avgPressureDia; // average diastolic BP
+var avgPressureSys; // average systolic BP
+var avgHeartRate; // average HR
 
 List<FlSpot> data1 = []; // used for systolic BP in fl_chart
 List<FlSpot> data1a = []; // used for diastolic BP in fl_chart
@@ -50,22 +57,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   getUserData(uid) async {
+    // get user's first name from Firestore collection patientprofile to display in AppBar
     final DocumentSnapshot patientInfo = await patientRef.doc(uid).get();
     setState(() {
       name = patientInfo.get('first name');
     });
-  }
-
-  getUploadedData() async {
-    final DocumentSnapshot uploadedData = await patientData.get();
-    setState(
-      () {
-        avgGlucose = uploadedData.get('Average Blood Glucose (mmol|L)');
-        avgPressureDia = uploadedData.get('Average Blood Pressure (diastolic)');
-        avgPressureSys = uploadedData.get('Average Blood Pressure (systolic)');
-        avgHeartRate = uploadedData.get('Average Heart Rate');
-      },
-    );
   }
 
   Future<List<FlSpot>> getSysData() async {
@@ -73,8 +69,8 @@ class _HomePageState extends State<HomePage> {
     data1 = [];
     final bpData = await patientData
         .collection('bloodPressure')
-        .orderBy('uploaded')
-        .limitToLast(6)
+        .orderBy('uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
+        .limitToLast(6) // only calls on last 6 docs in collection
         .get();
     final value = bpData.docs;
     double index2 = 1.0;
@@ -82,17 +78,16 @@ class _HomePageState extends State<HomePage> {
       double sys = val.get('systolic');
       data1.add(FlSpot(index2++, sys.toDouble()));
     }
-
     return data1;
   }
 
   Future<List<FlSpot>> getDiasData() async {
     // gets list of 6 most recent BP (diastolic) points to use in Graphs
     data1a = [];
-    final bpData = await patientData
-        .collection('bloodPressure')
-        .orderBy('uploaded')
-        .limitToLast(6)
+    final bpData = await bloodPressure
+        .orderBy(
+            'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
+        .limitToLast(6) // only calls on last 6 docs in collection
         .get();
     final value = bpData.docs;
     double index = 1.0;
@@ -106,10 +101,10 @@ class _HomePageState extends State<HomePage> {
   Future<List<FlSpot>> getBGData() async {
     // gets list of 6 most recent BG points to use in Graphs
     data2 = [];
-    final bgData = await patientData
-        .collection('bloodGlucose')
-        .orderBy('uploaded')
-        .limitToLast(4)
+    final bgData = await bloodGlucose
+        .orderBy(
+            'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
+        .limitToLast(6) // only calls on last 6 docs in collection
         .get();
     final value = bgData.docs;
     double index = 1.0;
@@ -123,10 +118,10 @@ class _HomePageState extends State<HomePage> {
   Future<List<FlSpot>> getHRData() async {
     // gets list of 6 most recent HR points to use in Graphs
     data3 = [];
-    final hrData = await patientData
-        .collection('heartRate')
-        .orderBy('uploaded')
-        .limitToLast(6)
+    final hrData = await heartRate
+        .orderBy(
+            'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
+        .limitToLast(6) // only calls on last 6 docs in collection
         .get();
     final value = hrData.docs;
     double index = 1.0;
@@ -137,15 +132,62 @@ class _HomePageState extends State<HomePage> {
     return data3;
   }
 
+  getUploadedData() async {
+    // gets averages of each data type for user
+    final bpData = await bloodPressure
+        .orderBy(
+        'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
+        .get();
+    final bpData1 = bpData.docs;
+    final bgData = await bloodGlucose
+        .orderBy(
+        'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
+        .get();
+    final bgData1 = bgData.docs;
+    final hrData = await heartRate
+        .orderBy(
+        'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
+        .get();
+    final hrData1 = hrData.docs;
+    final DocumentSnapshot uploadedData = await patientData.get();
+    setState(
+      () {
+        if (bpData1.isNotEmpty) {
+          avgPressureSys =
+              uploadedData.get('Average Blood Pressure (systolic)');
+        } else {
+          avgPressureSys = 0;
+        }
+        if (bpData1.isNotEmpty) {
+          avgPressureDia =
+              uploadedData.get('Average Blood Pressure (diastolic)');
+        } else {
+          avgPressureDia = 0;
+        }
+        if (bgData1.isNotEmpty) {
+          avgGlucose = uploadedData.get('Average Blood Glucose (mmol|L)');
+        } else {
+          avgGlucose = 0;
+        }
+        if (hrData1.isNotEmpty) {
+          avgHeartRate = uploadedData.get('Average Heart Rate');
+        } else {
+          avgHeartRate = 0;
+        }
+      },
+    );
+  }
+
   @override
   void initState() {
+    // initialize functions
     getCurrentUser();
     getUserData(uid);
-    getUploadedData();
     getBGData();
     getSysData();
     getDiasData();
     getHRData();
+    getUploadedData();
     super.initState();
   }
 
@@ -170,9 +212,15 @@ class _HomePageState extends State<HomePage> {
             ),
           )
         ],
-        title: Text(
-          'Hello, $name',
-        ),
+        title: name != ''
+            ? Text(
+                // if name is not empty, display user's name
+                'Hello, $name',
+              )
+            : Text(
+                // if name is empty, remove comma to only display 'Hello'
+                'Hello',
+              ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
@@ -196,7 +244,7 @@ class _HomePageState extends State<HomePage> {
               'Recent Analysis',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 40,
+                fontSize: 40.0,
                 decoration: TextDecoration.underline,
               ),
             ),
@@ -206,68 +254,26 @@ class _HomePageState extends State<HomePage> {
           ),
           Container(
             child: data1.isNotEmpty
-                ? extractDataV2()
-                : Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Center(
-                      child: NoDataCard(
-                        child: Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Text(
-                            'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                ? extractDataV2() // if there's data, display BP graph and info
+                : NoDataCard(
+                    textBody:
+                        'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.',
                   ),
           ),
           Container(
             child: data2.isNotEmpty
-                ? extractData2V2()
-                : Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Center(
-                      child: NoDataCard(
-                        child: Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Text(
-                            'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                ? extractData2V2() // if there's data, display BG graph and info
+                : NoDataCard(
+                    textBody:
+                        'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.',
                   ),
           ),
           Container(
             child: data3.isNotEmpty
-                ? extractData3V2()
-                : Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Center(
-                      child: NoDataCard(
-                        child: Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Text(
-                            'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                ? extractData3V2() // if there's data, display HR graph and info
+                : NoDataCard(
+                    textBody:
+                        'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.',
                   ),
           ),
           SizedBox(
@@ -298,14 +304,8 @@ class _HomePageState extends State<HomePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            Legend(
-              text: 'Systolic',
-              color: Colors.black,
-            ),
-            Legend(
-              text: 'Diastolic',
-              color: Colors.red,
-            ),
+            NewLegend(name: 'Systolic', color: Colors.black),
+            NewLegend(name: 'Diastolic', color: Colors.red),
           ],
         ),
         SummaryCard(
