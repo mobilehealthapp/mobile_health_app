@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+//Class containing various functions for database and authentication operations in Firebase
 
 class DatabaseAuth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -24,11 +25,15 @@ class DatabaseAuth {
   final CollectionReference doctorProfileCollection =
       FirebaseFirestore.instance.collection('doctorprofile');
 
-  final CollectionReference doctorPatientsCollection = FirebaseFirestore.instance.collection('doctorprofile');
+  final CollectionReference doctorPatientsCollection =
+      FirebaseFirestore.instance.collection('doctorprofile');
 
   Future setPatientData(String firstName, String lastName, String email,
       String accountType) async {
     return await patientProfileCollection.doc(uid).set(
+      //Called on sign-up, this function creates a document within the patient profile collection and populates it with initial patient data.
+      // The document's ID matches the UID of the user for convenience of user data management
+      //Fields with empty strings can be edited later by users from the profile page
       {
         'first name': firstName,
         'last name': lastName,
@@ -50,6 +55,7 @@ class DatabaseAuth {
   Future setDoctorData(String firstName, String lastName, String email,
       String accountType) async {
     return await doctorProfileCollection.doc(uid).set(
+      //Identical to setPatientData but for doctor accounts
       {
         'first name': firstName,
         'last name': lastName,
@@ -111,7 +117,7 @@ class DatabaseAuth {
       await user!.reauthenticateWithCredential(credentials);
       await patientDataCollection.doc(_auth.currentUser!.uid).delete();
       await patientDoctorsCollection.get().then(
-            (snapshot) {
+        (snapshot) {
           for (DocumentSnapshot ds in snapshot.docs) {
             ds.reference.delete();
           }
@@ -196,7 +202,7 @@ class DatabaseAuth {
     return patientProfileCollection.snapshots();
   }
 
-  Future updatePatientData(String firstName, lastName, age, dob, sex, ht, wt,
+  Future updatePatientData(String firstName, lastName, age, dob, sex, ht, wt, //Used in the profile edit screen, this function updates fields within the user's document with their inputted account information
       conds, meds, tele, adr) async {
     return await patientProfileCollection.doc(_auth.currentUser!.uid).update(
       {
@@ -216,7 +222,7 @@ class DatabaseAuth {
   }
 
   Future updateDoctorData(
-      String firstName, lastName, quali, fax, tele, adr) async {
+      String firstName, lastName, quali, fax, tele, adr) async { //Identical to updateDoctorData but for physician accounts
     return await doctorProfileCollection.doc(_auth.currentUser!.uid).update(
       {
         'first name': firstName,

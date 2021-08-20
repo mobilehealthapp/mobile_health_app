@@ -2,18 +2,23 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_health_app/Authentication/authentication_button.dart';
-import 'package:wc_form_validators/wc_form_validators.dart';
-import 'accountcheck.dart';
 import 'package:mobile_health_app/Constants.dart';
+import 'package:wc_form_validators/wc_form_validators.dart';
 
+import 'accountcheck.dart';
+
+//This file contains the UI elements of the login page as well as the firebase functionality of user authentication and login
+//TODO: Clean up UI, improve visual aesthetics of page if deemed necessary
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final formKey = GlobalKey<FormState>();
-  final _auth = FirebaseAuth.instance;
+  final formKey = GlobalKey<
+      FormState>(); //Form must be declared for validators to function properly
+  final _auth = FirebaseAuth
+      .instance; //_auth variable is used to perform firebase authentication functions
   bool showSpinner = false;
   var user;
   var email;
@@ -37,6 +42,7 @@ class _LoginPageState extends State<LoginPage> {
               constraints: BoxConstraints(),
               child: SafeArea(
                 child: Form(
+                  //all text fields must be wrapped in form containing formKey for validators to function
                   key: formKey,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -45,6 +51,7 @@ class _LoginPageState extends State<LoginPage> {
                         height: 25.0,
                       ),
                       Hero(
+                        //Hero widget allows for logo animations on welcome/login screen transition
                         tag: 'logo',
                         child: Container(
                           width: 200.0,
@@ -63,10 +70,12 @@ class _LoginPageState extends State<LoginPage> {
                       Container(
                         padding: EdgeInsets.all(20.0),
                         child: TextFormField(
-                          validator: Validators.required('Email is required'),
+                          validator: Validators.required(
+                              'Email is required'), //validator property of TextFormField allows for app to check that correct information has been inputted
                           keyboardType: TextInputType.emailAddress,
                           onChanged: (value) {
-                            email = value;
+                            email =
+                                value; //Value inputted into textfield is saved as a variable
                           },
                           style: TextStyle(
                             fontSize: 20,
@@ -154,8 +163,8 @@ class _LoginPageState extends State<LoginPage> {
                                 style: TextStyle(
                                     color: kPrimaryColour, fontSize: 17),
                               ),
-                              onPressed: () =>
-                                  Navigator.of(context).pushNamed('/reset'),
+                              onPressed: () => Navigator.of(context).pushNamed(
+                                  '/reset'), //Button navigates to password reset screen
                               padding: EdgeInsets.only(bottom: 20, top: 5),
                             ),
                           ],
@@ -167,32 +176,43 @@ class _LoginPageState extends State<LoginPage> {
                       AuthenticationButton(
                           label: 'Log in',
                           onPressed: () async {
-                            var areCredsValid =
-                                formKey.currentState?.validate();
+                            var areCredsValid = formKey.currentState
+                                ?.validate(); //upon login button press, state of current form is checked to see if all textfield validators are satisfied. Saved as True if valid.
                             if (areCredsValid == true) {
+                              //If validators are satisfied, attempts to log user in using inputted email and password values from textfield.
                               try {
+                                //wrapped in try/catch block to handle login errors
                                 await _auth.signInWithEmailAndPassword(
-                                    email: email, password: password);
+                                    email: email,
+                                    password:
+                                        password); //signs in user using credentials
                                 user = _auth.currentUser;
                                 if (user.emailVerified) {
+                                  //checks if user's email is verified
                                   var uid = user!.uid;
-                                  bool isPatient =
+                                  bool
+                                      isPatient = //if email is verified, checks patient's account type using functions from accountcheck.dart
                                       await patientAccountCheck(uid);
                                   bool isDoctor = await doctorAccountCheck(uid);
                                   if (isPatient) {
+                                    //Navigates to patient home page
                                     Navigator.of(context)
                                         .pushReplacementNamed('/home');
                                   } else if (isDoctor) {
+                                    //Navigates to physician home page
                                     Navigator.of(context)
                                         .pushReplacementNamed('/physHome');
                                   }
                                 } else {
+                                  //If email is not verified, navigates user to email verification screen
                                   Navigator.of(context).pushNamed('/verify');
                                   setState(() {
                                     showSpinner = false;
                                   });
                                 }
                               } catch (signInError) {
+                                //If errors occur such as incorrect email or password, they will be handled here and displayed in a 'snackbar' message
+                                //TODO: Implement logic that handles specific firebase errors and displays custom, easily-interpreted messages for each. Current code displays messages as written by firebase which are not always easy to interpret for a user
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     duration: Duration(seconds: 10),
@@ -217,7 +237,8 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(color: kPrimaryColour, fontSize: 20),
                         ),
                         onPressed: () {
-                          Navigator.of(context).pushReplacementNamed('/signup');
+                          Navigator.of(context).pushReplacementNamed(
+                              '/signup'); //Navigates user to signup page
                         },
                       ),
                     ],
