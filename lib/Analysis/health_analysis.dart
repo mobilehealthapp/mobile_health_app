@@ -9,6 +9,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '/graphs/graph_info.dart';
 import 'package:calc/calc.dart';
 
+// TODO: Make sure data refreshes when new user signs in and displays their data, NOT previous user's
+
 var patientData = FirebaseFirestore.instance.collection('patientData').doc(
     FirebaseAuth.instance.currentUser!
         .uid); // DocumentReference used to access patient's uploaded medical data on Firestore
@@ -24,37 +26,42 @@ List<FlSpot> data1a = []; // used for diastolic BP in fl_chart
 List<FlSpot> data2 = []; // used for BG in fl_chart
 List<FlSpot> data3 = []; // used for HR in fl_chart
 
+// used for lengths
 late int numberOfBGPoints = 0;
 late int numberOfBPPoints = 0;
 late int numberOfHRPoints = 0;
 
-var varianceBG; // BG variables
-var standardDeviationBG;
-var avgGlucose;
-var firstBG;
-var lastBG;
-List bg = [];
+// systolic BP variables
+var variancePressureSys; // variance of systolic BP
+var standardDeviationSys; // standard deviation of systolic BP
+var avgPressureSys; // average of systolic BP
+var firstSys; // lowest point in systolic BP's range
+var lastSys; // highest point in systolic BP's range
+List sys = []; // list of all systolic BP data points used for calculations
 
-var varianceHR; // HR variables
-var standardDeviationHR;
-var avgHeartRate;
-var firstHR;
-var lastHR;
-List hr = [];
+// diastolic BP variables
+var variancePressureDia; // variance of diastolic BP
+var standardDeviationDia; // standard deviation of diastolic BP
+var avgPressureDia; // average of diastolic BP
+var firstDia; // lowest point in diastolic BP's range
+var lastDia; // highest point in diastolic BP's range
+List dia = []; // list of all diastolic BP data points used for calculations
 
-var variancePressureSys; // systolic BP variables
-var standardDeviationSys;
-var avgPressureSys;
-var firstSys;
-var lastSys;
-List sys = [];
+// BG variables
+var varianceBG; // variance of BG
+var standardDeviationBG; // standard deviation of BG
+var avgGlucose; // average of BG
+var firstBG; // lowest point in BG's range
+var lastBG; // highest point in BG's range
+List bg = []; // list of all BG data points used for calculations
 
-var variancePressureDia; // diastolic BP variables
-var standardDeviationDia;
-var avgPressureDia;
-var firstDia;
-var lastDia;
-List dia = [];
+// HR variables
+var varianceHR; // variance of HR
+var standardDeviationHR; // standard deviation of HR
+var avgHeartRate; // average of HR
+var firstHR; // lowest point in HR's range
+var lastHR; // highest point in HR's range
+List hr = []; // list of all HR data points used for calculations
 
 class HealthAnalysis extends StatefulWidget {
   @override
@@ -62,72 +69,6 @@ class HealthAnalysis extends StatefulWidget {
 }
 
 class _HealthAnalysisState extends State<HealthAnalysis> {
-  bgGet() async {
-    // calculates standard deviation, variance, and range of BG
-    bg = [];
-
-    final bgData = await bloodGlucose.get();
-    final value = bgData.docs;
-    for (var val in value) {
-      // fetch data from firestore - and add it in the dynamic array bg.
-      double bgGet = val.get('blood glucose (mmol|L)');
-      bg.add(bgGet.toDouble());
-    }bg.sort();
-
-    var doubles = bg
-        .map((e) => e as double)
-        .toList(); // converts dynamic list to double list
-
-    setState(() {
-      if (bg.length > 1) {
-        final sdv = doubles.standardDeviation();
-        standardDeviationBG =
-            sdv.toStringAsFixed(3); // show only 3 digits after the comma.
-        var sdv2 = sdv;
-        varianceBG = sqrt(sdv2).toStringAsFixed(3);
-        firstBG = bg.first;
-        lastBG = bg.last;
-      } else {
-        standardDeviationBG = 0;
-        varianceBG = 0;
-        firstBG = 0;
-        lastBG = 0;
-      }
-    });
-    bg.sort();
-    return [standardDeviationBG, varianceBG, bg];
-  }
-
-  hrGet() async {
-    // calculates standard deviation, variance, and range of HR
-    hr = [];
-    final hrData = await heartRate.get();
-    final value = hrData.docs;
-    for (var val in value) {
-      int hrGet = val.get('heart rate');
-      hr.add(hrGet.toDouble());
-    }
-    hr.sort();
-
-    var doubles = hr.map((e) => e as double).toList();
-
-    setState(() {
-      if (hr.length > 1) {
-        final sdv = doubles.standardDeviation().toDouble();
-        standardDeviationHR = sdv.truncateToDouble();
-        varianceHR = sqrt(standardDeviationHR).toStringAsFixed(3);
-        firstHR = hr.first;
-        lastHR = hr.last;
-      } else {
-        standardDeviationHR = 0;
-        varianceHR = 0;
-        firstHR = 0;
-        lastHR = 0;
-      }
-    });
-    hr.sort();
-    return [standardDeviationHR, varianceHR, hr];
-  }
 
   sysGet() async {
     // calculates standard deviation, variance, and range of systolic BP
@@ -143,6 +84,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     var doubles = sys.map((e) => e as double).toList();
 
     setState(() {
+      // if there's more than 1 data point, calculate the values; if not, automatically set to 0
       if (sys.length > 1) {
         final sdv = doubles.standardDeviation().toDouble();
         standardDeviationSys = sdv.truncateToDouble();
@@ -181,6 +123,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     var doubles = dia.map((e) => e as double).toList();
 
     setState(() {
+      // if there's more than 1 data point, calculate the values; if not, automatically set to 0
       if (dia.length > 1) {
         final sdv = doubles.standardDeviation().toDouble();
         standardDeviationDia = sdv.truncateToDouble();
@@ -203,6 +146,75 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
       firstDia,
       lastDia,
     ];
+  }
+
+  bgGet() async {
+    // calculates standard deviation, variance, and range of BG
+    bg = [];
+
+    final bgData = await bloodGlucose.get();
+    final value = bgData.docs;
+    for (var val in value) {
+      // fetch data from firestore - and add it in the dynamic array bg.
+      double bgGet = val.get('blood glucose (mmol|L)');
+      bg.add(bgGet.toDouble());
+    }bg.sort();
+
+    var doubles = bg
+        .map((e) => e as double)
+        .toList(); // converts dynamic list to double list
+
+    setState(() {
+      // if there's more than 1 data point, calculate the values; if not, automatically set to 0
+      if (bg.length > 1) {
+        final sdv = doubles.standardDeviation();
+        standardDeviationBG =
+            sdv.toStringAsFixed(3); // show only 3 digits after the comma.
+        var sdv2 = sdv;
+        varianceBG = sqrt(sdv2).toStringAsFixed(3);
+        firstBG = bg.first;
+        lastBG = bg.last;
+      } else {
+        standardDeviationBG = 0;
+        varianceBG = 0;
+        firstBG = 0;
+        lastBG = 0;
+      }
+    });
+    bg.sort();
+    return [standardDeviationBG, varianceBG, bg];
+  }
+
+  hrGet() async {
+    // calculates standard deviation, variance, and range of HR
+    hr = [];
+    final hrData = await heartRate.get();
+    final value = hrData.docs;
+    for (var val in value) {
+      int hrGet = val.get('heart rate');
+      hr.add(hrGet.toDouble());
+    }
+    hr.sort();
+
+    var doubles = hr.map((e) => e as double).toList();
+
+    setState(() {
+      // if there's more than 1 data point, calculate the values; if not, automatically set to 0
+      if (hr.length > 1) {
+        final sdv = doubles.standardDeviation().toDouble();
+        standardDeviationHR = sdv.truncateToDouble();
+        varianceHR = sqrt(standardDeviationHR).toStringAsFixed(3);
+        firstHR = hr.first;
+        lastHR = hr.last;
+      } else {
+        standardDeviationHR = 0;
+        varianceHR = 0;
+        firstHR = 0;
+        lastHR = 0;
+      }
+    });
+    hr.sort();
+    return [standardDeviationHR, varianceHR, hr];
   }
 
   getNumberOfBGPoints() async {
@@ -307,6 +319,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     final DocumentSnapshot uploadedData = await patientData.get();
     setState(
           () {
+            // if data is not empty, calculate avgs; if empty, automatically set to 0
         if (bpData1.isNotEmpty) {
           avgPressureSys =
               uploadedData.get('Average Blood Pressure (systolic)');
@@ -383,7 +396,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                 ? extractData()
                 : NoDataCard(
                     textBody:
-                        'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.',
+                        'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
                   ),
           ),
           Container(
@@ -392,7 +405,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                 ? extractData2()
                 : NoDataCard(
                     textBody:
-                        'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.',
+                        'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
                   ),
           ),
           Container(
@@ -401,7 +414,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                 ? extractData3()
                 : NoDataCard(
                     textBody:
-                        'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.',
+                        'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
                   ),
           ),
           SizedBox(

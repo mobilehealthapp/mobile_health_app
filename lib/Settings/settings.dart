@@ -21,7 +21,6 @@ class _SettingsPageState extends State<SettingsPage> {
       body: ListView(
         children: <Widget>[
           SettingsButton(
-            // taken from settings_classes_and_widgets.dart
             route: '/profile',
             label: 'My Profile',
           ),

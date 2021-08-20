@@ -8,6 +8,8 @@ import 'package:mobile_health_app/Graphs/graphData.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:mobile_health_app/Analysis/health_analysis.dart';
 
+// TODO: Make sure data refreshes when new user signs in and displays their data, NOT previous user's
+
 final patientData = FirebaseFirestore.instance.collection('patientData').doc(
     FirebaseAuth.instance.currentUser!
         .uid); // DocumentReference used to access patient's uploaded medical data on Firestore
@@ -72,7 +74,7 @@ class _HomePageState extends State<HomePage> {
         .orderBy('uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
         .limitToLast(6) // only calls on last 6 docs in collection
         .get();
-    final value = bpData.docs;
+    final value = bpData.docs; // calls on the docs in the collection
     double index2 = 1.0;
     for (var val in value) {
       double sys = val.get('systolic');
@@ -89,7 +91,7 @@ class _HomePageState extends State<HomePage> {
             'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
         .limitToLast(6) // only calls on last 6 docs in collection
         .get();
-    final value = bpData.docs;
+    final value = bpData.docs; // calls on the docs in the collection
     double index = 1.0;
     for (var val in value) {
       double dias = val.get('diastolic');
@@ -106,7 +108,7 @@ class _HomePageState extends State<HomePage> {
             'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
         .limitToLast(6) // only calls on last 6 docs in collection
         .get();
-    final value = bgData.docs;
+    final value = bgData.docs; // calls on the docs in the collection
     double index = 1.0;
     for (var val in value) {
       double glucose = val.get('blood glucose (mmol|L)');
@@ -123,7 +125,7 @@ class _HomePageState extends State<HomePage> {
             'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
         .limitToLast(6) // only calls on last 6 docs in collection
         .get();
-    final value = hrData.docs;
+    final value = hrData.docs; // calls on the docs in the collection
     double index = 1.0;
     for (var val in value) {
       int heartRate = val.get('heart rate');
@@ -253,27 +255,27 @@ class _HomePageState extends State<HomePage> {
             height: 20.0,
           ),
           Container(
-            child: data1.isNotEmpty
-                ? extractDataV2() // if there's data, display BP graph and info
+            child: data1.isNotEmpty // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
+                ? extractDataV2()
                 : NoDataCard(
                     textBody:
-                        'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.',
+                        'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
                   ),
           ),
           Container(
-            child: data2.isNotEmpty
-                ? extractData2V2() // if there's data, display BG graph and info
+            child: data2.isNotEmpty // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
+                ? extractData2V2()
                 : NoDataCard(
                     textBody:
-                        'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.',
+                        'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
                   ),
           ),
           Container(
-            child: data3.isNotEmpty
-                ? extractData3V2() // if there's data, display HR graph and info
+            child: data3.isNotEmpty // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
+                ? extractData3V2()
                 : NoDataCard(
                     textBody:
-                        'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.',
+                        'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
                   ),
           ),
           SizedBox(

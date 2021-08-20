@@ -34,7 +34,7 @@ class AlertPatientData extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextFormField(
+          TextFormField( // text field where user must enter email address
             keyboardType: TextInputType.emailAddress,
             controller: emailController,
             decoration: kTextFieldDecoration.copyWith(hintText: 'Email'),
@@ -42,7 +42,7 @@ class AlertPatientData extends StatelessWidget {
           SizedBox(
             height: 10.0,
           ),
-          TextFormField(
+          TextFormField( // text field where user must enter password
             obscureText: true,
             controller: passwordController,
             decoration: kTextFieldDecoration.copyWith(hintText: 'Password'),
@@ -76,7 +76,7 @@ class AlertPatientAccount extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextFormField(
+          TextFormField( // text field where user must enter email address
             keyboardType: TextInputType.emailAddress,
             controller: emailController,
             decoration: kTextFieldDecoration.copyWith(hintText: 'Email'),
@@ -84,7 +84,7 @@ class AlertPatientAccount extends StatelessWidget {
           SizedBox(
             height: 10.0,
           ),
-          TextFormField(
+          TextFormField( // text field where user must enter password
             obscureText: true,
             controller: passwordController,
             decoration: kTextFieldDecoration.copyWith(hintText: 'Password'),
@@ -118,7 +118,7 @@ class AlertDoctorData extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextFormField(
+          TextFormField( // text field where user must enter email address
             keyboardType: TextInputType.emailAddress,
             controller: emailController,
             decoration: kTextFieldDecoration.copyWith(hintText: 'Email'),
@@ -126,7 +126,7 @@ class AlertDoctorData extends StatelessWidget {
           SizedBox(
             height: 10.0,
           ),
-          TextFormField(
+          TextFormField( // text field where user must enter password
             obscureText: true,
             controller: passwordController,
             decoration: kTextFieldDecoration.copyWith(hintText: 'Password'),
@@ -160,7 +160,7 @@ class AlertDoctorAccount extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextFormField(
+          TextFormField( // text field where user must enter email address
             keyboardType: TextInputType.emailAddress,
             controller: emailController,
             decoration: kTextFieldDecoration.copyWith(hintText: 'Email'),
@@ -168,7 +168,7 @@ class AlertDoctorAccount extends StatelessWidget {
           SizedBox(
             height: 10.0,
           ),
-          TextFormField(
+          TextFormField( // text field where user must enter password
             obscureText: true,
             controller: passwordController,
             decoration: kTextFieldDecoration.copyWith(hintText: 'Password'),

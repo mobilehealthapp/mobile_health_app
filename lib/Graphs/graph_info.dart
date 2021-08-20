@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
+// TODO: look into creating LineTitles for the x-axis for the health analysis page (make it easier to read)
+// TODO: see if it's possible to scroll the graph horizontally (view one week at a time but scroll to see others)
+
 class LineTitles {
   // used for y-axis line titles on BP and HR graphs
   static getTitleData() {

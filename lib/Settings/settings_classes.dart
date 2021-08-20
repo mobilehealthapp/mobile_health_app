@@ -1,11 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'settings_constants.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'alerts.dart';
-
-final patientRef = FirebaseFirestore.instance
-    .collection('patientprofile'); // create this as global variable
 
 class TabContent extends StatelessWidget {
   // used on buttons which show a chevron > meaning it will navigate to another page
@@ -75,7 +71,7 @@ class SettingsButton extends StatelessWidget {
           label: label,
         ),
         onPressed: () {
-          Navigator.of(context).pushNamed(route);
+          Navigator.of(context).pushNamed(route); // moves user to specified page
         },
         style: kSettingsCardStyle,
       ),
@@ -143,27 +139,6 @@ class ProfileTab extends StatelessWidget {
       decoration: BoxDecoration(
         color: Color(0xFF607D8B),
         borderRadius: BorderRadius.circular(10.0),
-      ),
-    );
-  }
-}
-
-class ConfirmButton extends StatelessWidget {
-  // used to press confirm on an alert
-  final String label;
-  final VoidCallback
-      onPressed; // define what happens when user presses 'confirm'
-
-  ConfirmButton(this.label, this.onPressed);
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton(
-      style: TextButton.styleFrom(minimumSize: Size(20.0, 20.0)),
-      onPressed: onPressed,
-      child: Text(
-        label,
-        style: kAlertTextStyle,
       ),
     );
   }
