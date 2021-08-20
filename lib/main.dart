@@ -40,8 +40,15 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Handling a background message ${message.messageId}');
 }
 
+// Global key for our Navigation so that we can push a route w/o context
 final GlobalKey<NavigatorState> navigator = new GlobalKey<NavigatorState>();
 
+// You need to add this in your AndroidManifest.xml
+// <meta-data
+//  android:name="com.google.firebase.messaging.default_notification_channel_id"
+//  android:value="high_importance_channel" />
+//
+// Also see the file in android/app/src/main/res/values/string.xml
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
   'high_importance_channel', // id
   'High Importance Notifications', // title
@@ -64,6 +71,13 @@ Future<void> main() async {
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
+  //This is our app icon
+  //Must be placed in android/app/src/main/drawable
+  // <meta-data
+  // android:name="com.google.firebase.messaging.default_notification_icon"
+  // android:resource="@drawable/companyicon2" />
+
+  // Add the icon image, in this case, its companyicon2, to app/src/res/drawable
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('companyicon2');
 
@@ -80,12 +94,18 @@ Future<void> main() async {
     iOS: initializationSettingsIOS,
   );
 
+  //This will handle our click if the app is in Foreground
   await flutterLocalNotificationsPlugin.initialize(initializationSettings,
       onSelectNotification: (String? payload) async {
     debugPrint('payload: $payload');
+    //A route must always start with "/"
+    //If it doesn't start with "/" we get an error
     navigator.currentState!.pushNamed('/' + '$payload');
   });
 
+  /// Create an Android Notification Channel.
+  /// We use this channel in the `AndroidManifest.xml` file to override the
+  /// default FCM channel to enable heads up notifications.
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
