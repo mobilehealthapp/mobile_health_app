@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/Drawers/PhysDrawer.dart';
-import 'delete_data_or_account.dart';
+import 'package:mobile_health_app/Settings/delete_data_or_account.dart';
 import 'settings_classes.dart';
 
 class DrSettingsPage extends StatefulWidget {
@@ -38,7 +39,8 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
           ),
           RedSettingsButton(
             label: 'Delete My Data',
-            alertBody: 'This will erase all of your data except for your email address and your account type.',
+            alertBody:
+                'This will erase all of your data except for your email address and your account type.',
             widget: AlertDoctorData(),
           ),
           RedSettingsButton(

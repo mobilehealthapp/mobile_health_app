@@ -6,6 +6,7 @@ import 'package:mobile_health_app/Constants.dart';
 import 'alerts.dart';
 import 'settings_constants.dart';
 
+//This file contains the UI and functionality for the screen that allows patients to add a doctor as an approved physician and allow the doctor to view their data
 class AddDoctors extends StatefulWidget {
   @override
   _AddDoctorsState createState() => _AddDoctorsState();
@@ -149,8 +150,10 @@ class _AddDoctorsState extends State<AddDoctors> {
                       .where('access code', isEqualTo: inputtedCode)
                       .get()
                       .then((QuerySnapshot querySnapshot) {
+                    //Looks for document where doctor access code is identical to code inputted by user
                     if (querySnapshot.docs.length == 0) {
                       ScaffoldMessenger.of(context).showSnackBar(
+                        //If no doctors are found with this code, returns alert warning patient to input correct code
                         SnackBar(
                           duration: Duration(seconds: 10),
                           backgroundColor: Colors.red,
@@ -163,6 +166,7 @@ class _AddDoctorsState extends State<AddDoctors> {
                       );
                     } else {
                       querySnapshot.docs.forEach((doc) async {
+                        //If code matches, sets doctor info in collection of patient's doctors
                         String doctorUID = doc.id;
                         FirebaseFirestore.instance
                             .collection('patientprofile')
@@ -195,10 +199,12 @@ class _AddDoctorsState extends State<AddDoctors> {
                             .doc(doctorUID)
                             .collection('doctorPatients')
                             .doc(patientUID)
-                            .update({'patientUID': patientUID});
+                            .update({
+                          'patientUID': patientUID
+                        }); //Also collects patient data from firebase and adds patient to doctor's list of patients
                       });
 
-                      Navigator.pop(context);
+                      Navigator.pop(context); //Closes add doctor screen
                     }
                   });
                 },
