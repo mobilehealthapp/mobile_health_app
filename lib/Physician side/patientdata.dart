@@ -324,50 +324,33 @@ class _PatientDataState extends State<PatientData> {
           SizedBox(
             height: 30.0,
           ),
-          Text(
-            'Blood Pressure',
-            style: kGraphTitleTextStyle,
-            textAlign: TextAlign.center,
-          ),
           Container(
-            child: extractData2(),
-          ),
-          FullSummaryCard(
-            avgValue: '$avgPressureSys/$avgPressureDia mmHg',
-            varValue: '$variancePressureSys/$variancePressureDia mmHg',
-            sdValue: '$standardDeviationSys/$standardDeviationDia mmHg',
-            range: 'range',
-            // range: '${sys[0]}/${dia[0]} - ${sys[numberOfBPPoints -
-            //     1]}/${dia[numberOfBPPoints - 1]}',
-            //range: '${sys.first} - ${sys.last}/' '${dia.first} - ${dia.last}',
-          ),
-          SizedBox(
-            height: 25.0,
-          ),
-          Text(
-            'Blood Glucose',
-            style: kGraphTitleTextStyle,
-            textAlign: TextAlign.center,
-          ),
-          Container(
-            child: extractData3(),
-          ),
-          FullSummaryCard(
-            avgValue: '$avgGlucose mmol/L',
-            varValue: '$varianceBG mmol/L',
-            sdValue: '$standardDeviationBG mmol/L',
-            range: 'range',
-            // range: '${bg[0]} - ${bg[numberOfBGPoints - 1]}',
-            //range: '${bg.first} - ${bg.last}',
+            child: data2.isNotEmpty
+                ? extractData2()
+                : NoDataCard(
+                    textBody:
+                        'The patient hasnt uploaded any data for Blood pressure'),
           ),
           SizedBox(
             height: 25.0,
           ),
           Container(
-              child: isHRFilled
-                  ? extractData()
-                  : Text(
-                      'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.')),
+            child: data3.isNotEmpty
+                ? extractData3()
+                : NoDataCard(
+                    textBody:
+                        'The patient hasnt uploaded any data for Blood pressure'),
+          ),
+          SizedBox(
+            height: 25.0,
+          ),
+          Container(
+            child: data1.isNotEmpty
+                ? extractData()
+                : NoDataCard(
+                    textBody:
+                        'The patient hasnt uploaded any data for Blood pressure'),
+          ),
         ],
       ),
     );
@@ -403,27 +386,97 @@ class _PatientDataState extends State<PatientData> {
 
   Widget extractData2() {
     // graph of BP data
-    return Charts2(
-      units: 'mmHg',
-      yStart: 10,
-      bool1: false,
-      yLength: 180,
-      xLength: numberOfBPPoints.toDouble(),
-      list: data2,
-      list2: data2a,
+    return Column(
+      children: [
+        Text(
+          'Blood Pressure',
+          style: kGraphTitleTextStyle,
+          textAlign: TextAlign.center,
+        ),
+        Charts2(
+          units: 'mmHg',
+          yStart: 10,
+          bool1: false,
+          yLength: 180,
+          xLength: numberOfBPPoints.toDouble(),
+          list: data2,
+          list2: data2a,
+        ),
+        FullSummaryCard(
+          avgValue: '$avgPressureSys/$avgPressureDia mmHg',
+          varValue: '$variancePressureSys/$variancePressureDia mmHg',
+          sdValue: '$standardDeviationSys/$standardDeviationDia mmHg',
+          range: 'range',
+          // range: '${sys[0]}/${dia[0]} - ${sys[numberOfBPPoints -
+          //     1]}/${dia[numberOfBPPoints - 1]}',
+          //range: '${sys.first} - ${sys.last}/' '${dia.first} - ${dia.last}',
+        ),
+      ],
     );
   }
 
   Widget extractData3() {
     // graph of BG data
-    return Charts3(
-      units: 'mmol/L',
-      yStart: 0,
-      bool1: false,
-      yLength: 10,
-      xLength: numberOfBGPoints.toDouble(),
-      list: data3,
-    );
+    return Column(children: [
+      Text(
+        'Blood Glucose',
+        style: kGraphTitleTextStyle,
+        textAlign: TextAlign.center,
+      ),
+      Charts3(
+        units: 'mmol/L',
+        yStart: 0,
+        bool1: false,
+        yLength: 10,
+        xLength: numberOfBGPoints.toDouble(),
+        list: data3,
+      ),
+      FullSummaryCard(
+        avgValue: '$avgGlucose mmol/L',
+        varValue: '$varianceBG mmol/L',
+        sdValue: '$standardDeviationBG mmol/L',
+        range: 'range',
+        // range: '${bg[0]} - ${bg[numberOfBGPoints - 1]}',
+        //range: '${bg.first} - ${bg.last}',
+      ),
+    ]);
     // DoctorList()
+  }
+}
+
+class NoDataCard extends StatelessWidget {
+  // card to display when user has no data of certain (or all) type(s)
+  final String textBody;
+
+  NoDataCard({required this.textBody});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(10.0),
+      child: Center(
+        child: Container(
+          child: Padding(
+            padding: EdgeInsets.all(15.0),
+            child: Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Text(
+                textBody,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20.0,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          margin: EdgeInsets.all(15.0),
+          decoration: BoxDecoration(
+            color: Color(0xFF607D8B),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+        ),
+      ),
+    );
   }
 }
