@@ -35,6 +35,7 @@ class _CameraOverlayState extends State<CameraOverlay> {
   _CameraOverlayState(
       this.recognisedText, this.absoluteImageSize, this.rotation, this.size);
 
+  // activateOverlay changes the colour of a box from inactive to active
   void activateOverlay(selectedText) {
     setState(() {
       _blockColours[text.indexOf(selectedText)] =
@@ -43,6 +44,7 @@ class _CameraOverlayState extends State<CameraOverlay> {
     });
   }
 
+  // deactivateOverlay changes the colour of a box from active to inactive
   void deactivateOverlay(selectedText) {
     setState(() {
       _blockColours[text.indexOf(selectedText)] =
@@ -51,16 +53,24 @@ class _CameraOverlayState extends State<CameraOverlay> {
     });
   }
 
+  // getBoxes returns the list of boxes that contain the numeric text for the
+  // OCR output. These boxes are Stacked on top of the image preview
   List<Widget> getBoxes() {
     int count = 0;
     List<Widget> boxes = [];
     for (TextBlock block in recognisedText!.blocks) {
       for (TextLine line in block.lines) {
         for (TextElement element in line.elements) {
+          // filter out non numeric detected text
           if (element.text.contains(RegExp(r'.*[0-9]+.*'))) {
+            // Lists of block colours and border colours to make it easier
+            // to change the colour of a specific box
             _blockColours.add(Colors.blueGrey.withOpacity(0.75));
             _borderColours.add(Colors.transparent);
+
             text.add(element.text);
+
+            // Coordinates of the box (must be translated properly first)
             final left = translateX(
                 element.rect.left, rotation, size, absoluteImageSize);
             final right = translateX(
@@ -69,12 +79,20 @@ class _CameraOverlayState extends State<CameraOverlay> {
                 translateY(element.rect.top, rotation, size, absoluteImageSize);
             final bottom = translateY(
                 element.rect.bottom, rotation, size, absoluteImageSize);
+
+            // Add the box to the list of boxes
             boxes.add(
               Positioned.fromRect(
                 rect: Rect.fromLTRB(left, top, right, bottom),
                 child: FittedBox(
                   fit: BoxFit.contain,
                   child: GestureDetector(
+                    // when the box is tapped on, if it was already selected
+                    // the colour changes from green to grey and vice versa if
+                    // it wasn't selected
+                    // this also deselects the least recently tapped on box if
+                    // the user tries to select more boxes than the number of
+                    // measurements
                     onTap: () {
                       setState(() {
                         if (_blockColours[text.indexOf(element.text)] ==
@@ -115,8 +133,6 @@ class _CameraOverlayState extends State<CameraOverlay> {
         }
       }
     }
-    //print(text);
-    //print(boxes);
     return boxes;
   }
 

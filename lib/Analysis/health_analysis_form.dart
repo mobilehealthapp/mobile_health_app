@@ -17,6 +17,12 @@ List hr = [];
 List sys = [];
 List dia = [];
 
+// This page is primarily used as a proof of concept and thus requires more work
+// it essentially allows the user to fill out their information and receive
+// a summary comparing their data to what would be considered ideal for their
+// demographic
+
+// General constants used on the page
 TextStyle kTempTextStyle = TextStyle(color: Colors.white);
 Color kActiveRadioColour = Colors.cyan;
 bool warning = false;
@@ -94,6 +100,8 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      // This allows for the number keyboard to be dismissed if the user
+      // taps anywhere on the screen
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
         if (!currentFocus.hasPrimaryFocus &&
@@ -115,6 +123,7 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
           child: Container(
             child: ListView(
               children: <Widget>[
+                // Age card
                 ReusableCard(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -158,6 +167,7 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
                     ],
                   ),
                 ),
+                // Biological sex card
                 ReusableCard(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -227,6 +237,7 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
                     ],
                   ),
                 ),
+                // Diabetic card
                 ReusableCard(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -297,6 +308,7 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
                     ],
                   ),
                 ),
+                // Calculate button
                 Center(
                   child: CupertinoButton(
                     child: Text(
@@ -305,45 +317,23 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
                     ),
                     color: kPrimaryColour,
                     onPressed: () async {
-                      // if (sys.isNotEmpty) {
-                        calculate = true;
-                        getIdealBP(_age!, _sex!, (_diabetic != 'No'));
-                        String results = await getAverageResults(
-                            FirebaseAuth.instance.currentUser!.uid.toString());
-                        setState(() {
-                          resultsMessage = results;
-                          warningMessage = warningText;
-                          warning = warning;
-                        });
-                      // } else {
-                      //   showDialog(
-                      //     context: context,
-                      //     builder: (BuildContext context) {
-                      //       return AlertDialog(
-                      //         title: Text('No Data Found', textAlign: TextAlign.center,),
-                      //         content: Text(
-                      //           'There is no Blood Pressure data attached to your account. Please use the Data Input Page if you wish to add any.',
-                      //           textAlign: TextAlign.center,
-                      //         ),
-                      //         actions: [
-                      //           TextButton(
-                      //             onPressed: () =>
-                      //                 Navigator.pop(context, 'Okay'),
-                      //             child: Text(
-                      //               'Okay',
-                      //               style: kAlertTextStyle,
-                      //             ),
-                      //           ),
-                      //         ],
-                      //       );
-                      //     },
-                      //   );
-                      // }
+                      calculate = true;
+                      // Calls getIdealBP first then getAverageResults
+                      getIdealBP(_age!, _sex!, (_diabetic != 'No'));
+                      String results = await getAverageResults(
+                          FirebaseAuth.instance.currentUser!.uid.toString());
+                      setState(() {
+                        // changes the resultsMessage and potentially the warningMessage
+                        resultsMessage = results;
+                        warningMessage = warningText;
+                        warning = warning;
+                      });
                     },
                   ),
                 ),
                 calculate
                     ? ReusableCard(
+                        // Summary card
                         color: kPrimaryColour,
                         child: Text(
                           resultsMessage,
@@ -353,9 +343,10 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
                           ),
                           textAlign: TextAlign.left,
                         ))
-                    : Container(),
+                    : Container(), // empty container if there's no summary to show
                 warning
                     ? ReusableCard(
+                        // Warning card
                         color: Colors.red,
                         child: Column(
                           children: [
@@ -370,7 +361,7 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
                             ),
                           ],
                         ))
-                    : Container()
+                    : Container() // empty container if there's no warning to show
               ],
             ),
           ),
@@ -380,6 +371,7 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
   }
 }
 
+// Class used to display the components on the page
 class ReusableCard extends StatelessWidget {
   final Widget child;
   final Color? color;

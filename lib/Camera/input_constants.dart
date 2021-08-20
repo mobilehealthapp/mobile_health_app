@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-const kPrimaryColour = Color(0xFF1B4DA8);
-const kSecondaryColour = Color(0xFFDAE9F4);
-
+// Constant for the data types
 const List dataTypes = [
   'Select Data Type',
   'Blood Pressure',
@@ -10,11 +8,16 @@ const List dataTypes = [
   'Heart Rate',
 ];
 
+// Constant for number of variables required for each data type
 const List kNumberOfVariables = [
   ['Blood Pressure', 2],
   ['Blood Glucose', 1],
   ['Heart Rate', 1],
 ];
+
+// Text style for dropdown menu
+const TextStyle kDropdownTextStyle =
+    TextStyle(fontSize: 20.0, color: Colors.black);
 
 // Variables for inputted data
 double? systolicInput;
@@ -23,6 +26,9 @@ double? glucoseLevelInput;
 String? glucoseUnit;
 double? bpmInput;
 
+//////// Constants for Text fields for each data type ////////
+
+// Blood Pressure text fields
 Column bloodPressureTF = Column(
   children: [
     Row(
@@ -30,7 +36,7 @@ Column bloodPressureTF = Column(
       children: [
         Text(
           'Systolic (SYS)',
-          style: kTextStyle,
+          style: kDropdownTextStyle,
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -56,7 +62,7 @@ Column bloodPressureTF = Column(
         ),
         Text(
           'mmHg',
-          style: kTextStyle,
+          style: kDropdownTextStyle,
         )
       ],
     ),
@@ -65,7 +71,7 @@ Column bloodPressureTF = Column(
       children: [
         Text(
           'Diastolic (DIA)',
-          style: kTextStyle,
+          style: kDropdownTextStyle,
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -91,13 +97,14 @@ Column bloodPressureTF = Column(
         ),
         Text(
           'mmHg',
-          style: kTextStyle,
+          style: kDropdownTextStyle,
         )
       ],
     ),
   ],
 );
 
+// Blood Glucose text fields
 String? bloodGlucoseUnit = 'Select unit type';
 
 class BloodGlucoseTF extends StatefulWidget {
@@ -172,12 +179,13 @@ class _BloodGlucoseTFState extends State<BloodGlucoseTF> {
   }
 }
 
+// Heart Rate text fields
 Row heartRateTF = Row(
   mainAxisAlignment: MainAxisAlignment.center,
   children: [
     Text(
       'Heart Rate',
-      style: kTextStyle,
+      style: kDropdownTextStyle,
     ),
     Padding(
       padding: const EdgeInsets.all(8.0),
@@ -202,9 +210,7 @@ Row heartRateTF = Row(
     ),
     Text(
       'bpm',
-      style: kTextStyle,
+      style: kDropdownTextStyle,
     )
   ],
 );
-
-const TextStyle kTextStyle = TextStyle(fontSize: 20.0, color: Colors.black);

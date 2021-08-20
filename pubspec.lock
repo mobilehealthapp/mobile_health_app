@@ -353,7 +353,7 @@ packages:
     source: hosted
     version: "0.1.0-nullsafety-1"
   path:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: path
       url: "https://pub.dartlang.org"

@@ -11,9 +11,11 @@ import 'OCR_text_overlay.dart';
 import 'dart:ui';
 import 'input_constants.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile_health_app/Constants.dart';
 
 Data ocrData = Data(null, null, null);
 
+// Get the windowSize of the device (this is used for x and y coordinate translation)
 final windowSize =
     Size(window.physicalSize.width / 2, window.physicalSize.height / 2);
 
@@ -39,6 +41,8 @@ class _CameraAppState extends State<CameraApp> {
   final ImagePicker _picker = ImagePicker();
   bool initCamera = cameras.isNotEmpty;
 
+  // Constant for a container that appears if the cameras have not
+  // been initialized
   Container uninitializedCamera = Container(
     color: Colors.black,
     constraints: BoxConstraints.expand(),
@@ -58,6 +62,7 @@ class _CameraAppState extends State<CameraApp> {
   void initState() {
     super.initState();
     if (initCamera) {
+      // if the camera has been initialized, it starts a camera stream
       controller = CameraController(cameras[0], ResolutionPreset.high);
       controller.initialize().then((_) {
         controller.startImageStream(_processCameraImage);
@@ -76,13 +81,14 @@ class _CameraAppState extends State<CameraApp> {
     if (initCamera) {
       controller.dispose();
       textDetector.close();
-      imageCache!.clear();
+      imageCache!.clear(); // clears cache
     }
     ocrData = Data(null, null, null);
     selected = [];
     super.dispose();
   }
 
+  // Function that opens the image picker
   Future<void> _imgFromGallery() async {
     XFile? image =
         await _picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
@@ -99,13 +105,16 @@ class _CameraAppState extends State<CameraApp> {
     lastImage = [inputImage];
   }
 
+  // Function that processes an InputImage (typically called after an image
+  // has been taken (from _processCameraImage) or selected (from _imgFromGallery)
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;
     isBusy = true;
+
     final recognisedText = await textDetector.processImage(inputImage);
 
     ocrText = recognisedText;
-    //(recognisedText.text);
+
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
       imageSize = inputImage.inputImageData!.size;
@@ -114,6 +123,7 @@ class _CameraAppState extends State<CameraApp> {
     isBusy = false;
   }
 
+  // Function that processes CameraImages taken from the camera image stream
   Future _processCameraImage(CameraImage image) async {
     final WriteBuffer allBytes = WriteBuffer();
     for (Plane plane in image.planes) {
@@ -152,16 +162,19 @@ class _CameraAppState extends State<CameraApp> {
 
     final inputImage =
         InputImage.fromBytes(bytes: bytes, inputImageData: inputImageData);
+
+    // sets lastImage to be the most recent image in the stream
     lastImage = [inputImage];
-    // processImage(inputImage);
   }
 
+  // Function for the bottomNavigationBar
   Future<void> _onItemTapped(int index) async {
     _selectedIndex = index;
     switch (_selectedIndex) {
-      case 0:
+      case 0: // option labelled "Retake"
         try {
           await _initializeControllerFuture;
+          // turn on image stream & stop displaying the recent image
           if (!isStreamingImages) {
             await controller.startImageStream(_processCameraImage);
             setState(() {
@@ -175,22 +188,27 @@ class _CameraAppState extends State<CameraApp> {
           print(e);
         }
         break;
-      case 1:
+      case 1: // option labelled "Scan" or "Submit" (middle option)
         try {
           await _initializeControllerFuture;
+          // Scan feature.
+          // If the camera is streaming: take a picture, process it, then display it
           if (isStreamingImages) {
-            await controller.stopImageStream();
-            final image = await controller.takePicture();
+            await controller.stopImageStream(); // stop image stream
+            final image = await controller.takePicture(); // take a picture
             if (lastImage != []) {
-              await processImage(lastImage[0]);
+              await processImage(lastImage[0]); // process image
             }
-            pathToImage = image.path;
+            pathToImage = image.path; // set path to display image
             setState(() {
-              showImage = true;
+              showImage = true; // display image
               camera = true;
             });
             isStreamingImages = false;
           } else {
+            // Submit feature
+            // Creates the Data class object labelled ocrData containing the ocr data
+            // Note that selected is a list of the selected data (see OCR_text_overlay.dart)
             if (dataType == "Blood Glucose") {
               ocrData = Data(dataType, (selected.isEmpty) ? null : selected[0],
                   glucoseUnit);
@@ -199,10 +217,14 @@ class _CameraAppState extends State<CameraApp> {
                   (selected.length == 2) ? selected[1] : null);
             }
 
+            // Alert once they hit submit
+            // Once the user taps on submit, the alert varies based on
+            // the ocrData and inputtedData
             showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   String alertText = ocrData.ocrAlertText();
+                  // nothing was selected
                   if (selected.isEmpty) {
                     return AlertDialog(
                         title: Text('Selected value(s)'),
@@ -215,7 +237,9 @@ class _CameraAppState extends State<CameraApp> {
                             },
                           )
                         ]);
-                  } else if (!ocrData.isValid) {
+                  }
+                  // invalid ocrData
+                  else if (!ocrData.isValid) {
                     return AlertDialog(
                       title: Text('Selected value(s)'),
                       content: Text(alertText),
@@ -234,7 +258,9 @@ class _CameraAppState extends State<CameraApp> {
                         )
                       ],
                     );
-                  } else if (!ocrData.isSame(inputtedData)) {
+                  }
+                  // ocrData does not match inputtedData
+                  else if (!ocrData.isSame(inputtedData)) {
                     return AlertDialog(
                       title: Text('Selected value(s)'),
                       content: Text(
@@ -260,7 +286,9 @@ class _CameraAppState extends State<CameraApp> {
                         )
                       ],
                     );
-                  } else {
+                  }
+                  // ocrData is valid and matches inputtedData
+                  else {
                     return AlertDialog(
                       title: Text('Selected value(s)'),
                       content: Text(ocrData.ocrAlertText()),
@@ -293,7 +321,8 @@ class _CameraAppState extends State<CameraApp> {
           print(e);
         }
         break;
-      case 2:
+      case 2: // Option labelled "From photos"
+        // TODO: Fix image picker. The text detection and OCR overlay are not currently working
         try {
           if (initCamera) {
             await _initializeControllerFuture;
@@ -302,9 +331,7 @@ class _CameraAppState extends State<CameraApp> {
             }
           }
           await _imgFromGallery();
-          print(3);
           if (lastImage.isNotEmpty) {
-            print(4);
             await processImage(lastImage[0]);
           }
           setState(() {
