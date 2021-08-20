@@ -9,6 +9,8 @@ class MedicalDisclaimer extends StatefulWidget {
 }
 
 class _MedicalDisclaimerState extends State<MedicalDisclaimer> {
+   // TODO: Write Medical Disclaimer and display it here
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

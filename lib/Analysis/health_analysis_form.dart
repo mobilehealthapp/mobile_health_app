@@ -4,6 +4,18 @@ import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/Drawers/drawers.dart';
 import 'analysis_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+var patientData = FirebaseFirestore.instance
+    .collection('patientData')
+    .doc(FirebaseAuth.instance.currentUser!.uid);
+var bloodGlucose = patientData.collection('bloodGlucose');
+var bloodPressure = patientData.collection('bloodPressure');
+var heartRate = patientData.collection('heartRate');
+List bg = [];
+List hr = [];
+List sys = [];
+List dia = [];
 
 // This page is primarily used as a proof of concept and thus requires more work
 // it essentially allows the user to fill out their information and receive
@@ -30,6 +42,50 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
   String resultsMessage = '';
   bool calculate = false;
   String warningMessage = '';
+
+  bgGet() async {
+    bg = [];
+    final bgData = await bloodGlucose.get();
+    final value = bgData.docs;
+    for (var val in value) {
+      double bgGet = val.get('blood glucose (mmol|L)');
+      bg.add(bgGet.toDouble());
+    }
+    return bg;
+  }
+
+  hrGet() async {
+    hr = [];
+    final hrData = await heartRate.get();
+    final value = hrData.docs;
+    for (var val in value) {
+      int hrGet = val.get('heart rate');
+      hr.add(hrGet.toDouble());
+    }
+    return hr;
+  }
+
+  sysGet() async {
+    sys = [];
+    final bpData = await bloodPressure.get();
+    final value = bpData.docs;
+    for (var val in value) {
+      double bpGet = val.get('systolic');
+      sys.add(bpGet.toDouble());
+    }
+    return sys;
+  }
+
+  diaGet() async {
+    dia = [];
+    final bpData = await bloodPressure.get();
+    final value = bpData.docs;
+    for (var val in value) {
+      double bpGet = val.get('diastolic');
+      dia.add(bpGet.toDouble());
+    }
+    return dia;
+  }
 
   @override
   void initState() {

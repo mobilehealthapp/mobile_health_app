@@ -7,13 +7,15 @@ import 'settings_constants.dart';
 import 'package:mobile_health_app/Authentication/database_auth_services.dart';
 
 final doctorRef = FirebaseFirestore.instance
-    .collection('doctorprofile'); // create this as global variable
-var drFirst;
-var drLast;
-var quali;
-var drTele;
-var fax;
-var clinicAdr;
+    .collection('doctorprofile'); // CollectionReference used to access doctor's profile data on Firestore
+
+var clinicAdr; // clinic address
+var drFirst; // first name
+var drLast; // last name
+var drTele; // telephone number (clinic)
+var fax; // fax number (clinic)
+var province; // province or territory
+var quali; // qualifications
 
 class DrProfileEdit extends StatefulWidget {
   @override
@@ -25,14 +27,22 @@ class _DrProfileEditState extends State<DrProfileEdit> {
   var uid;
   var loggedInUser;
 
+  TextEditingController clinicAdrTEC = TextEditingController();
   TextEditingController drFirstTEC = TextEditingController();
   TextEditingController drLastTEC = TextEditingController();
-  TextEditingController qualiTEC = TextEditingController();
   TextEditingController drTeleTEC = TextEditingController();
   TextEditingController faxTEC = TextEditingController();
-  TextEditingController clinicAdrTEC = TextEditingController();
+  TextEditingController provinceTEC = TextEditingController();
+  TextEditingController qualiTEC = TextEditingController();
 
   void drUpdateProfile() {
+    // this function tells code that if the user does not enter anything
+    // in a specific text field, don't change it in Firestore
+    if (clinicAdrTEC.text == '') {
+      clinicAdr = clinicAdr;
+    } else
+      clinicAdr = clinicAdrTEC.text;
+
     if (drFirstTEC.text == '') {
       drFirst = drFirst;
     } else
@@ -42,11 +52,6 @@ class _DrProfileEditState extends State<DrProfileEdit> {
       drLast = drLast;
     } else
       drLast = drLastTEC.text;
-
-    if (qualiTEC.text == '') {
-      quali = quali;
-    } else
-      quali = qualiTEC.text;
 
     if (drTeleTEC.text == '') {
       drTele = drTele;
@@ -58,20 +63,29 @@ class _DrProfileEditState extends State<DrProfileEdit> {
     } else
       fax = faxTEC.text;
 
-    if (clinicAdrTEC.text == '') {
-      clinicAdr = clinicAdr;
+    if (provinceTEC.text == '') {
+      province = province;
     } else
-      clinicAdr = clinicAdrTEC.text;
+      province = provinceTEC.text;
+
+    if (qualiTEC.text == '') {
+      quali = quali;
+    } else
+      quali = qualiTEC.text;
   }
+
+
 
   @override
   void initState() {
+    // initialize functions
     super.initState();
     getCurrentUser();
     getUserData(uid);
   }
 
   void getCurrentUser() async {
+    // find uid
     try {
       final user = _auth.currentUser;
       if (user != null) {
@@ -85,15 +99,17 @@ class _DrProfileEditState extends State<DrProfileEdit> {
   }
 
   getUserData(uid) async {
+    // retrieve doctor's data from Firestore
     final DocumentSnapshot doctorInfo = await doctorRef.doc(uid).get();
     setState(
       () {
+        clinicAdr = doctorInfo.get('clinicAddress');
         drFirst = doctorInfo.get('first name');
         drLast = doctorInfo.get('last name');
         drTele = doctorInfo.get('tele');
-        quali = doctorInfo.get('quali');
         fax = doctorInfo.get('fax');
-        clinicAdr = doctorInfo.get('clinicAddress');
+        province = doctorInfo.get('province');
+        quali = doctorInfo.get('quali');
       },
     );
   }
@@ -121,7 +137,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
               ),
             ),
             SizedBox(
-              height: 20.0,
+              height: 10.0,
             ),
             textFieldLabel('Last Name'),
             TextField(
@@ -131,7 +147,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
               ),
             ),
             SizedBox(
-              height: 20.0,
+              height: 10.0,
             ),
             textFieldLabel('Qualifications'),
             TextField(
@@ -141,7 +157,87 @@ class _DrProfileEditState extends State<DrProfileEdit> {
               ),
             ),
             SizedBox(
-              height: 20.0,
+              height: 10.0,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                textFieldLabel('Province/Territory:    '),
+                DropdownButton<String>(
+                  iconDisabledColor: Colors.black,
+                  iconEnabledColor: Colors.black,
+                  value: province,
+                  style: kTextStyle2,
+                  items: [
+                    DropdownMenuItem(
+                      child: Text(''),
+                      value: '',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('AB'),
+                      value: 'AB',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('BC'),
+                      value: 'BC',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('MB'),
+                      value: 'MB',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('NB'),
+                      value: 'NB',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('NL'),
+                      value: 'NL',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('NS'),
+                      value: 'NS',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('NU'),
+                      value: 'NU',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('NWT'),
+                      value: 'NWT',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('ON'),
+                      value: 'ON',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('PEI'),
+                      value: 'PEI',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('QC'),
+                      value: 'QC',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('SK'),
+                      value: 'SK',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('YT'),
+                      value: 'YT',
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(
+                      () {
+                        province = value.toString();
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 10.0,
             ),
             textFieldLabel('Telephone Number'),
             TextField(
@@ -154,7 +250,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
               ),
             ),
             SizedBox(
-              height: 20.0,
+              height: 10.0,
             ),
             textFieldLabel('Fax Number'),
             TextField(
@@ -167,7 +263,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
               ),
             ),
             SizedBox(
-              height: 20.0,
+              height: 10.0,
             ),
             textFieldLabel('Clinic Address'),
             TextField(
@@ -178,7 +274,7 @@ class _DrProfileEditState extends State<DrProfileEdit> {
               ),
             ),
             SizedBox(
-              height: 20.0,
+              height: 10.0,
             ),
             Row(
               children: <Widget>[
@@ -188,12 +284,15 @@ class _DrProfileEditState extends State<DrProfileEdit> {
                     onPressed: () async {
                       setState(
                         () {
+                          // if the user presses 'cancel', do not change any values
+                          // in Firestore, even if there are new values in some text fields and exit page
+                          clinicAdr = clinicAdr;
                           drFirst = drFirst;
                           drLast = drLast;
-                          quali = quali;
                           drTele = drTele;
                           fax = fax;
-                          clinicAdr = clinicAdr;
+                          province = province;
+                          quali = quali;
                           Navigator.pop(context);
                         },
                       );
@@ -213,24 +312,27 @@ class _DrProfileEditState extends State<DrProfileEdit> {
                     onPressed: () async {
                       setState(
                         () {
+                          // if the user presses confirm, update info in Firestore and exit page
                           drUpdateProfile();
                           DatabaseAuth(uid: loggedInUser.uid).updateDoctorData(
+                            clinicAdr,
                             drFirst,
                             drLast,
-                            quali,
                             fax,
                             drTele,
-                            clinicAdr,
+                            province,
+                            quali,
                           );
                           Navigator.pop(
                             context,
                             {
+                              clinicAdr,
                               drFirst,
                               drLast,
-                              quali,
-                              drTele,
                               fax,
-                              clinicAdr,
+                              drTele,
+                              province,
+                              quali,
                             },
                           );
                         },

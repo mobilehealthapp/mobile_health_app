@@ -3,17 +3,19 @@ import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/Settings/settings_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'settings_card.dart';
+import 'settings_classes.dart';
 
-final doctorRef = FirebaseFirestore.instance
-    .collection('doctorprofile'); // create this as global variable
-var drFirst; // these variables will represent the info in firebase
-var drLast;
-var quali;
-var drTele;
-var fax;
-var clinicAdr;
-var doctorCode;
+final doctorRef = FirebaseFirestore.instance.collection(
+    'doctorprofile'); // CollectionReference used to access doctor's profile data on Firestore
+
+var clinicAdr; // clinic address
+var doctorCode; // unique access code assigned to doctor when they sign up for app
+var drFirst; // first name
+var drLast; // last name
+var drTele; // telephone number (clinic)
+var fax; // fax number (clinic)
+var province; // province or territory
+var quali; // qualifications
 
 class DrProfilePage extends StatefulWidget {
   const DrProfilePage({Key? key}) : super(key: key);
@@ -29,12 +31,14 @@ class _DrProfilePageState extends State<DrProfilePage> {
 
   @override
   void initState() {
+    // initialize functions
     super.initState();
     getCurrentUser();
     getUserData(uid);
   }
 
   void getCurrentUser() async {
+    // find uid
     try {
       final user = _auth.currentUser;
       if (user != null) {
@@ -48,16 +52,18 @@ class _DrProfilePageState extends State<DrProfilePage> {
   }
 
   getUserData(uid) async {
+    // retrieve doctor's data from Firestore
     final DocumentSnapshot doctorInfo = await doctorRef.doc(uid).get();
     setState(
       () {
+        clinicAdr = doctorInfo.get('clinicAddress');
+        doctorCode = doctorInfo.get('access code');
         drFirst = doctorInfo.get('first name');
         drLast = doctorInfo.get('last name');
         drTele = doctorInfo.get('tele');
-        quali = doctorInfo.get('quali');
         fax = doctorInfo.get('fax');
-        clinicAdr = doctorInfo.get('clinicAddress');
-        doctorCode = doctorInfo.get('access code');
+        province = doctorInfo.get('province');
+        quali = doctorInfo.get('quali');
       },
     );
   }
@@ -71,11 +77,15 @@ class _DrProfilePageState extends State<DrProfilePage> {
       ),
       body: ListView(
         children: <Widget>[
+          // displays all of doctor's profile information on tabs in a ListView
           ProfileTab(
             editAnswer: 'Name: $drFirst $drLast',
           ),
           ProfileTab(
             editAnswer: 'Qualifications: $quali',
+          ),
+          ProfileTab(
+            editAnswer: 'Province/Territory: $province',
           ),
           ProfileTab(
             editAnswer: 'Unique Code: $doctorCode',
@@ -99,6 +109,7 @@ class _DrProfilePageState extends State<DrProfilePage> {
                 ).then(
                   (value) => getUserData(uid),
                 );
+                // takes user to page where they can edit their profile info
               },
               child: TabContent(label: 'Edit My Information'),
               style: kSettingsCardStyle,

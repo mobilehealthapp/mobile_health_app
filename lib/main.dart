@@ -1,3 +1,4 @@
+// flutter packages imports
 import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -5,16 +6,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/services.dart';
-import 'package:mobile_health_app/Constants.dart';
-import 'package:mobile_health_app/Settings/delete_data_or_account.dart';
-import 'package:mobile_health_app/Settings/my_doctor_profile.dart';
-import 'package:mobile_health_app/Authentication/splashscreen.dart';
-import 'package:mobile_health_app/Authentication/welcome_screen.dart';
-import 'package:mobile_health_app/Analysis/health_analysis.dart';
 
+// camera/data input imports
 import 'Camera/camera_input.dart';
 import 'Camera/data_input_page.dart';
-import 'package:mobile_health_app/Physician side/physHome.dart';
+
+// home page imports
+import 'Physician side/physHome.dart';
+import 'package:mobile_health_app/Home page/HomePage.dart';
+import 'Constants.dart';
+
+// settings imports
 import 'Settings/add_a_doctor.dart';
 import 'Settings/dr_profile.dart';
 import 'Settings/dr_profileEdit.dart';
@@ -26,22 +28,35 @@ import 'Settings/profile_edit.dart';
 import 'Settings/profile_tab.dart';
 import 'Settings/settings.dart';
 import 'Settings/terms_and_conditions.dart';
+import 'Settings/delete_data_or_account.dart';
+import 'Settings/my_doctor_profile.dart';
 
-import 'package:mobile_health_app/Home page/HomePage.dart';
+// analysis imports
 import 'package:mobile_health_app/Analysis/health_analysis_form.dart';
-import 'Physician side/physHome.dart';
+import 'Analysis/health_analysis.dart';
+
+// authentication imports
 import 'Authentication/loginpage.dart';
 import 'Authentication/passwordreset.dart';
 import 'Authentication/signup.dart';
 import 'Authentication/verify.dart';
+import 'Authentication/splashscreen.dart';
+import 'Authentication/welcome_screen.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('Handling a background message ${message.messageId}');
 }
 
+// Global key for our Navigation so that we can push a route w/o context
 final GlobalKey<NavigatorState> navigator = new GlobalKey<NavigatorState>();
 
+// You need to add this in your AndroidManifest.xml
+// <meta-data
+//  android:name="com.google.firebase.messaging.default_notification_channel_id"
+//  android:value="high_importance_channel" />
+//
+// Also see the file in android/app/src/main/res/values/string.xml
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
   'high_importance_channel', // id
   'High Importance Notifications', // title
@@ -68,6 +83,13 @@ Future<void> main() async {
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
+  //This is our app icon
+  //Must be placed in android/app/src/main/drawable
+  // <meta-data
+  // android:name="com.google.firebase.messaging.default_notification_icon"
+  // android:resource="@drawable/companyicon2" />
+
+  // Add the icon image, in this case, its companyicon2, to app/src/res/drawable
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('companyicon2');
 
@@ -84,12 +106,18 @@ Future<void> main() async {
     iOS: initializationSettingsIOS,
   );
 
+  //This will handle our click if the app is in Foreground
   await flutterLocalNotificationsPlugin.initialize(initializationSettings,
       onSelectNotification: (String? payload) async {
     debugPrint('payload: $payload');
+    //A route must always start with "/"
+    //If it doesn't start with "/" we get an error
     navigator.currentState!.pushNamed('/' + '$payload');
   });
 
+  /// Create an Android Notification Channel.
+  /// We use this channel in the `AndroidManifest.xml` file to override the
+  /// default FCM channel to enable heads up notifications.
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
@@ -135,6 +163,10 @@ class MyApp extends StatelessWidget {
       initialRoute:
           '/splash', //FirebaseAuth.instance.currentUser != null ? '/home' : '/',
       routes: {
+        /*
+        named routes like these make it easier to navigate within the app and clean the code
+        they mean files require less imports as they are all named here
+         */
         "/splash": (context) => SplashScreen(),
         '/': (context) => WelcomeScreen(),
         '/login': (context) => LoginPage(),

@@ -1,12 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // ignore: unused_import
 import 'package:mobile_health_app/Authentication/authentication_button.dart';
-import 'package:wc_form_validators/wc_form_validators.dart';
 import 'package:mobile_health_app/Authentication/database_auth_services.dart';
-import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:mobile_health_app/Constants.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:wc_form_validators/wc_form_validators.dart';
+
+//TODO: Make textfield style more consistent with the rest of the app, clean up UI
+//This file contains the UI and firebase functionality for user signup
 
 class SignupPage extends StatefulWidget {
   @override
@@ -14,7 +16,8 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-  final formKey = GlobalKey<FormState>();
+  final formKey =
+      GlobalKey<FormState>(); //Form key for textformfield validation
   final _auth = FirebaseAuth.instance;
   bool showSpinner = false;
   var firstName;
@@ -35,7 +38,7 @@ class _SignupPageState extends State<SignupPage> {
           elevation: 0,
           leading: IconButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context); //Closes screen
             },
             icon: Icon(
               Icons.arrow_back_ios,
@@ -73,8 +76,8 @@ class _SignupPageState extends State<SignupPage> {
                         onChangedFunction: (value) {
                           firstName = value;
                         },
-                        validation:
-                            Validators.required('First name is required'),
+                        validation: Validators.required(
+                            'First name is required'), //Each text form field contains a validator to ensure user has inputted information before signing up
                       ),
                       inputFile(
                         label: 'Last Name',
@@ -101,6 +104,7 @@ class _SignupPageState extends State<SignupPage> {
                             password = value;
                           },
                           validation: Validators.compose([
+                            //TODO: Currently, only password restriction is a minimum length of 6 characters, for tighter security it is necessary to include more restrictions on password
                             Validators.required('Password is required'),
                             Validators.minLength(
                                 6, 'Password must be at least 6 characters'),
@@ -113,7 +117,7 @@ class _SignupPageState extends State<SignupPage> {
                           Validators.required('Please confirm password'),
                           (value) {
                             if (value != password) {
-                              return "Passwords must match";
+                              return "Passwords must match"; //Validator returns message if password and confirm password fields do not match
                             } else {
                               return null;
                             }
@@ -125,8 +129,10 @@ class _SignupPageState extends State<SignupPage> {
                           height: 50,
                           width: 250,
                           child: DropdownButtonFormField<String>(
+                            //Dropdown menu for users to choose an account type
                             isExpanded: true,
-                            validator: (value) => value == null
+                            validator: (value) => value ==
+                                    null //Validator to ensure user has picked an account type
                                 ? 'Please select an account type'
                                 : null,
                             value: _chosenValue,
@@ -167,29 +173,35 @@ class _SignupPageState extends State<SignupPage> {
                 AuthenticationButton(
                     label: 'Sign up',
                     onPressed: () async {
-                      var areCredsValid = formKey.currentState?.validate();
+                      var areCredsValid = formKey.currentState
+                          ?.validate(); //Ensures all validators are satisfied
                       if (areCredsValid == true) {
                         setState(() {
                           showSpinner = true;
                         });
                         try {
-                          var result =
-                              await _auth.createUserWithEmailAndPassword(
-                                  email: email, password: password);
+                          var result = await _auth.createUserWithEmailAndPassword(
+                              email: email,
+                              password:
+                                  password); //Firebase Authentication method that creates user with inputted email and password
                           var user = result.user;
                           if (accountType == 'Patient account') {
+                            //Checks user account type and sets user data in Firestore Database using functions defined in database_auth_services.dart
                             await DatabaseAuth(uid: user!.uid).setPatientData(
                                 firstName, lastName, email, accountType);
                           } else if (accountType == 'Physician account') {
                             await DatabaseAuth(uid: user!.uid).setDoctorData(
                                 firstName, lastName, email, accountType);
                           }
-                          Navigator.of(context).pushNamed('/verify');
+                          Navigator.of(context).pushNamed(
+                              '/verify'); //Once account has been created, navigates user to email verification screen
                           setState(() {
                             showSpinner = false;
                           });
                         } catch (signUpError) {
                           ScaffoldMessenger.of(context).showSnackBar(
+                            //Catches authentication errors from firebase and displays them in snackbar message
+                            //TODO: Implement logic that handles specific firebase errors and displays custom, easily-interpreted messages for each. Current code displays messages as written by firebase which are not always easy to interpret
                             SnackBar(
                               duration: Duration(seconds: 10),
                               backgroundColor: Colors.red,
@@ -205,6 +217,7 @@ class _SignupPageState extends State<SignupPage> {
                     },
                     colour: kPrimaryColour),
                 TextButton(
+                  //Button that navigates user to login screen
                   child: Text(
                     'Already registered? Log in!',
                     style: TextStyle(
