@@ -9,6 +9,8 @@ class TermsAndConditions extends StatefulWidget {
 }
 
 class _TermsAndConditionsState extends State<TermsAndConditions> {
+  // TODO: Write Terms and Conditions and display them here
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

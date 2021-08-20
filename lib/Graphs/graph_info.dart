@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
+// TODO: look into creating LineTitles for the x-axis for the health analysis page (make it easier to read)
+// TODO: see if it's possible to scroll the graph horizontally (view one week at a time but scroll to see others)
+
 class LineTitles {
+  // used for y-axis line titles on BP and HR graphs
   static getTitleData() {
     return FlTitlesData(
       show: true,
@@ -63,6 +67,7 @@ class LineTitles {
 }
 
 class LineTitles2 {
+  // used for y-axis line titles on BG graphs
   static getTitleData() {
     return FlTitlesData(
       show: true,
@@ -106,6 +111,7 @@ class LineTitles2 {
 }
 
 class Charts extends StatelessWidget {
+  // used for HR graph
   Charts(
       {required this.list,
       required this.xLength,
@@ -114,12 +120,12 @@ class Charts extends StatelessWidget {
       required this.yStart,
       required this.units});
 
-  List<FlSpot> list = [];
-  final double? xLength;
-  final double? yLength;
-  final double? yStart;
-  final bool bool1;
-  final String units;
+  List<FlSpot> list = []; // list of data to display as fl spots
+  final double? xLength; // length of x-axis
+  final double? yLength; // length of y-axis
+  final double? yStart; // at what value does the y-axis start?
+  final bool bool1; // show dots? yes (true) for home page, no (false) for health analysis
+  final String units; // units of measurement (display along y-axis)
 
   @override
   Widget build(BuildContext context) {
@@ -172,6 +178,7 @@ class Charts extends StatelessWidget {
 }
 
 class Charts2 extends StatelessWidget {
+  // used for BP graph
   Charts2(
       {required this.list,
       required this.list2,
@@ -181,13 +188,13 @@ class Charts2 extends StatelessWidget {
       required this.yStart,
       required this.units});
 
-  List<FlSpot> list = [];
-  List<FlSpot> list2 = [];
-  final double? xLength;
-  final double? yLength;
-  final double? yStart;
-  final bool bool1;
-  final String units;
+  List<FlSpot> list = [];  // list of data to display as fl spots
+  List<FlSpot> list2 = [];  // another list of data to display as fl spots (need to for BP)
+  final double? xLength; // length of x-axis
+  final double? yLength; // length of y-axis
+  final double? yStart; // at what value does the y-axis start?
+  final bool bool1; // show dots? yes (true) for home page, no (false) for health analysis
+  final String units; // units of measurement (display along y-axis)
 
   @override
   Widget build(BuildContext context) {
@@ -258,6 +265,7 @@ class Charts2 extends StatelessWidget {
 }
 
 class Charts3 extends StatelessWidget {
+  // used for BG graph
   Charts3({
     required this.list,
     required this.xLength,
@@ -268,11 +276,11 @@ class Charts3 extends StatelessWidget {
   });
 
   List<FlSpot> list = [];
-  final double? xLength;
-  final double? yLength;
-  final double? yStart;
-  final bool bool1;
-  final String units;
+  final double? xLength; // length of x-axis
+  final double? yLength; // length of y-axis
+  final double? yStart; // at what value does the y-axis start?
+  final bool bool1; // show dots? yes (true) for home page, no (false) for health analysis
+  final String units; // units of measurement (display along y-axis)
 
   @override
   Widget build(BuildContext context) {
