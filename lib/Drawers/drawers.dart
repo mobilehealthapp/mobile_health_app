@@ -1,9 +1,6 @@
-// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/Constants.dart';
 
 class Drawers extends StatelessWidget {
-  // final _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -34,26 +31,16 @@ class Drawers extends StatelessWidget {
               ),
               SizedBox(height: 10),
               addItem(
-                text: 'Contact',
-                icon: Icons.contacts,
-                onClicked: () => select(context, 5),
-              ),
-              SizedBox(height: 10),
-              addItem(
                 text: 'Settings',
                 icon: Icons.settings,
                 onClicked: () => select(context, 1),
               ),
               SizedBox(height: 10),
-              // ListTile(
-              //   onTap: () {
-              //     _auth.signOut();
-              //     Navigator.of(context).pushNamedAndRemoveUntil(
-              //         '/', (Route<dynamic> route) => false);
-              //   },
-              //   leading: Icon(Icons.logout),
-              //   title: Text('Logout'),
-              // ),
+              addItem(
+                text: 'Logout',
+                icon: Icons.logout,
+                onClicked: () => select(context, 4),
+              ),
               SizedBox(height: 10),
               addItem(
                 text: 'Physician Side ',
@@ -84,22 +71,22 @@ class Drawers extends StatelessWidget {
     Navigator.of(context).pop();
     switch (i) {
       case 0:
-        Navigator.of(context).pushNamed('/home');
+        Navigator.of(context).pushNamed('/home'); // navigate to the patient home page
         break;
       case 1:
-        Navigator.of(context).pushNamed('/settings');
+        Navigator.of(context).pushNamed('/settings'); // navigate to the patient settings page
         break;
       case 2:
-        Navigator.of(context).pushNamed('/healthAnalysis');
+        Navigator.of(context).pushNamed('/healthAnalysis'); // navigate to the health analysis page
         break;
       case 3:
-        Navigator.of(context).pushNamed('/healthAnalysisForm');
+        Navigator.of(context).pushNamed('/healthAnalysisForm'); // navigate to the health analysis form
         break;
       case 4:
-        Navigator.of(context).pushNamed('/physHome');
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false); // navigate to the welcome page (logout)
         break;
       case 5:
-        Navigator.of(context).pushNamed('/physHome');
+        Navigator.of(context).pushNamed('/physHome'); // ONLY FOR EASE OF NAVIGATION! PLEASE TAKE OUT OF FINAL PRODUCT
         break;
     }
   }

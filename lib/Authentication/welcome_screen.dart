@@ -1,13 +1,15 @@
+import 'dart:io';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mobile_health_app/Authentication/authentication_button.dart';
-import 'package:mobile_health_app/main.dart';
-import '../main.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'dart:io';
+import 'package:mobile_health_app/main.dart';
 
+import '../main.dart';
+//This file contains the UI and functionality for the welcome screen that users see upon launching the app (if not logged in), from here they can choose to sign up with a new account or log in with an existing one
 // final GlobalKey<NavigatorState> _navigator = new GlobalKey<NavigatorState>();
 
 class MyApp extends StatelessWidget {
@@ -128,7 +130,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         ),
                       ),
                       Text(
-                        'AppName',
+                        'MedScan',
                         style: TextStyle(
                             fontSize: 35, fontWeight: FontWeight.bold),
                       )
@@ -152,7 +154,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   AuthenticationButton(
                       label: 'Log in',
                       onPressed: () {
-                        Navigator.of(context).pushNamed('/login');
+                        Navigator.of(context).pushNamed(
+                            '/login'); //Button that navigates users to login screen
                       },
                       colour: Colors.blueGrey),
                   SizedBox(
@@ -161,7 +164,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   AuthenticationButton(
                       label: 'Sign up',
                       onPressed: () {
-                        Navigator.of(context).pushNamed('/signup');
+                        Navigator.of(context).pushNamed(
+                            '/signup'); //Button that navigates users to signup screen
                       },
                       colour: kPrimaryColour)
                 ],

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+//Class containing various functions for database and authentication operations in Firebase
 
 class DatabaseAuth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -24,16 +25,21 @@ class DatabaseAuth {
   final CollectionReference doctorProfileCollection =
       FirebaseFirestore.instance.collection('doctorprofile');
 
-  final CollectionReference doctorPatientsCollection = FirebaseFirestore.instance.collection('doctorprofile');
+  final CollectionReference doctorPatientsCollection =
+      FirebaseFirestore.instance.collection('doctorprofile');
 
   Future setPatientData(String firstName, String lastName, String email,
       String accountType) async {
     return await patientProfileCollection.doc(uid).set(
+      //Called on sign-up, this function creates a document within the patient profile collection and populates it with initial patient data.
+      // The document's ID matches the UID of the user for convenience of user data management
+      //Fields with empty strings can be edited later by users from the profile page
       {
         'first name': firstName,
         'last name': lastName,
         'email': email,
         'account type': accountType,
+        'province': '',
         'address': '',
         'age': '',
         'tele': '',
@@ -50,11 +56,13 @@ class DatabaseAuth {
   Future setDoctorData(String firstName, String lastName, String email,
       String accountType) async {
     return await doctorProfileCollection.doc(uid).set(
+      //Identical to setPatientData but for doctor accounts
       {
         'first name': firstName,
         'last name': lastName,
         'email': email,
         'account type': accountType,
+        'province': '',
         'clinicAddress': '',
         'quali': '',
         'tele': '',
@@ -66,6 +74,7 @@ class DatabaseAuth {
   Future deleteDoctorData(
       String email, String password, BuildContext context) async {
     try {
+      // TODO: edit function so that it also deletes doctor's document from each of their patients' Firestore collections
       User? user = _auth.currentUser;
       AuthCredential credentials =
           EmailAuthProvider.credential(email: email, password: password);
@@ -75,18 +84,27 @@ class DatabaseAuth {
         {
           'first name': '',
           'last name': '',
+          'province': '',
           'clinicAddress': '',
           'quali': '',
           'tele': '',
           'fax': '',
         },
       );
+      /*
+      when the user inputs the correct credentials and they are verified by Firebase Auth,
+      they will delete all of their data from Firestore except for their account type and email address
+      the document itself is not deleted as it is still attached to their uid, but all fields being
+      deleted within the document are set to blank (set to ' ')
+       */
       Navigator.of(context).pushNamedAndRemoveUntil(
           '/physHome', (Route<dynamic> route) => false);
     } catch (e) {
       Fluttertoast.showToast(
         msg:
             'The email address and/or password is incorrect. Please try again.',
+        // if the credentials are not correct, a fluttertoast message explaining the error shows up
+        // to ask the user to reenter the correct email and password
         gravity: ToastGravity.TOP,
         backgroundColor: Colors.red,
         toastLength: Toast.LENGTH_LONG,
@@ -104,6 +122,7 @@ class DatabaseAuth {
   Future deletePatientData(
       String email, String password, BuildContext context) async {
     try {
+      // TODO: edit function so that it also deletes patient's document from each of their physicians' Firestore collections
       User? user = _auth.currentUser;
       AuthCredential credentials =
           EmailAuthProvider.credential(email: email, password: password);
@@ -111,7 +130,7 @@ class DatabaseAuth {
       await user!.reauthenticateWithCredential(credentials);
       await patientDataCollection.doc(_auth.currentUser!.uid).delete();
       await patientDoctorsCollection.get().then(
-            (snapshot) {
+        (snapshot) {
           for (DocumentSnapshot ds in snapshot.docs) {
             ds.reference.delete();
           }
@@ -121,6 +140,7 @@ class DatabaseAuth {
         {
           'first name': '',
           'last name': '',
+          'province': '',
           'address': '',
           'age': '',
           'tele': '',
@@ -132,12 +152,20 @@ class DatabaseAuth {
           'dob': '',
         },
       );
+      /*
+      when the user inputs the correct credentials and they are verified by Firebase Auth,
+      they will delete all of their data from Firestore except for their account type and email address
+      the document itself is not deleted as it is still attached to their uid, but all fields being
+      deleted within the document are set to blank (set to ' ')
+       */
       Navigator.of(context)
           .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
     } catch (e) {
       Fluttertoast.showToast(
         msg:
             'The email address and/or password is incorrect. Please try again.',
+        // if the credentials are not correct, a fluttertoast message explaining the error shows up
+        // to ask the user to reenter the correct email and password
         gravity: ToastGravity.TOP,
         backgroundColor: Colors.red,
         toastLength: Toast.LENGTH_LONG,
@@ -148,6 +176,7 @@ class DatabaseAuth {
   Future deletePatientUser(
       String email, String password, BuildContext context) async {
     try {
+      // TODO: edit function so that it also deletes patient's document from each of their physicians' Firestore collections
       User? user = _auth.currentUser;
       AuthCredential credentials =
           EmailAuthProvider.credential(email: email, password: password);
@@ -155,12 +184,18 @@ class DatabaseAuth {
       var result = await user!.reauthenticateWithCredential(credentials);
       await erasePatientDocument();
       await result.user!.delete();
+      /*
+      when the user inputs the correct credentials and they are verified by Firebase Auth,
+      all of the data attached to their uid will be deleted, along with their account itself
+       */
       Navigator.of(context)
           .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
     } catch (e) {
       Fluttertoast.showToast(
         msg:
             'The email address and/or password is incorrect. Please try again.',
+        // if the credentials are not correct, a fluttertoast message explaining the error shows up
+        // to ask the user to reenter the correct email and password
         gravity: ToastGravity.TOP,
         backgroundColor: Colors.red,
         toastLength: Toast.LENGTH_LONG,
@@ -171,6 +206,7 @@ class DatabaseAuth {
   Future deleteDoctorUser(
       String email, String password, BuildContext context) async {
     try {
+      // TODO: edit function so that it also deletes doctor's document from each of their patients' Firestore collections
       User? user = _auth.currentUser;
       AuthCredential credentials =
           EmailAuthProvider.credential(email: email, password: password);
@@ -178,12 +214,18 @@ class DatabaseAuth {
       var result = await user!.reauthenticateWithCredential(credentials);
       await eraseDoctorDocument();
       await result.user!.delete();
+      /*
+      when the user inputs the correct credentials and they are verified by Firebase Auth,
+      all of the data attached to their uid will be deleted, along with their account itself
+       */
       Navigator.of(context)
           .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
     } catch (e) {
       Fluttertoast.showToast(
         msg:
             'The email address and/or password is incorrect. Please try again.',
+        // if the credentials are not correct, a fluttertoast message explaining the error shows up
+        // to ask the user to reenter the correct email and password
         gravity: ToastGravity.TOP,
         backgroundColor: Colors.red,
         toastLength: Toast.LENGTH_LONG,
@@ -196,12 +238,16 @@ class DatabaseAuth {
     return patientProfileCollection.snapshots();
   }
 
-  Future updatePatientData(String firstName, lastName, age, dob, sex, ht, wt,
-      conds, meds, tele, adr) async {
+  Future updatePatientData(String adr, age, conds, dob, firstName, ht, lastName,
+      meds, province, sex, tele, wt) async {
+    /* used in patient profile edit page to update their data in Firestore once they
+    press confirm
+     */
     return await patientProfileCollection.doc(_auth.currentUser!.uid).update(
       {
         'first name': firstName,
         'last name': lastName,
+        'province': province,
         'age': age,
         'dob': dob,
         'sex': sex,
@@ -216,11 +262,15 @@ class DatabaseAuth {
   }
 
   Future updateDoctorData(
-      String firstName, lastName, quali, fax, tele, adr) async {
+      String adr, firstName, lastName, fax, tele, province, quali) async {
+    /* used in doctor profile edit page to update their data in Firestore once they
+    press confirm
+     */
     return await doctorProfileCollection.doc(_auth.currentUser!.uid).update(
       {
         'first name': firstName,
         'last name': lastName,
+        'province': province,
         'quali': quali,
         'tele': tele,
         'clinicAddress': adr,
@@ -230,6 +280,9 @@ class DatabaseAuth {
   }
 
   Future erasePatientDocument() async {
+    /* used in the delete my account function to delete document associated with
+    patient's uid
+     */
     await patientProfileCollection.doc(_auth.currentUser!.uid).delete();
     await patientDataCollection.doc(_auth.currentUser!.uid).delete();
     await patientDoctorsCollection.get().then(
@@ -242,6 +295,9 @@ class DatabaseAuth {
   }
 
   Future eraseDoctorDocument() async {
+    /* used in the delete my account function to delete document associated with
+    doctor's uid
+     */
     await doctorProfileCollection.doc(_auth.currentUser!.uid).delete();
   }
 }

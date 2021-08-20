@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/Settings/my_doctor_profile.dart';
-
-import 'my_doctor_profile.dart';
-import 'settings_card.dart';
+import 'settings_classes.dart';
 import 'settings_constants.dart';
+//This file contains the UI and functionality for displaying a patient's list of approved doctors, which they can add through the 'Add a doctor' screen
 
 final _firestore = FirebaseFirestore.instance;
 var loggedInUser;
@@ -27,12 +26,12 @@ class _MyDoctorsState extends State<MyDoctors> {
   }
 
   void getCurrentUser() async {
+    //Gets current user from FirebaseAuth and stores uid as variable for later use
     try {
       final user = _auth.currentUser;
       if (user != null) {
         loggedInUser = user;
-        print(loggedInUser.email);
-        uid = user.uid.toString(); //convert to string in this method
+        uid = user.uid.toString(); //convert UID to string in this method
       }
     } catch (e) {
       print(e);
@@ -56,7 +55,8 @@ class _MyDoctorsState extends State<MyDoctors> {
               onPressed: () {
                 setState(
                   () {
-                    Navigator.pushNamed(context, '/addDoctors');
+                    Navigator.pushNamed(context,
+                        '/addDoctors'); //Navigates user to add doctor screen
                   },
                 );
               },
@@ -84,42 +84,55 @@ class _DoctorListState extends State<DoctorList> {
           .collection('patientprofile')
           .doc(uid)
           .collection('patientDoctors')
-          .snapshots(),
+          .snapshots(), //stream gathers snapshot of patient's doctors
       builder: (context, snapshot) {
-        final doctors = snapshot.data!.docs;
-        List<DoctorCard> doctorCardList = [];
-        try {
-          for (var doctor in doctors) {
-            final firstName = doctor.get('doctorFirstName');
-            final lastName = doctor.get('doctorLastName');
-            final email = doctor.get('doctorEmail');
-            final label = doctor.get('doctorLabel');
-            final docUID = doctor.get('doctorUID');
-            final doctorCard = DoctorCard(
-              firstName: firstName,
-              lastName: lastName,
-              email: email,
-              label: label,
-              docUID: docUID,
-            );
-            doctorCardList.add(doctorCard);
+        if (snapshot.hasData) {
+          //checks if snapshot has data (will not have data if patient has not added a doctor)
+          final doctors =
+              snapshot.data!.docs; //compiles snapshot into list of documents
+          List<DoctorCard> doctorCardList =
+              []; //initializes list of doctor cards
+          try {
+            for (var doctor in doctors) {
+              //iterates through each document in snapshot and collects information necessary to build doctor cards
+              final firstName = doctor.get('doctorFirstName');
+              final lastName = doctor.get('doctorLastName');
+              final email = doctor.get('doctorEmail');
+              final label = doctor.get('doctorLabel');
+              final docUID = doctor.get('doctorUID');
+              final doctorCard = DoctorCard(
+                //creates a doctor card for each document in snapshot with obtained information
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                label: label,
+                docUID: docUID,
+              );
+              doctorCardList
+                  .add(doctorCard); //adds doctor card to list of doctorcardlist
+            }
+          } catch (e) {
+            print(e);
           }
-        } catch (e) {
-          print(e);
+          return ListView(
+            //Streambuilder returns listview containing list of doctor cards
+            key: UniqueKey(),
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+            children: doctorCardList,
+            physics: ClampingScrollPhysics(),
+          );
+        } else {
+          return SizedBox
+              .shrink(); //If snapshot has no data, returns an empty box (blank page with 'add doctor' button at the top
         }
-        return ListView(
-          key: UniqueKey(),
-          shrinkWrap: true,
-          scrollDirection: Axis.vertical,
-          children: doctorCardList,
-          physics: ClampingScrollPhysics(),
-        );
       },
     );
   }
 }
 
 class DoctorCard extends StatelessWidget {
+  //TODO: Improve styling/UI of doctor cards
   final firstName;
   final lastName;
   final email;
@@ -187,15 +200,17 @@ class DoctorCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextButton(
+                //'View profile' button that collects doctor's information from firebase and displays it on MyDoctorProfile page
                 onPressed: () async {
                   var doctorInfo = await FirebaseFirestore.instance
                       .collection('doctorprofile')
                       .doc(docUID)
-                      .get();
+                      .get(); //Collects snapshot of document containing information of this doctor
                   var drTele = await doctorInfo.get('tele');
                   var quali = await doctorInfo.get('quali');
                   var fax = await doctorInfo.get('fax');
-                  var clinicAdr = await doctorInfo.get('clinicAddress');
+                  var clinicAdr = await doctorInfo
+                      .get('clinicAddress'); //Stores specific data as variables
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -207,7 +222,8 @@ class DoctorCard extends StatelessWidget {
                         quali: quali,
                         drTele: drTele,
                         clinicAdr: clinicAdr,
-                        email: email,
+                        email:
+                            email, //Passes variables from doctor card and firebase to MyDoctorProfile, navigates to doctor profile screen
                       ),
                     ),
                   );
@@ -223,15 +239,18 @@ class DoctorCard extends StatelessWidget {
                 ),
               ),
               TextButton(
+                //Remove doctor button
                 onPressed: () {
                   showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
+                          //Displays alert asking for confirmation of removal of doctor from list
                           actions: [
                             TextButton(
                                 onPressed: () {
-                                  Navigator.pop(context);
+                                  Navigator.pop(
+                                      context); //Closes alert and cancels removal
                                 },
                                 child: Text('Cancel')),
                             TextButton(
@@ -241,20 +260,20 @@ class DoctorCard extends StatelessWidget {
                                       .doc(uid)
                                       .collection('patientDoctors')
                                       .doc(docUID)
-                                      .delete();
+                                      .delete(); //Deletes doctor from patient profile
                                   await _firestore
                                       .collection('doctorprofile')
                                       .doc(docUID)
                                       .collection('doctorPatients')
                                       .doc(uid)
-                                      .delete();
-                                  Navigator.pop(context);
+                                      .delete(); //Deletes patient from corresponding doctor profile
+                                  Navigator.pop(context); //Closes alert
                                 },
                                 child: Text('Confirm'))
                           ],
                           title: Text('Remove Doctor'),
                           content: Text(
-                              'Are you sure you want to remove $firstName $lastName from your list of doctors? This means they will no longer be able to access your patient data.'),
+                              'Are you sure you want to remove $firstName $lastName from your list of doctors? This means they will no longer be able to access your data.'),
                         );
                       });
                 },
