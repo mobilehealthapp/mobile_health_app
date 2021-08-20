@@ -3,8 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
-
-import 'settings_card.dart';
+import 'alerts.dart';
 import 'settings_constants.dart';
 
 //This file contains the UI and functionality for the screen that allows patients to add a doctor as an approved physician and allow the doctor to view their data
@@ -96,7 +95,8 @@ class _AddDoctorsState extends State<AddDoctors> {
                       return showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return new Alert3();
+                          return new Alert2();
+                          // displays alert explaining how doctors receive a unique access code when they sign up
                         },
                       );
                     },
@@ -129,7 +129,9 @@ class _AddDoctorsState extends State<AddDoctors> {
                       return showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return new Alert4();
+                          return new Alert3();
+                          // displays alert explaining that the user can create any label for the doctor
+                          // that they'd like to help them remember who the doctor is to them (specialist, family physician, etc.)
                         },
                       );
                     },

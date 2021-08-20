@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/Settings/my_doctor_profile.dart';
 
-import 'settings_card.dart';
+import 'settings_classes.dart';
 import 'settings_constants.dart';
 //This file contains the UI and functionality for displaying a patient's list of approved doctors, which they can add through the 'Add a doctor' screen
 

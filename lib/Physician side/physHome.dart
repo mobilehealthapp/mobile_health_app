@@ -22,6 +22,7 @@ class _PhysHomeState extends State<PhysHome> {
       TextEditingController(); //TextEditingController allows for control over textfield
 
   final _auth = FirebaseAuth.instance;
+
   @override
   void initState() {
     super.initState();
