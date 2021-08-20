@@ -1,6 +1,5 @@
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/Constants.dart';
 
 class Drawers extends StatelessWidget {
   // final _auth = FirebaseAuth.instance;
@@ -45,15 +44,16 @@ class Drawers extends StatelessWidget {
                 onClicked: () => select(context, 1),
               ),
               SizedBox(height: 10),
-              // ListTile(
-              //   onTap: () {
-              //     _auth.signOut();
-              //     Navigator.of(context).pushNamedAndRemoveUntil(
-              //         '/', (Route<dynamic> route) => false);
-              //   },
-              //   leading: Icon(Icons.logout),
-              //   title: Text('Logout'),
-              // ),
+              ListTile(
+                // tapping on this will log you out
+                onTap: () {
+                  // _auth.signOut();
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/', (Route<dynamic> route) => false);
+                },
+                leading: Icon(Icons.logout),
+                title: Text('Logout'),
+              ),
               SizedBox(height: 10),
               addItem(
                 text: 'Physician Side ',
@@ -68,6 +68,7 @@ class Drawers extends StatelessWidget {
     );
   }
 
+  // add a text with an icon
   Widget addItem({
     required String text,
     required IconData icon,
@@ -80,6 +81,10 @@ class Drawers extends StatelessWidget {
     );
   }
 
+  // clicking on the icons will redirect you in these pages
+  /* to add a new page to navigate to add a case with the navigation page and include that number
+    in the onclick method.
+   */
   select(BuildContext context, int i) {
     Navigator.of(context).pop();
     switch (i) {

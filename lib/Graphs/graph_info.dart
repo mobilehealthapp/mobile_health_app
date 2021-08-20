@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class LineTitles {
+  // this is for the y-axis for pulse rate and blood pressure
   static getTitleData() {
     return FlTitlesData(
       show: true,
@@ -63,15 +64,16 @@ class LineTitles {
 }
 
 class LineTitles2 {
+  // this is y values for blood glucose
   static getTitleData() {
     return FlTitlesData(
       show: true,
       leftTitles: SideTitles(
           showTitles: true,
           getTextStyles: (value) => TextStyle(
-            color: Colors.black,
-            fontSize: 10,
-          ),
+                color: Colors.black,
+                fontSize: 10,
+              ),
           getTitles: (value) {
             switch (value.toInt()) {
               case 0:
@@ -106,6 +108,7 @@ class LineTitles2 {
 }
 
 class Charts extends StatelessWidget {
+  //pulse rate
   Charts(
       {required this.list,
       required this.xLength,
@@ -126,7 +129,7 @@ class Charts extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 20, horizontal: 10.0),
       padding: EdgeInsets.fromLTRB(5, 20, 20, 10),
-      width: 350,
+      width: 600,
       height: 400,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.0),
@@ -152,16 +155,25 @@ class Charts extends StatelessWidget {
                 // removes dots
                 show: bool1,
               ),
-              spots: list,
+              spots:
+                  list, //  data that is returned from firestore that will be displayed in the graph
             ),
           ],
           axisTitleData: FlAxisTitleData(
             leftTitle: AxisTitle(
               titleText: units,
+              textStyle: TextStyle(
+                fontSize: 15.0,
+                color: Colors.black,
+              ),
               showTitle: true,
             ),
             bottomTitle: AxisTitle(
               titleText: 'Most Recent Uploads',
+              textStyle: TextStyle(
+                fontSize: 15.0,
+                color: Colors.black,
+              ),
               showTitle: true,
             ),
           ),
@@ -193,7 +205,7 @@ class Charts2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 20, horizontal: 10.0),
-      padding: EdgeInsets.fromLTRB(10, 20, 20, 10),
+      padding: EdgeInsets.fromLTRB(5, 20, 20, 10),
       width: 350,
       height: 400,
       decoration: BoxDecoration(
@@ -313,10 +325,18 @@ class Charts3 extends StatelessWidget {
           axisTitleData: FlAxisTitleData(
             leftTitle: AxisTitle(
               titleText: units,
+              textStyle: TextStyle(
+                fontSize: 15.0,
+                color: Colors.black,
+              ),
               showTitle: true,
             ),
             bottomTitle: AxisTitle(
               titleText: 'Most Recent Uploads',
+              textStyle: TextStyle(
+                fontSize: 15.0,
+                color: Colors.black,
+              ),
               showTitle: true,
             ),
           ),

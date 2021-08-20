@@ -6,6 +6,7 @@ import 'package:mobile_health_app/Drawers/drawers.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/graphs/graphData.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:mobile_health_app/Analysis/health_analysis.dart';
 
 final patientData = FirebaseFirestore.instance
     .collection('patientData')
@@ -35,6 +36,7 @@ class _HomePageState extends State<HomePage> {
   var uid; //declare below state
 
   void getCurrentUser() async {
+    // will return the current users uid
     try {
       final user = _auth.currentUser;
       if (user != null) {
@@ -48,6 +50,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   getUserData(uid) async {
+    // return user data from the patient info collection
     final DocumentSnapshot patientInfo = await patientRef.doc(uid).get();
     setState(() {
       name = patientInfo.get('first name');
@@ -55,13 +58,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   getUploadedData() async {
+    // gets averages of each data type for user
     final DocumentSnapshot uploadedData = await patientData.get();
     setState(
       () {
+        // if (bg.isNotEmpty) {
         avgGlucose = uploadedData.get('Average Blood Glucose (mmol|L)');
-        avgPressureDia = uploadedData.get('Average Blood Pressure (diastolic)');
+        // }
+        // if (sys.isNotEmpty) {
         avgPressureSys = uploadedData.get('Average Blood Pressure (systolic)');
+        // }
+        // if (dia.isNotEmpty) {
+        avgPressureDia = uploadedData.get('Average Blood Pressure (diastolic)');
+        // }
+        // if (hr.isNotEmpty) {
         avgHeartRate = uploadedData.get('Average Heart Rate');
+        // }
       },
     );
   }
@@ -124,7 +136,7 @@ class _HomePageState extends State<HomePage> {
     final bgData = await patientData
         .collection('bloodGlucose')
         .orderBy('uploaded')
-        .limitToLast(4)
+        .limitToLast(6) // only the most recent 6 data will be fetched
         .get();
     final value = bgData.docs;
     double index = 1.0;
@@ -173,7 +185,8 @@ class _HomePageState extends State<HomePage> {
           'Hello, $name',
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation
+          .centerFloat, // the camera will be in the center
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.grey[600],
         onPressed: () {
@@ -203,41 +216,58 @@ class _HomePageState extends State<HomePage> {
           SizedBox(
             height: 30.0,
           ),
-          Text(
-            'Blood Pressure',
-            style: kGraphTitleTextStyle,
-            textAlign: TextAlign.center,
+          Container(
+            child: data2.isNotEmpty && data2a.isNotEmpty
+                ? Text(
+                    'Blood Pressure',
+                    style: kGraphTitleTextStyle,
+                    textAlign: TextAlign.center,
+                  )
+                : Text(''),
           ),
           Container(
-            width: 400,
-            height: 500,
-            child: extractData2V2(),
+            child: data2.isNotEmpty && data2a.isNotEmpty
+                ? extractData2V2()
+                : Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Legend(
-                text: 'Systolic',
-                color: Colors.black,
-              ),
-              Legend(
-                text: 'Diastolic',
-                color: Colors.red,
-              ),
-            ],
+          Container(
+            child: data2.isNotEmpty && data2a.isNotEmpty
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      NewLegend(name: 'Systolic', color: Colors.black),
+                      SizedBox(width: 10.0),
+                      NewLegend(name: 'Diastolic', color: Colors.red),
+                    ],
+                  )
+                : Text(''),
           ),
-          SummaryCard(
-            type: 'Average Blood Pressure:',
-            value: '$avgPressureSys/$avgPressureDia mmHg',
+          Container(
+            child: data2.isNotEmpty && data2a.isNotEmpty
+                ? SummaryCard(
+                    type: 'Average Blood Pressure:',
+                    value: '$avgPressureSys/$avgPressureDia mmHg',
+                  )
+                : Text(''),
           ),
-          SizedBox(
-            height: 25.0,
-          ),
-          Text(
-            'Blood Glucose',
-            style: kGraphTitleTextStyle,
-            textAlign: TextAlign.center,
-          ),
+          SizedBox(height: 25.0),
+          Text('Blood Glucose',
+              style: kGraphTitleTextStyle, textAlign: TextAlign.center),
           Container(
             child: extractData3V2(),
           ),
@@ -291,6 +321,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget extractData3V2() {
+    //blood glucose
     return Charts3(
       units: 'mmol/L',
       yStart: 0,
@@ -298,6 +329,26 @@ class _HomePageState extends State<HomePage> {
       yLength: 10,
       xLength: 6,
       list: data3,
+    );
+  }
+}
+
+class NewLegend extends StatelessWidget {
+  NewLegend({required this.color, required this.name});
+  final Color color;
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Container(width: 20, height: 20, color: color),
+        SizedBox(width: 5.0),
+        Text(
+          name,
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 }

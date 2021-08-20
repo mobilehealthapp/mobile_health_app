@@ -17,10 +17,10 @@ var patientData = FirebaseFirestore.instance
 var bloodGlucose = patientData.collection('bloodGlucose');
 var bloodPressure = patientData.collection('bloodPressure');
 var heartRate = patientData.collection('heartRate');
-List<FlSpot> data1 = [];
-List<FlSpot> data2 = [];
-List<FlSpot> data2a = [];
-List<FlSpot> data3 = [];
+List<FlSpot> data1 = []; //heart rate
+List<FlSpot> data2 = []; // systolic
+List<FlSpot> data2a = []; // diastolic
+List<FlSpot> data3 = []; //heart rate
 late int numberOfBGPoints = 0;
 late int numberOfBPPoints = 0;
 late int numberOfHRPoints = 0;
@@ -29,6 +29,7 @@ var varianceBG;
 var standardDeviationBG;
 var avgGlucose;
 List bg = [];
+List rangeBG = [];
 
 var varianceHR;
 var standardDeviationHR;
@@ -57,23 +58,33 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
 
   bgGet() async {
     bg = [];
+
     final bgData = await bloodGlucose.get();
     final value = bgData.docs;
     for (var val in value) {
+      // fetch data from firestore - and add it in the dynamic array bg.
       double bgGet = val.get('blood glucose (mmol|L)');
       bg.add(bgGet.toDouble());
     }
 
-    var doubles = bg.map((e) => e as double).toList();
-
-    final sdv = doubles.standardDeviation();
-    print('sdv for bg is $sdv');
-    setState(() {
-      standardDeviationBG = sdv.toStringAsFixed(3);
-      var sdv2 = sdv;
-      varianceBG = sqrt(sdv2).toStringAsFixed(3);
-    });
+    var doubles = bg
+        .map((e) => e as double)
+        .toList(); // converts dynamic list to double list
     bg.sort();
+    final sdv = doubles.standardDeviation();
+    setState(() {
+      if (bg.length > 0) {
+        rangeBG[0] = rangeBG[(bg.first)];
+        standardDeviationBG =
+            sdv.toStringAsFixed(3); // show only 3 digits after the comma.
+        var sdv2 = sdv;
+        varianceBG = sqrt(sdv2).toStringAsFixed(3);
+      } else {
+        standardDeviationBG = 0;
+        varianceBG = 0;
+      }
+    });
+
     return [standardDeviationBG, varianceBG, bg];
   }
 
@@ -88,11 +99,15 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
 
     var doubles = hr.map((e) => e as double).toList();
 
-    final sdv = doubles.standardDeviation().toDouble();
-
     setState(() {
-      standardDeviationHR = sdv.truncateToDouble();
-      varianceHR = sqrt(standardDeviationHR).toStringAsFixed(3);
+      if (hr.length > 0) {
+        final sdv = doubles.standardDeviation().toDouble();
+        standardDeviationHR = sdv.truncateToDouble();
+        varianceHR = sqrt(standardDeviationHR).toStringAsFixed(3);
+      } else {
+        standardDeviationHR = 0;
+        varianceHR = 0;
+      }
     });
     hr.sort();
     return [standardDeviationHR, varianceHR, hr];
@@ -110,14 +125,23 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
 
     var doubles = sys.map((e) => e as double).toList();
 
-    final sdv = doubles.standardDeviation().toDouble();
-
     setState(() {
-      standardDeviationSys = sdv.truncateToDouble();
-      variancePressureSys = sqrt(standardDeviationSys).toStringAsFixed(3);
+      if (sys.length > 0) {
+        final sdv = doubles.standardDeviation().toDouble();
+        standardDeviationSys = sdv.truncateToDouble();
+        variancePressureSys = sqrt(standardDeviationSys).toStringAsFixed(3);
+      } else {
+        standardDeviationSys = 0;
+        variancePressureSys = 0;
+      }
     });
+
     sys.sort();
-    return [standardDeviationSys, variancePressureSys, sys];
+    return [
+      standardDeviationSys,
+      variancePressureSys,
+      sys,
+    ];
   }
 
   diaGet() async {
@@ -130,13 +154,18 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     }
     var doubles = dia.map((e) => e as double).toList();
 
-    final sdv = doubles.standardDeviation().toDouble();
-
     setState(() {
-      standardDeviationDia = sdv.truncateToDouble();
-      variancePressureDia = sqrt(standardDeviationDia).toStringAsFixed(3);
+      if (dia.length > 1) {
+        final sdv = doubles.standardDeviation().toDouble();
+        standardDeviationDia = sdv.truncateToDouble();
+        variancePressureDia = sqrt(standardDeviationDia).toStringAsFixed(3);
+      } else if (dia.isEmpty) {
+        standardDeviationDia = 0;
+        variancePressureDia = 0;
+      }
     });
     dia.sort();
+
     return [standardDeviationDia, variancePressureDia, dia];
   }
 
@@ -166,10 +195,32 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     final DocumentSnapshot uploadedData = await patientData.get();
     setState(
       () {
+        if (bg.isEmpty) {
+          avgGlucose = 0;
+        }
+        if (hr.isEmpty) {
+          avgHeartRate = 0;
+        }
+        if (sys.isEmpty) {
+          avgPressureSys = 0;
+        }
+        if (dia.isEmpty) {
+          avgPressureDia = 0;
+        }
+
+        // if (bg.isNotEmpty) {
         avgGlucose = uploadedData.get('Average Blood Glucose (mmol|L)');
-        avgPressureDia = uploadedData.get('Average Blood Pressure (diastolic)');
+        print(avgGlucose);
+        // }
+        // if (sys.isEmpty) {
         avgPressureSys = uploadedData.get('Average Blood Pressure (systolic)');
+        // }
+        // if (dia.isNotEmpty) {
+        avgPressureDia = uploadedData.get('Average Blood Pressure (diastolic)');
+        // }
+        // if (hr.isNotEmpty) {
         avgHeartRate = uploadedData.get('Average Heart Rate');
+        // }
       },
     );
   }
@@ -272,55 +323,128 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
         ),
       ),
       body: ListView(
-        shrinkWrap: true,
+        shrinkWrap: false,
         children: [
           SizedBox(
             height: 30.0,
           ),
-          Text(
-            'Blood Pressure',
-            style: kGraphTitleTextStyle,
-            textAlign: TextAlign.center,
+          Container(
+            child: data2.isNotEmpty && data2a.isNotEmpty
+                ? Text(
+                    'Blood Pressure',
+                    style: kGraphTitleTextStyle,
+                    textAlign: TextAlign.center,
+                  )
+                : Text(''),
           ),
           Container(
-            child: extractData2(),
+            child: data2.isNotEmpty && data2a.isNotEmpty
+                ? extractData2()
+                : Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ), //blood pressure
           ),
-          FullSummaryCard(
-            avgValue: '$avgPressureSys/$avgPressureDia mmHg',
-            varValue: '$variancePressureSys/$variancePressureDia mmHg',
-            sdValue: '$standardDeviationSys/$standardDeviationDia mmHg',
-            range: 'range',
-            // range: '${sys[0]}/${dia[0]} - ${sys[numberOfBPPoints -
-            //     1]}/${dia[numberOfBPPoints - 1]}',
-            //range: '${sys.first} - ${sys.last}/' '${dia.first} - ${dia.last}',
+          Container(
+            child: data2.isNotEmpty && data2a.isNotEmpty
+                ? FullSummaryCard(
+                    avgValue: '$avgPressureSys/$avgPressureDia mmHg',
+                    varValue: '$variancePressureSys/$variancePressureDia mmHg',
+                    sdValue: '$standardDeviationSys/$standardDeviationDia mmHg',
+                    range: ' range '
+                    // range: '${sys[0]}/${dia[0]} - ${sys[numberOfBPPoints -
+                    //     1]}/${dia[numberOfBPPoints - 1]}',
+                    //range: '${sys.first} - ${sys.last}/' '${dia.first} - ${dia.last}',
+                    )
+                : Text(''),
           ),
           SizedBox(
             height: 25.0,
           ),
-          Text(
-            'Blood Glucose',
-            style: kGraphTitleTextStyle,
-            textAlign: TextAlign.center,
+          Container(
+            child: data3.isNotEmpty
+                ? Text(
+                    'Blood Glucose',
+                    style: kGraphTitleTextStyle,
+                    textAlign: TextAlign.center,
+                  )
+                : Text(''),
           ),
           Container(
-            child: extractData3(),
+            child: data3.isNotEmpty
+                ? extractData3()
+                : Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'No data has been uploaded for Pulse Rate. Please use the Data Input Page if you wish to add any.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
           ),
-          FullSummaryCard(
-            avgValue: '$avgGlucose mmol/L',
-            varValue: '$varianceBG mmol/L',
-            sdValue: '$standardDeviationBG mmol/L',
-            range: 'range',
-            // range: '${bg[0]} - ${bg[numberOfBGPoints - 1]}',
-            //range: '${bg.first} - ${bg.last}',
+          Container(
+            child: data3.isNotEmpty
+                ? FullSummaryCard(
+                    avgValue: '$avgGlucose mmol/L',
+                    varValue: '$varianceBG mmol/L',
+                    sdValue: '$standardDeviationBG mmol/L',
+                    range: 'RANGE'
+                    //TODO fix the error  " RangeError (index): Invalid value: Valid value range is empty: -1" for the range
+                    // range: '${bg[0]} - ${bg[numberOfBGPoints - 1]}',
+                    //range: '${bg.first} - ${bg.last}',
+                    )
+                : Text(''),
           ),
           SizedBox(
             height: 25.0,
           ),
           Container(
-              child: isHRFilled
-                  ? extractData()
-                  : Text(
-                      'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.')),
+            child: data1.isNotEmpty
+                ? extractData()
+                : Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'No data has been uploaded for Pulse Rate. Please use the Data Input Page if you wish to add any.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+          ),
+          SizedBox(
+            height: 25.0,
+          ),
+          Text('hr is is $avgHeartRate'),
+          Text('sys is $avgPressureSys'),
+          Text('dia is $avgPressureDia'),
+          Text('bg is $avgGlucose'),
         ],
       ),
     );
@@ -335,6 +459,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
+        //TODO Fix the display for this graph
         Charts(
           units: 'BPM',
           yStart: 30,
@@ -372,7 +497,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     return Charts3(
       units: 'mmol/L',
       yStart: 0,
-      bool1: false,
+      bool1: true,
       yLength: 10,
       xLength: numberOfBGPoints.toDouble(),
       list: data3,

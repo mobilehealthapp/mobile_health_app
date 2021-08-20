@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/settings_pages/settings_card.dart';
-import 'package:mobile_health_app/settings_pages/settings_constants.dart';
+import 'package:mobile_health_app/Settings/settings_card.dart';
 
 import '../Constants.dart';
 
