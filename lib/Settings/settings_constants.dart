@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile_health_app/Camera/input_constants.dart';
+import 'package:mobile_health_app/Constants.dart';
 
 final kTextFieldDecoration = InputDecoration(
   // used for text fields to keep theme consistent
@@ -71,7 +71,7 @@ final kTextStyle1 =
     TextStyle(fontSize: 15.0, fontWeight: FontWeight.w400, color: Colors.black);
 
 final kTextStyle2 =
-TextStyle(fontSize: 20.0, fontWeight: FontWeight.w400, color: Colors.black);
+    TextStyle(fontSize: 20.0, fontWeight: FontWeight.w400, color: Colors.black);
 
 Widget textFieldLabel(label) {
   // label that appears above text fields
