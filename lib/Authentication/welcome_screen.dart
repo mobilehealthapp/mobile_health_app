@@ -35,48 +35,62 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
     super.initState();
+    //If we are on iOS we ask for permissions
     if (Platform.isIOS) {
       FirebaseMessaging.instance.requestPermission();
     }
+
+    //Handle the background notifications (the app is terminated)
     FirebaseMessaging.instance
         .getInitialMessage()
         .then((RemoteMessage? message) {
+      //If there is data in our notification
       if (message != null) {
+        //We will open the route from the field view
+        //with the value defined in the notification
         navigator.currentState!.pushNamed('/' + message.data['view']);
       }
     });
 
+    //Handle the notification if the app is in Foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
       if (notification != null && android != null) {
         flutterLocalNotificationsPlugin.show(
             notification.hashCode,
-            notification.title,
-            notification.body,
+            notification.title, // Title of our notification
+            notification.body, // Body of our notification
             NotificationDetails(
               android: AndroidNotificationDetails(
+                // This is the channel we use defined above
                 channel.id,
                 channel.name,
                 channel.description,
+                //The icon is defined in android/app/src/main/res/drawable
                 icon: 'companyicon2',
                 playSound: true,
               ),
             ),
+            //We parse the data from the field view to the callback
+            //Line 95 in main.dart
             payload: message.data["view"]);
       }
     });
-    FirebaseMessaging.instance.subscribeToTopic('test');
+    FirebaseMessaging.instance
+        .subscribeToTopic('test'); // subscribe to topic test
 
+    //Handle the background notifications (the app is closed but not termianted)
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       debugPrint('A new onMessageOpenedApp event was published!');
       navigator.currentState!.pushNamed('/' + message.data['view']);
     });
-    getToken();
+    getToken(); // print the token for Firebase test notifications in debug mode. You can use this add
   }
 
   void getToken() {
     FirebaseMessaging.instance.getToken.call().then((token) {
+      // this will be printed only on debug mode
       debugPrint('Token: $token');
     });
   }
