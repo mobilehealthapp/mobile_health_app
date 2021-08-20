@@ -111,6 +111,10 @@ class _CameraAppState extends State<CameraApp> {
     if (isBusy) return;
     isBusy = true;
 
+    final recognisedText = await textDetector.processImage(inputImage);
+
+    ocrText = recognisedText;
+
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
       imageSize = inputImage.inputImageData!.size;

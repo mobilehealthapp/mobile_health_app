@@ -467,8 +467,6 @@ PODS:
     - Flutter
   - PromisesObjC (2.0.0)
   - Protobuf (3.17.0)
-  - shared_preferences (0.0.1):
-    - Flutter
   - SSZipArchive (2.4.2)
   - Toast (4.0.0)
 
@@ -485,7 +483,6 @@ DEPENDENCIES:
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - modal_progress_hud_nsn (from `.symlinks/plugins/modal_progress_hud_nsn/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
-  - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
 
 SPEC REPOS:
   trunk:
@@ -555,8 +552,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/modal_progress_hud_nsn/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
-  shared_preferences:
-    :path: ".symlinks/plugins/shared_preferences/ios"
 
 SPEC CHECKSUMS:
   abseil: 6c8eb7892aefa08d929b39f9bb108e5367e3228f
@@ -609,7 +604,6 @@ SPEC CHECKSUMS:
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   Protobuf: 7327d4444215b5f18e560a97f879ff5503c4581c
-  shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   SSZipArchive: e7b4f3d9e780c2acc1764cd88fbf2de28f26e5b2
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
 
