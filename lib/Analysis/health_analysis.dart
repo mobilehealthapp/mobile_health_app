@@ -2,11 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'package:mobile_health_app/Drawers/drawers.dart';
-import 'package:mobile_health_app/Graphs/graphData.dart';
+import 'package:mobile_health_app/Graphs/graph_data.dart';
 import '/Drawers/drawers.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '/graphs/graph_info.dart';
+import '/Graphs/graph_info.dart';
 import 'package:calc/calc.dart';
 
 // TODO: Make sure data refreshes when new user signs in and displays their data, NOT previous user's
@@ -434,13 +434,13 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        Charts2(
-          units: 'mmHg',
+        BPCharts(
+          unitOfMeasurement: 'mmHg',
           yStart: 10,
-          bool1: false,
+          showDots: false,
           yLength: 180,
           xLength: numberOfBPPoints.toDouble(),
-          list: data1,
+          dataList: data1,
           list2: data1a,
         ),
         Row(
@@ -472,13 +472,13 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        Charts3(
-          units: 'mmol/L',
+        BGCharts(
+          unitOfMeasurement: 'mmol/L',
           yStart: 0,
-          bool1: false,
+          showDots: false,
           yLength: 10,
           xLength: numberOfBGPoints.toDouble(),
-          list: data2,
+          dataList: data2,
         ),
         FullSummaryCard(
           avgValue: '$avgGlucose mmol/L',
@@ -502,13 +502,13 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        Charts(
-          units: 'BPM',
+        HRCharts(
+          unitOfMeasurement: 'BPM',
           yStart: 30,
-          bool1: false,
+          showDots: false,
           yLength: 200,
           xLength: numberOfHRPoints.toDouble(),
-          list: data3,
+          dataList: data3,
         ),
         FullSummaryCard(
           avgValue: '$avgHeartRate BPM',

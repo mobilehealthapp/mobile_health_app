@@ -3,9 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'package:mobile_health_app/graphs/graphData.dart';
+import 'package:mobile_health_app/Graphs/graph_data.dart';
 
-import '/graphs/graph_info.dart';
+import '/Graphs/graph_info.dart';
 
 //This file is identical to the health analysis file on the patient side of the app, except several variables must be declared multiple times in various functions
 //The purpose of this file is for doctors to view each patient's data
@@ -365,13 +365,13 @@ class _PatientDataState extends State<PatientData> {
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        Charts(
-          units: 'BPM',
+        HRCharts(
+          unitOfMeasurement: 'BPM',
           yStart: 30,
-          bool1: false,
+          showDots: false,
           yLength: 200,
           xLength: numberOfHRPoints.toDouble(),
-          list: data1,
+          dataList: data1,
         ),
         FullSummaryCard(
           avgValue: '$avgHeartRate BPM',
@@ -393,13 +393,13 @@ class _PatientDataState extends State<PatientData> {
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        Charts2(
-          units: 'mmHg',
+        BPCharts(
+          unitOfMeasurement: 'mmHg',
           yStart: 10,
-          bool1: false,
+          showDots: false,
           yLength: 180,
           xLength: numberOfBPPoints.toDouble(),
-          list: data2,
+          dataList: data2,
           list2: data2a,
         ),
         FullSummaryCard(
@@ -423,13 +423,13 @@ class _PatientDataState extends State<PatientData> {
         style: kGraphTitleTextStyle,
         textAlign: TextAlign.center,
       ),
-      Charts3(
-        units: 'mmol/L',
+      BGCharts(
+        unitOfMeasurement: 'mmol/L',
         yStart: 0,
-        bool1: false,
+        showDots: false,
         yLength: 10,
         xLength: numberOfBGPoints.toDouble(),
-        list: data3,
+        dataList: data3,
       ),
       FullSummaryCard(
         avgValue: '$avgGlucose mmol/L',

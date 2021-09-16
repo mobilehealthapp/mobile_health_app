@@ -4,9 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Constants.dart';
 
-import 'accountcheck.dart';
+import 'account_check.dart';
 import 'database_auth_services.dart';
-import 'physiciancode.dart';
+import 'physician_code.dart';
 
 //This file contains the UI and functionality for user email verification
 class EmailVerificationScreen extends StatefulWidget {
@@ -85,9 +85,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       });
       timer.cancel();
       bool isPatient = await patientAccountCheck(
-          uid); //checks if user is patient using function from accountcheck.dart
+          uid); //checks if user is patient using function from account_check.dart
       bool isDoctor = await doctorAccountCheck(
-          uid); //checks if user is doctor using function from accountcheck.dart
+          uid); //checks if user is doctor using function from account_check.dart
       if (isPatient) {
         Navigator.of(context).pushReplacementNamed(
             '/home'); //navigates to patient homepage if user is patient

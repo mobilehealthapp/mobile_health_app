@@ -4,61 +4,26 @@ import 'package:fl_chart/fl_chart.dart';
 // TODO: look into creating LineTitles for the x-axis for the health analysis page (make it easier to read)
 // TODO: see if it's possible to scroll the graph horizontally (view one week at a time but scroll to see others)
 
-class LineTitles {
+class BPHRLineTitles {
   // used for y-axis line titles on BP and HR graphs
   static getTitleData() {
     return FlTitlesData(
       show: true,
       leftTitles: SideTitles(
           showTitles: true,
-          getTextStyles: (value) => TextStyle(
+          getTextStyles: (context, value) => TextStyle(
                 color: Colors.black,
                 fontSize: 10,
               ),
           getTitles: (value) {
-            switch (value.toInt()) {
-              case 10:
-                return '10';
-              case 20:
-                return '20';
-              case 30:
-                return '30';
-              case 40:
-                return '40';
-              case 50:
-                return '50';
-              case 60:
-                return '60';
-              case 70:
-                return '70';
-              case 80:
-                return '80';
-              case 90:
-                return '90';
-              case 100:
-                return '100';
-              case 110:
-                return '110';
-              case 120:
-                return '120';
-              case 130:
-                return '130';
-              case 140:
-                return '140';
-              case 150:
-                return '150';
-              case 160:
-                return '160';
-              case 170:
-                return '170';
-              case 180:
-                return '180';
-              case 190:
-                return '190';
-              case 200:
-                return '200';
+            int returnValue = value.toInt();
+            if (returnValue % 10 == 0 &&
+                returnValue <= 220 &&
+                returnValue >= 10) {
+              return returnValue.toString();
+            } else {
+              return '';
             }
-            return '';
           },
           reservedSize: 20,
           margin: 10),
@@ -66,43 +31,25 @@ class LineTitles {
   }
 }
 
-class LineTitles2 {
+class BGLineTitles {
   // used for y-axis line titles on BG graphs
   static getTitleData() {
     return FlTitlesData(
       show: true,
       leftTitles: SideTitles(
           showTitles: true,
-          getTextStyles: (value) => TextStyle(
-            color: Colors.black,
-            fontSize: 10,
-          ),
+          getTextStyles: (context, value) => TextStyle(
+                color: Colors.black,
+                fontSize: 10,
+              ),
           getTitles: (value) {
-            switch (value.toInt()) {
-              case 0:
-                return '0';
-              case 1:
-                return '1';
-              case 2:
-                return '2';
-              case 3:
-                return '3';
-              case 4:
-                return '4';
-              case 5:
-                return '5';
-              case 6:
-                return '6';
-              case 7:
-                return '7';
-              case 8:
-                return '8';
-              case 9:
-                return '9';
-              case 10:
-                return '10';
+            int returnValue = value.toInt();
+            if (returnValue <= 0 &&
+                returnValue >= 10) {
+              return returnValue.toString();
+            } else {
+              return '';
             }
-            return '';
           },
           reservedSize: 20,
           margin: 10),
@@ -110,22 +57,22 @@ class LineTitles2 {
   }
 }
 
-class Charts extends StatelessWidget {
+class HRCharts extends StatelessWidget {
   // used for HR graph
-  Charts(
-      {required this.list,
+  HRCharts(
+      {required this.dataList,
       required this.xLength,
       required this.yLength,
-      required this.bool1,
+      required this.showDots,
       required this.yStart,
-      required this.units});
+      required this.unitOfMeasurement});
 
-  List<FlSpot> list = []; // list of data to display as fl spots
+  List<FlSpot> dataList = []; // list of data to display as fl spots
   final double? xLength; // length of x-axis
   final double? yLength; // length of y-axis
   final double? yStart; // at what value does the y-axis start?
-  final bool bool1; // show dots? yes (true) for home page, no (false) for health analysis
-  final String units; // units of measurement (display along y-axis)
+  final bool showDots; // show dots? yes (true) for home page, no (false) for health analysis
+  final String unitOfMeasurement; // units of measurement (display along y-axis)
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +88,7 @@ class Charts extends StatelessWidget {
       ),
       child: LineChart(
         LineChartData(
-          titlesData: LineTitles.getTitleData(),
+          titlesData: BPHRLineTitles.getTitleData(),
           borderData: FlBorderData(
             show: true,
           ),
@@ -156,14 +103,14 @@ class Charts extends StatelessWidget {
               colors: [Colors.red],
               dotData: FlDotData(
                 // removes dots
-                show: bool1,
+                show: showDots,
               ),
-              spots: list,
+              spots: dataList,
             ),
           ],
           axisTitleData: FlAxisTitleData(
             leftTitle: AxisTitle(
-              titleText: units,
+              titleText: unitOfMeasurement,
               showTitle: true,
             ),
             bottomTitle: AxisTitle(
@@ -177,24 +124,25 @@ class Charts extends StatelessWidget {
   }
 }
 
-class Charts2 extends StatelessWidget {
+class BPCharts extends StatelessWidget {
   // used for BP graph
-  Charts2(
-      {required this.list,
+  BPCharts(
+      {required this.dataList,
       required this.list2,
       required this.xLength,
       required this.yLength,
-      required this.bool1,
+      required this.showDots,
       required this.yStart,
-      required this.units});
+      required this.unitOfMeasurement});
 
-  List<FlSpot> list = [];  // list of data to display as fl spots
-  List<FlSpot> list2 = [];  // another list of data to display as fl spots (need to for BP)
+  List<FlSpot> dataList = []; // list of data to display as fl spots
+  List<FlSpot> list2 =
+      []; // another list of data to display as fl spots (need to for BP)
   final double? xLength; // length of x-axis
   final double? yLength; // length of y-axis
   final double? yStart; // at what value does the y-axis start?
-  final bool bool1; // show dots? yes (true) for home page, no (false) for health analysis
-  final String units; // units of measurement (display along y-axis)
+  final bool showDots; // show dots? yes (true) for home page, no (false) for health analysis
+  final String unitOfMeasurement; // units of measurement (display along y-axis)
 
   @override
   Widget build(BuildContext context) {
@@ -210,7 +158,7 @@ class Charts2 extends StatelessWidget {
       ),
       child: LineChart(
         LineChartData(
-          titlesData: LineTitles.getTitleData(),
+          titlesData: BPHRLineTitles.getTitleData(),
           borderData: FlBorderData(
             show: true,
           ),
@@ -220,7 +168,7 @@ class Charts2 extends StatelessWidget {
           minY: yStart,
           axisTitleData: FlAxisTitleData(
             leftTitle: AxisTitle(
-              titleText: units,
+              titleText: unitOfMeasurement,
               textStyle: TextStyle(
                 fontSize: 15.0,
                 color: Colors.black,
@@ -243,9 +191,9 @@ class Charts2 extends StatelessWidget {
               colors: [Colors.red],
               dotData: FlDotData(
                 // removes dots
-                show: bool1,
+                show: showDots,
               ),
-              spots: list,
+              spots: dataList,
             ),
             LineChartBarData(
               preventCurveOverShooting: true,
@@ -253,7 +201,7 @@ class Charts2 extends StatelessWidget {
               colors: [Colors.black],
               dotData: FlDotData(
                 // removes dots
-                show: bool1,
+                show: showDots,
               ),
               spots: list2,
             ),
@@ -264,23 +212,23 @@ class Charts2 extends StatelessWidget {
   }
 }
 
-class Charts3 extends StatelessWidget {
+class BGCharts extends StatelessWidget {
   // used for BG graph
-  Charts3({
-    required this.list,
+  BGCharts({
+    required this.dataList,
     required this.xLength,
     required this.yLength,
-    required this.bool1,
+    required this.showDots,
     required this.yStart,
-    required this.units,
+    required this.unitOfMeasurement,
   });
 
-  List<FlSpot> list = [];
+  List<FlSpot> dataList = [];
   final double? xLength; // length of x-axis
   final double? yLength; // length of y-axis
   final double? yStart; // at what value does the y-axis start?
-  final bool bool1; // show dots? yes (true) for home page, no (false) for health analysis
-  final String units; // units of measurement (display along y-axis)
+  final bool showDots; // show dots? yes (true) for home page, no (false) for health analysis
+  final String unitOfMeasurement; // units of measurement (display along y-axis)
 
   @override
   Widget build(BuildContext context) {
@@ -296,7 +244,7 @@ class Charts3 extends StatelessWidget {
       ),
       child: LineChart(
         LineChartData(
-          titlesData: LineTitles2.getTitleData(),
+          titlesData: BGLineTitles.getTitleData(),
           borderData: FlBorderData(
             show: true,
           ),
@@ -313,14 +261,14 @@ class Charts3 extends StatelessWidget {
               colors: [Colors.red],
               dotData: FlDotData(
                 // removes dots
-                show: bool1,
+                show: showDots,
               ),
-              spots: list,
+              spots: dataList,
             ),
           ],
           axisTitleData: FlAxisTitleData(
             leftTitle: AxisTitle(
-              titleText: units,
+              titleText: unitOfMeasurement,
               showTitle: true,
             ),
             bottomTitle: AxisTitle(

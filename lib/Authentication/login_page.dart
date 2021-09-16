@@ -5,7 +5,7 @@ import 'package:mobile_health_app/Authentication/authentication_button.dart';
 import 'package:mobile_health_app/Constants.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
 
-import 'accountcheck.dart';
+import 'account_check.dart';
 
 //This file contains the UI elements of the login page as well as the firebase functionality of user authentication and login
 //TODO: Clean up UI, improve visual aesthetics of page if deemed necessary

@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:mobile_health_app/Authentication/accountcheck.dart';
+import 'package:mobile_health_app/Authentication/account_check.dart';
 
 //This file contains the UI and functionality for the Splash Screen, which is briefly displayed every time the app is launched
 //TODO: This page functions properly, feel free to improve UI if necessary

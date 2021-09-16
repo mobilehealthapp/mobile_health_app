@@ -12,15 +12,15 @@ import 'Camera/camera_input.dart';
 import 'Camera/data_input_page.dart';
 
 // home page imports
-import 'Physician side/physHome.dart';
-import 'package:mobile_health_app/Home page/HomePage.dart';
+import 'Physician side/physician_home.dart';
+import 'package:mobile_health_app/Home page/home_page.dart';
 import 'Constants.dart';
 
 // settings imports
 import 'Settings/add_a_doctor.dart';
-import 'Settings/dr_profile.dart';
-import 'Settings/dr_profileEdit.dart';
-import 'Settings/dr_settings.dart';
+import 'Settings/physician_profile.dart';
+import 'Settings/physician_profile_edit.dart';
+import 'Settings/physician_settings.dart';
 import 'Settings/medical_disclaimer.dart';
 import 'Settings/my_doctors.dart';
 import 'Settings/privacy_policy.dart';
@@ -36,11 +36,11 @@ import 'package:mobile_health_app/Analysis/health_analysis_form.dart';
 import 'Analysis/health_analysis.dart';
 
 // authentication imports
-import 'Authentication/loginpage.dart';
-import 'Authentication/passwordreset.dart';
-import 'Authentication/signup.dart';
+import 'Authentication/login_page.dart';
+import 'Authentication/password_reset.dart';
+import 'Authentication/sign_up.dart';
 import 'Authentication/verify.dart';
-import 'Authentication/splashscreen.dart';
+import 'Authentication/splash_screen.dart';
 import 'Authentication/welcome_screen.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
