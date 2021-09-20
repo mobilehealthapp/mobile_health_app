@@ -20,6 +20,7 @@ class _SignupPageState extends State<SignupPage> {
       GlobalKey<FormState>(); //Form key for textformfield validation
   final _auth = FirebaseAuth.instance;
   bool showSpinner = false;
+  bool isHidden = true;
   var firstName;
   var lastName;
   var email;
@@ -61,7 +62,7 @@ class _SignupPageState extends State<SignupPage> {
                     Text(
                       'Create an account. It\'s free!',
                       style: TextStyle(
-                        fontSize: 15.0,
+                        fontSize: 25,
                         color: Colors.grey[700],
                       ),
                     )
@@ -71,49 +72,117 @@ class _SignupPageState extends State<SignupPage> {
                   key: formKey,
                   child: Column(
                     children: [
-                      inputFile(
-                        label: 'First Name',
-                        onChangedFunction: (value) {
+                      SizedBox(height: 5.0),
+                      TextFormField(
+                          decoration: InputDecoration(labelText: 'First Name',
+                          labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15    
+                            ),
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+                          border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                        ),
+                        onChanged: (value) {
                           firstName = value;
                         },
-                        validation: Validators.required(
+                        validator: Validators.required(
                             'First name is required'), //Each text form field contains a validator to ensure user has inputted information before signing up
                       ),
-                      inputFile(
-                        label: 'Last Name',
-                        onChangedFunction: (value) {
+                      SizedBox(height: 15.0),
+                      TextFormField(
+                          decoration: InputDecoration(labelText: 'Last Name',
+                          labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15    
+                            ),
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+                          border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                        ),
+                        onChanged: (value) {
                           lastName = value;
                         },
-                        validation:
+                        validator:
                             Validators.required('Last name is required'),
                       ),
-                      inputFile(
-                        label: 'Email',
-                        onChangedFunction: (value) {
+                      SizedBox(height: 15.0),
+                      TextFormField(
+                          decoration: InputDecoration(labelText: 'Email',
+                          labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15    
+                            ),
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+                          border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                        ),
+                        onChanged: (value) {
                           email = value;
                         },
-                        validation: Validators.compose([
+                        validator: Validators.compose([
                           Validators.required('Email is required'),
                           Validators.email('Invalid email address'),
                         ]),
                       ),
-                      inputFile(
-                          label: 'Password',
-                          obscureTextState: true,
-                          onChangedFunction: (value) {
+                      SizedBox(height: 15.0),
+                      TextFormField(
+                          decoration: InputDecoration(labelText: 'Password',
+                          labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15    
+                            ),
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+                          border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                          suffix: InkWell(
+                            onTap: togglePasswordView,
+                            child: Icon(
+                                    isHidden 
+                                    ? Icons.visibility 
+                                    : Icons.visibility_off,
+                              ),
+                            ),
+                          ),
+                          obscureText: isHidden,
+                          onChanged: (value) {
                             password = value;
                           },
-                          validation: Validators.compose([
+                          validator: Validators.compose([
                             //TODO: Currently, only password restriction is a minimum length of 6 characters, for tighter security it is necessary to include more restrictions on password
                             Validators.required('Password is required'),
                             Validators.minLength(
                                 6, 'Password must be at least 6 characters'),
-                          ])),
-                      inputFile(
-                        label: 'Confirm Password',
-                        obscureTextState: true,
-                        onChangedFunction: (value) {},
-                        validation: Validators.compose([
+                          ]
+                        )
+                      ),
+                      SizedBox(height: 15.0),
+                      TextFormField(
+                        decoration: InputDecoration(labelText: 'Confirm Password',
+                          labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15    
+                            ),
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+                          border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                          suffix: InkWell(
+                            onTap: togglePasswordView,
+                            child: Icon(
+                                    isHidden 
+                                    ? Icons.visibility 
+                                    : Icons.visibility_off,
+                            ),
+                          ),
+                        ),
+                        obscureText: isHidden,
+                        onChanged: (value) {},
+                        validator: Validators.compose([
                           Validators.required('Please confirm password'),
                           (value) {
                             if (value != password) {
@@ -124,6 +193,7 @@ class _SignupPageState extends State<SignupPage> {
                           }
                         ]),
                       ),
+                      SizedBox(height: 10.0),
                       Center(
                         child: Container(
                           height: 50,
@@ -236,35 +306,9 @@ class _SignupPageState extends State<SignupPage> {
       ),
     );
   }
-}
-
-Widget inputFile(
-    {label, obscureTextState = false, onChangedFunction, validation}) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(label,
-          style: TextStyle(
-              fontSize: 15.0,
-              fontWeight: FontWeight.w400,
-              color: Colors.black)),
-      SizedBox(height: 5.0),
-      TextFormField(
-        validator: validation,
-        onChanged: onChangedFunction,
-        obscureText: obscureTextState,
-        decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-            enabledBorder:
-                OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-            focusedBorder:
-                OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
-            border:
-                OutlineInputBorder(borderSide: BorderSide(color: Colors.grey))),
-      ),
-      SizedBox(
-        height: 10.0,
-      )
-    ],
-  );
+  void togglePasswordView() {
+    setState(() {
+      isHidden = !isHidden;
+    });
+  }
 }

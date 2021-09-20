@@ -20,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   final _auth = FirebaseAuth
       .instance; //_auth variable is used to perform firebase authentication functions
   bool showSpinner = false;
+  bool isHidden = true;
   var user;
   var email;
   var password;
@@ -115,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: TextFormField(
                           validator:
                               Validators.required('Password is required'),
-                          obscureText: true,
+                          obscureText: isHidden,
                           onChanged: (value) {
                             password = value;
                           },
@@ -131,6 +132,14 @@ class _LoginPageState extends State<LoginPage> {
                               color: Colors.black,
                             ),
                             hintText: 'Enter Password',
+                            suffix: InkWell(
+                              onTap: togglePasswordView,
+                              child: Icon(
+                                      isHidden 
+                                      ? Icons.visibility 
+                                      : Icons.visibility_off,
+                                ),
+                              ),
                             hintStyle: TextStyle(fontSize: 20),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.all(
@@ -250,5 +259,10 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+  void togglePasswordView() {
+    setState(() {
+      isHidden = !isHidden;
+    });
   }
 }
