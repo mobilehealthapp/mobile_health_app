@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/graphs/graph_info.dart';
+import 'package:mobile_health_app/Graphs/graph_info.dart';
 import 'package:mobile_health_app/Drawers/drawers.dart';
 import 'package:mobile_health_app/Constants.dart';
-import 'package:mobile_health_app/Graphs/graphData.dart';
+import 'package:mobile_health_app/Graphs/graph_data.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:mobile_health_app/Analysis/health_analysis.dart';
 
@@ -294,13 +294,13 @@ class _HomePageState extends State<HomePage> {
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        Charts2(
-          units: 'mmHg',
+        BPCharts(
+          unitOfMeasurement: 'mmHg',
           yStart: 30,
-          bool1: true,
+          showDots: true,
           yLength: 180,
           xLength: 6,
-          list: data1a,
+          dataList: data1a,
           list2: data1,
         ),
         Row(
@@ -329,13 +329,13 @@ class _HomePageState extends State<HomePage> {
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        Charts3(
-          units: 'mmol/L',
+        BGCharts(
+          unitOfMeasurement: 'mmol/L',
           yStart: 0,
-          bool1: true,
+          showDots: true,
           yLength: 10,
           xLength: 6,
-          list: data2,
+          dataList: data2,
         ),
         SummaryCard(
           value: '$avgGlucose mmol/L',
@@ -356,13 +356,13 @@ class _HomePageState extends State<HomePage> {
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        Charts(
-          units: 'BPM',
+        HRCharts(
+          unitOfMeasurement: 'BPM',
           yStart: 30,
-          bool1: true,
+          showDots: true,
           yLength: 200,
           xLength: 6,
-          list: data3,
+          dataList: data3,
         ),
         SummaryCard(
           value: '$avgHeartRate bpm',
