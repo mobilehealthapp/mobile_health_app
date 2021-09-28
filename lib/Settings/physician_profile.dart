@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/Constants.dart';
+import 'package:mobile_health_app/constants.dart';
 import 'package:mobile_health_app/Settings/settings_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

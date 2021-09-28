@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile_health_app/Constants.dart';
+import 'package:mobile_health_app/constants.dart';
 
 final kTextFieldDecoration = InputDecoration(
   // used for text fields to keep theme consistent

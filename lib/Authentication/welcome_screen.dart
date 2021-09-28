@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mobile_health_app/Authentication/authentication_button.dart';
-import 'package:mobile_health_app/Constants.dart';
+import 'package:mobile_health_app/constants.dart';
 import 'package:mobile_health_app/main.dart';
 
 import '../main.dart';

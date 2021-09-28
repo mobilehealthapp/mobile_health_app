@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/Constants.dart';
+import 'package:mobile_health_app/constants.dart';
 import 'package:mobile_health_app/Drawers/drawers.dart';
 import 'package:mobile_health_app/Graphs/graph_data.dart';
 import '/Drawers/drawers.dart';

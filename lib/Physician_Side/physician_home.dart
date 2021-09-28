@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/Constants.dart';
+import 'package:mobile_health_app/constants.dart';
 import 'package:mobile_health_app/Drawers/physician_drawer.dart';
-import 'package:mobile_health_app/Physician%20side/patient_data.dart';
+import 'package:mobile_health_app/Physician_Side/patient_data.dart';
 
 //This file contains UI and functionality for the Physician home page, which displays a searchable list of a doctor's patients
 var loggedInUser;

@@ -12,9 +12,9 @@ import 'Camera/camera_input.dart';
 import 'Camera/data_input_page.dart';
 
 // home page imports
-import 'Physician side/physician_home.dart';
-import 'package:mobile_health_app/Home page/home_page.dart';
-import 'Constants.dart';
+import 'Physician_Side/physician_home.dart';
+import 'package:mobile_health_app/Home_Page/home_page.dart';
+import 'package:mobile_health_app/constants.dart';
 
 // settings imports
 import 'Settings/add_a_doctor.dart';

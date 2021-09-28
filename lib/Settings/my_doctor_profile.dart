@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Settings/settings_classes.dart';
-import '../Constants.dart';
+import 'package:mobile_health_app/constants.dart';
 
 //This file collects information from the doctor cards and firebase data to show the patient a more detailed display of their doctor's information
 class MyDoctorProfile extends StatelessWidget {

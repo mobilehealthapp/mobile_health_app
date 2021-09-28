@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/Constants.dart';
+import 'package:mobile_health_app/constants.dart';
 import 'package:mobile_health_app/Drawers/physician_drawer.dart';
 import 'package:mobile_health_app/Settings/delete_data_or_account.dart';
 import 'settings_classes.dart';

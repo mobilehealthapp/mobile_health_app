@@ -11,7 +11,7 @@ import 'OCR_text_overlay.dart';
 import 'dart:ui';
 import 'input_constants.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mobile_health_app/Constants.dart';
+import 'package:mobile_health_app/constants.dart';
 
 Data ocrData = Data(null, null, null);
 

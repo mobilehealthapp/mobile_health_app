@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Graphs/graph_info.dart';
 import 'package:mobile_health_app/Drawers/drawers.dart';
-import 'package:mobile_health_app/Constants.dart';
+import 'package:mobile_health_app/constants.dart';
 import 'package:mobile_health_app/Graphs/graph_data.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:mobile_health_app/Analysis/health_analysis.dart';

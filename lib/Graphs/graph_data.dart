@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_health_app/Constants.dart';
+import 'package:mobile_health_app/constants.dart';
 
 class SCRow extends StatelessWidget {
   SCRow({required this.type, required this.value});
