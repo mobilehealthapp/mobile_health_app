@@ -8,30 +8,16 @@ import 'package:mobile_health_app/Graphs/graph_data.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:mobile_health_app/Analysis/health_analysis.dart';
 
-// TODO: Make sure data refreshes when new user signs in and displays their data, NOT previous user's
-
-final patientData = FirebaseFirestore.instance.collection('patientData').doc(
-    FirebaseAuth.instance.currentUser!
-        .uid); // DocumentReference used to access patient's uploaded medical data on Firestore
-final patientRef = FirebaseFirestore.instance.collection(
-    'patientprofile'); // CollectionReference used to access patient's profile data on Firestore
-var bloodGlucose = patientData.collection(
-    'bloodGlucose'); // CollectionReference used to access patient's BG data
-var bloodPressure = patientData.collection(
-    'bloodPressure'); // CollectionReference used to access patient's BP data
-var heartRate = patientData.collection(
-    'heartRate'); // CollectionReference used to access patient's HR data
-
 var name; // patient's name
 var avgGlucose; // average BG
 var avgPressureDia; // average diastolic BP
 var avgPressureSys; // average systolic BP
 var avgHeartRate; // average HR
 
-List<FlSpot> data1 = []; // used for systolic BP in fl_chart
-List<FlSpot> data1a = []; // used for diastolic BP in fl_chart
-List<FlSpot> data2 = []; // used for BG in fl_chart
-List<FlSpot> data3 = []; // used for HR in fl_chart
+List<FlSpot> sys = []; // used for systolic BP in fl_chart
+List<FlSpot> dia = []; // used for diastolic BP in fl_chart
+List<FlSpot> bg = []; // used for BG in fl_chart
+List<FlSpot> hr = []; // used for HR in fl_chart
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -44,6 +30,13 @@ class _HomePageState extends State<HomePage> {
   final _auth = FirebaseAuth.instance;
   var loggedInUser;
   var uid; //declare below state
+
+ final patientData = FirebaseFirestore.instance.collection('patientData').doc(
+    FirebaseAuth.instance.currentUser!.uid); // DocumentReference used to access patient's uploaded medical data on Firestore
+final patientRef = FirebaseFirestore.instance.collection('patientprofile'); // CollectionReference used to access patient's profile data on Firestore
+var bloodGlucose; 
+var bloodPressure; 
+var heartRate;
 
   void getCurrentUser() async {
     try {
@@ -60,7 +53,7 @@ class _HomePageState extends State<HomePage> {
 
   getUserData(uid) async {
     // get user's first name from Firestore collection patientprofile to display in AppBar
-    final DocumentSnapshot patientInfo = await patientRef.doc(uid).get();
+    final DocumentSnapshot patientInfo = await patientRef.doc(_auth.currentUser!.uid).get();
     setState(() {
       name = patientInfo.get('first name');
     });
@@ -68,7 +61,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<List<FlSpot>> getSysData() async {
     // gets list of 6 most recent BP (systolic) points to use in Graphs
-    data1 = [];
+    sys = [];
+    bloodPressure = patientData.collection('bloodPressure');
     final bpData = await patientData
         .collection('bloodPressure')
         .orderBy('uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
@@ -77,15 +71,16 @@ class _HomePageState extends State<HomePage> {
     final value = bpData.docs; // calls on the docs in the collection
     double index2 = 1.0;
     for (var val in value) {
-      double sys = val.get('systolic');
-      data1.add(FlSpot(index2++, sys.toDouble()));
+      double syst = val.get('systolic');
+      sys.add(FlSpot(index2++, syst.toDouble()));
     }
-    return data1;
+    return sys;
   }
 
   Future<List<FlSpot>> getDiasData() async {
     // gets list of 6 most recent BP (diastolic) points to use in Graphs
-    data1a = [];
+    dia = [];
+    bloodPressure = patientData.collection('bloodPressure');
     final bpData = await bloodPressure
         .orderBy(
             'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
@@ -95,47 +90,50 @@ class _HomePageState extends State<HomePage> {
     double index = 1.0;
     for (var val in value) {
       double dias = val.get('diastolic');
-      data1a.add(FlSpot(index++, dias.toDouble()));
+      dia.add(FlSpot(index++, dias.toDouble()));
     }
-    return data1a;
+    return dia;
   }
 
   Future<List<FlSpot>> getBGData() async {
     // gets list of 6 most recent BG points to use in Graphs
-    data2 = [];
+    bg = [];
+    bloodGlucose = patientData.collection('bloodGlucose');
     final bgData = await bloodGlucose
-        .orderBy(
-            'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
+        .orderBy('uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
         .limitToLast(6) // only calls on last 6 docs in collection
         .get();
     final value = bgData.docs; // calls on the docs in the collection
     double index = 1.0;
     for (var val in value) {
       double glucose = val.get('blood glucose (mmol|L)');
-      data2.add(FlSpot(index++, glucose.toDouble()));
+      bg.add(FlSpot(index++, glucose.toDouble()));
     }
-    return data2;
+    return bg;
   }
 
   Future<List<FlSpot>> getHRData() async {
     // gets list of 6 most recent HR points to use in Graphs
-    data3 = [];
+    hr = [];
+    heartRate = patientData.collection('heartRate');
     final hrData = await heartRate
-        .orderBy(
-            'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
+        .orderBy('uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
         .limitToLast(6) // only calls on last 6 docs in collection
         .get();
     final value = hrData.docs; // calls on the docs in the collection
     double index = 1.0;
     for (var val in value) {
       int heartRate = val.get('heart rate');
-      data3.add(FlSpot(index++, heartRate.toDouble()));
+      hr.add(FlSpot(index++, heartRate.toDouble()));
     }
-    return data3;
+    return hr;
   }
 
   getUploadedData() async {
     // gets averages of each data type for user
+    bloodPressure = patientData.collection('bloodPressure'); 
+    bloodGlucose = patientData.collection('bloodGlucose'); 
+    heartRate = patientData.collection('heartRate'); 
     final bpData = await bloodPressure
         .orderBy(
         'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
@@ -184,7 +182,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     // initialize functions
     getCurrentUser();
-    getUserData(uid);
+    getUserData(_auth.currentUser!.uid);
     getBGData();
     getSysData();
     getDiasData();
@@ -255,24 +253,24 @@ class _HomePageState extends State<HomePage> {
             height: 20.0,
           ),
           Container(
-            child: data1.isNotEmpty // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
-                ? extractDataV2()
+            child: sys.isNotEmpty // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
+                ? extractBP()
                 : NoDataCard(
                     textBody:
                         'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
                   ),
           ),
           Container(
-            child: data2.isNotEmpty // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
-                ? extractData2V2()
+            child: bg.isNotEmpty // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
+                ? extractBG()
                 : NoDataCard(
                     textBody:
                         'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
                   ),
           ),
           Container(
-            child: data3.isNotEmpty // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
-                ? extractData3V2()
+            child: hr.isNotEmpty // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
+                ? extractHR()
                 : NoDataCard(
                     textBody:
                         'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
@@ -286,7 +284,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget extractDataV2() {
+  Widget extractBP() {
     return Column(
       children: [
         Text(
@@ -300,8 +298,8 @@ class _HomePageState extends State<HomePage> {
           showDots: true,
           yLength: 180,
           xLength: 6,
-          dataList: data1a,
-          list2: data1,
+          dataList: dia,
+          list2: sys,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -321,7 +319,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget extractData2V2() {
+  Widget extractBG() {
     return Column(
       children: [
         Text(
@@ -335,7 +333,7 @@ class _HomePageState extends State<HomePage> {
           showDots: true,
           yLength: 10,
           xLength: 6,
-          dataList: data2,
+          dataList: bg,
         ),
         SummaryCard(
           value: '$avgGlucose mmol/L',
@@ -348,7 +346,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget extractData3V2() {
+  Widget extractHR() {
     return Column(
       children: [
         Text(
@@ -362,7 +360,7 @@ class _HomePageState extends State<HomePage> {
           showDots: true,
           yLength: 200,
           xLength: 6,
-          dataList: data3,
+          dataList: hr,
         ),
         SummaryCard(
           value: '$avgHeartRate bpm',
