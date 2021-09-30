@@ -439,7 +439,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           yLength: 180,
           xLength: numberOfBPPoints.toDouble(),
           dataList: sysChart,
-          list2: diaChart,
+          secondaryDataList: diaChart,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

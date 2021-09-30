@@ -128,7 +128,7 @@ class BPCharts extends StatelessWidget {
   // used for BP graph
   BPCharts(
       {required this.dataList,
-      required this.list2,
+      required this.secondaryDataList,
       required this.xLength,
       required this.yLength,
       required this.showDots,
@@ -136,7 +136,7 @@ class BPCharts extends StatelessWidget {
       required this.unitOfMeasurement});
 
   List<FlSpot> dataList = []; // list of data to display as fl spots
-  List<FlSpot> list2 =
+  List<FlSpot> secondaryDataList =
       []; // another list of data to display as fl spots (need to for BP)
   final double? xLength; // length of x-axis
   final double? yLength; // length of y-axis
@@ -203,7 +203,7 @@ class BPCharts extends StatelessWidget {
                 // removes dots
                 show: showDots,
               ),
-              spots: list2,
+              spots: secondaryDataList,
             ),
           ],
         ),
