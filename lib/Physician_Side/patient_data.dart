@@ -400,7 +400,7 @@ class _PatientDataState extends State<PatientData> {
           yLength: 180,
           xLength: numberOfBPPoints.toDouble(),
           dataList: data2,
-          list2: data2a,
+          secondaryDataList: data2a,
         ),
         FullSummaryCard(
           avgValue: '$avgPressureSys/$avgPressureDia mmHg',
