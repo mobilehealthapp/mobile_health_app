@@ -317,10 +317,10 @@ class _HomePageState extends State<HomePage> {
         HealthCharts(
           graphType: HealthCharts.BP,
           unitOfMeasurement: 'mmHg',
-          yStart: 30,
+          minY: 30,
           showDots: true,
-          yLength: 180,
-          xLength: 6,
+          maxY: 180,
+          maxX: 6,
           primaryDataList: diastolicList,
           secondaryDataList: systolicList,
         ),
@@ -359,10 +359,10 @@ class _HomePageState extends State<HomePage> {
         HealthCharts(
           graphType: HealthCharts.BG,
           unitOfMeasurement: 'mmol/L',
-          yStart: 0,
+          minY: 0,
           showDots: true,
-          yLength: 10,
-          xLength: 6,
+          maxY: 10,
+          maxX: 6,
           primaryDataList: glucoseList,
         ),
         SummaryCard(
@@ -393,10 +393,10 @@ class _HomePageState extends State<HomePage> {
         HealthCharts(
           graphType: HealthCharts.HR,
           unitOfMeasurement: 'BPM',
-          yStart: 30,
+          minY: 30,
           showDots: true,
-          yLength: 200,
-          xLength: 6,
+          maxY: 200,
+          maxX: 6,
           primaryDataList: heartRateList,
         ),
         SummaryCard(

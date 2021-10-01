@@ -27,16 +27,16 @@ class HealthCharts extends StatelessWidget {
   ///
   /// [primaryDataList] Acts as the main data source being graphed, and
   /// [secondaryDataList] is another list of data (need to for diastolic BP.)
-  /// [xLength], [yLength] and [yStart] are used to specify graph axis parameters.
+  /// [maxX], [maxY] and [minY] are used to specify graph axis parameters.
   /// [showDots] True if dots should be drawn on the graph.
   /// [unitOfMeasurement] The unit of measurement to display along y-axis.
   /// [graphType] essentially acts as a way to specify scale of y-axis using start,stop(both inclusive),step
   /// within HealthCharts there are three predefined GraphType objects, HR, BP and BG.
   final List<FlSpot> primaryDataList;
   final List<FlSpot>? secondaryDataList; // another list of data to display as fl spots (need to for BP)
-  final double? xLength; // length of x-axis
-  final double? yLength; // length of y-axis
-  final double? yStart; // at what value does the y-axis start
+  final double? maxX; // length of x-axis
+  final double? maxY; // length of y-axis
+  final double? minY; // at what value does the y-axis start
   final bool showDots; // show dots? yes (true) for home page, no (false) for health analysis
   final String unitOfMeasurement; // units of measurement (display along y-axis)
   final GraphType graphType;
@@ -47,10 +47,10 @@ class HealthCharts extends StatelessWidget {
 
   HealthCharts(
       {required this.primaryDataList,
-        required this.xLength,
-        required this.yLength,
+        required this.maxX,
+        required this.maxY,
         required this.showDots,
-        required this.yStart,
+        required this.minY,
         required this.unitOfMeasurement,
         required this.graphType,
         this.secondaryDataList});
@@ -131,10 +131,10 @@ class HealthCharts extends StatelessWidget {
         LineChartData(
           titlesData: _generateTitleData(graphType),
           borderData: FlBorderData(show: true),
-          maxX: xLength,
+          maxX: maxX,
           minX: 1,
-          maxY: yLength,
-          minY: yStart,
+          maxY: maxY,
+          minY: minY,
           axisTitleData: FlAxisTitleData(
             leftTitle: AxisTitle(
               titleText: unitOfMeasurement,

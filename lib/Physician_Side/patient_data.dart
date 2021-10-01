@@ -368,10 +368,10 @@ class _PatientDataState extends State<PatientData> {
         HealthCharts(
           graphType: HealthCharts.HR,
           unitOfMeasurement: 'BPM',
-          yStart: 30,
+          minY: 30,
           showDots: false,
-          yLength: 200,
-          xLength: numberOfHRPoints.toDouble(),
+          maxY: 200,
+          maxX: numberOfHRPoints.toDouble(),
           primaryDataList: heartRateList,
         ),
         FullSummaryCard(
@@ -397,10 +397,10 @@ class _PatientDataState extends State<PatientData> {
         HealthCharts(
           graphType: HealthCharts.BP,
           unitOfMeasurement: 'mmHg',
-          yStart: 10,
+          minY: 10,
           showDots: false,
-          yLength: 180,
-          xLength: numberOfBPPoints.toDouble(),
+          maxY: 180,
+          maxX: numberOfBPPoints.toDouble(),
           primaryDataList: diastolicList,
           secondaryDataList: systolicList,
         ),
@@ -428,10 +428,10 @@ class _PatientDataState extends State<PatientData> {
       HealthCharts(
         graphType: HealthCharts.BG,
         unitOfMeasurement: 'mmol/L',
-        yStart: 0,
+        minY: 0,
         showDots: false,
-        yLength: 10,
-        xLength: numberOfBGPoints.toDouble(),
+        maxY: 10,
+        maxX: numberOfBGPoints.toDouble(),
         primaryDataList: glucoseList,
       ),
       FullSummaryCard(
