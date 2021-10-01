@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mobile_health_app/Analysis/health_analysis.dart';
 //Class containing various functions for database and authentication operations in Firebase
 
 class DatabaseAuth {
@@ -25,8 +26,11 @@ class DatabaseAuth {
   final CollectionReference doctorProfileCollection =
       FirebaseFirestore.instance.collection('doctorprofile');
 
-  final CollectionReference doctorPatientsCollection =
-      FirebaseFirestore.instance.collection('doctorprofile');
+  final CollectionReference doctorPatientsCollection = FirebaseFirestore
+      .instance
+      .collection('doctorprofile')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('doctorPatients');
 
   Future setPatientData(String firstName, String lastName, String email,
       String accountType) async {
@@ -74,23 +78,12 @@ class DatabaseAuth {
   Future deleteDoctorData(
       String email, String password, BuildContext context) async {
     try {
-      // TODO: edit function so that it also deletes doctor's document from each of their patients' Firestore collections
       User? user = _auth.currentUser;
       AuthCredential credentials =
           EmailAuthProvider.credential(email: email, password: password);
       await user!.reauthenticateWithCredential(credentials);
       print(user);
-      await doctorProfileCollection.doc(uid).update(
-        {
-          'first name': '',
-          'last name': '',
-          'province': '',
-          'clinicAddress': '',
-          'quali': '',
-          'tele': '',
-          'fax': '',
-        },
-      );
+      await updateDoctorData('', '', '', '', '', '', '');
       /*
       when the user inputs the correct credentials and they are verified by Firebase Auth,
       they will delete all of their data from Firestore except for their account type and email address
@@ -110,7 +103,6 @@ class DatabaseAuth {
         toastLength: Toast.LENGTH_LONG,
       );
     }
-    return patientProfileCollection.doc(_auth.currentUser!.uid).delete();
   }
 
   Future setDoctorCode(String physicianCode) async {
@@ -122,36 +114,16 @@ class DatabaseAuth {
   Future deletePatientData(
       String email, String password, BuildContext context) async {
     try {
-      // TODO: edit function so that it also deletes patient's document from each of their physicians' Firestore collections
       User? user = _auth.currentUser;
       AuthCredential credentials =
           EmailAuthProvider.credential(email: email, password: password);
       print(user);
       await user!.reauthenticateWithCredential(credentials);
-      await patientDataCollection.doc(_auth.currentUser!.uid).delete();
-      await patientDoctorsCollection.get().then(
-        (snapshot) {
-          for (DocumentSnapshot ds in snapshot.docs) {
-            ds.reference.delete();
-          }
-        },
-      );
-      await patientProfileCollection.doc(_auth.currentUser!.uid).update(
-        {
-          'first name': '',
-          'last name': '',
-          'province': '',
-          'address': '',
-          'age': '',
-          'tele': '',
-          'meds': '',
-          'conds': '',
-          'sex': '',
-          'wt': '',
-          'ht': '',
-          'dob': '',
-        },
-      );
+      dataDelete('bloodGlucose', 1);
+      dataDelete('bloodPressure', 1);
+      dataDelete('heartRate', 0); //patientData field is emptied here
+      await updatePatientData('', '', '', '', '', '', '', '', '', '', '',
+          ''); //updates patientProfile field and doctorPatients fields
       /*
       when the user inputs the correct credentials and they are verified by Firebase Auth,
       they will delete all of their data from Firestore except for their account type and email address
@@ -176,13 +148,11 @@ class DatabaseAuth {
   Future deletePatientUser(
       String email, String password, BuildContext context) async {
     try {
-      // TODO: edit function so that it also deletes patient's document from each of their physicians' Firestore collections
       User? user = _auth.currentUser;
       AuthCredential credentials =
           EmailAuthProvider.credential(email: email, password: password);
-      print(user);
       var result = await user!.reauthenticateWithCredential(credentials);
-      await erasePatientDocument();
+      await erasePatientDocument(); //deletes patient from doctorPatients, patientData, and patientProfile collections
       await result.user!.delete();
       /*
       when the user inputs the correct credentials and they are verified by Firebase Auth,
@@ -206,7 +176,6 @@ class DatabaseAuth {
   Future deleteDoctorUser(
       String email, String password, BuildContext context) async {
     try {
-      // TODO: edit function so that it also deletes doctor's document from each of their patients' Firestore collections
       User? user = _auth.currentUser;
       AuthCredential credentials =
           EmailAuthProvider.credential(email: email, password: password);
@@ -243,7 +212,7 @@ class DatabaseAuth {
     /* used in patient profile edit page to update their data in Firestore once they
     press confirm
      */
-    return await patientProfileCollection.doc(_auth.currentUser!.uid).update(
+    await patientProfileCollection.doc(_auth.currentUser!.uid).update(
       {
         'first name': firstName,
         'last name': lastName,
@@ -259,6 +228,34 @@ class DatabaseAuth {
         'address': adr,
       },
     );
+    patientDoctorsCollection.get().then((docSnapshot) => {
+          //if the patient has a doctor, update their doctor(s)'s doctorPatients form
+          if (docSnapshot.size > 0)
+            {
+              docSnapshot.docs.forEach((DocumentSnapshot doc) {
+                doctorProfileCollection
+                    .doc(doc.id)
+                    .collection('doctorPatients')
+                    .doc(_auth.currentUser!.uid)
+                    .update(
+                  {
+                    'first name': firstName,
+                    'last name': lastName,
+                    'province': province,
+                    'age': age,
+                    'dob': dob,
+                    'sex': sex,
+                    'ht': ht,
+                    'wt': wt,
+                    'conds': conds,
+                    'meds': meds,
+                    'tele': tele,
+                    'address': adr,
+                  },
+                );
+              })
+            }
+        });
   }
 
   Future updateDoctorData(
@@ -266,38 +263,102 @@ class DatabaseAuth {
     /* used in doctor profile edit page to update their data in Firestore once they
     press confirm
      */
-    return await doctorProfileCollection.doc(_auth.currentUser!.uid).update(
+    await doctorProfileCollection.doc(_auth.currentUser!.uid).update(
       {
+        'clinicAddress': adr,
+        'fax': fax,
         'first name': firstName,
         'last name': lastName,
         'province': province,
         'quali': quali,
         'tele': tele,
-        'clinicAddress': adr,
-        'fax': fax,
       },
     );
+    doctorPatientsCollection.get().then((docSnapshot) => {
+          //if the doctor has a patient, update their patient(s)'s patientDoctors form
+          if (docSnapshot.size > 0)
+            {
+              docSnapshot.docs.forEach((DocumentSnapshot doc) {
+                patientProfileCollection
+                    .doc(doc.id)
+                    .collection('patientDoctors')
+                    .doc(_auth.currentUser!.uid)
+                    .set(
+                  {
+                    'doctorFirstName': firstName,
+                    'doctorLastName': lastName,
+                  },
+                );
+              })
+            }
+        });
+  }
+
+  Future dataDelete(String subcollection, int field) async {
+    //deletes all data documents in the specified subcollection of a patient's data
+    //if field is 0 the field will be updated
+    await patientDataCollection
+        .doc(_auth.currentUser!.uid)
+        .collection(subcollection)
+        .get()
+        .then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((DocumentSnapshot doc) {
+        patientDataCollection
+            .doc(_auth.currentUser!.uid)
+            .collection(subcollection)
+            .doc(doc.id)
+            .delete();
+      });
+    });
+    if (field == 0) {
+      patientDataCollection.doc(_auth.currentUser!.uid).set({
+        'Average Blood Glucose (mg|dL)': '',
+        'Average Blood Glucose (mmol|L)': '',
+        'Average Blood Pressure (diastolic)': '',
+        'Average Blood Pressure (systolic)': '',
+        'Average Heart Rate': '',
+      });
+    }
   }
 
   Future erasePatientDocument() async {
     /* used in the delete my account function to delete document associated with
     patient's uid
      */
+    await patientDoctorsCollection.get().then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((DocumentSnapshot doc) {
+        //iterate through all the patient's doctors, in case patients have several docotrs
+        doctorProfileCollection
+            .doc(doc
+                .id) //find the current patient from doctorPatients in the patientProfile Collection
+            .collection('doctorPatients')
+            .doc(_auth.currentUser!
+                .uid) //find the doctor in this patient's patientDoctors collection
+            .delete(); //delete the patient's document from the doctor's doctorPatients collection
+      });
+    });
     await patientProfileCollection.doc(_auth.currentUser!.uid).delete();
     await patientDataCollection.doc(_auth.currentUser!.uid).delete();
-    await patientDoctorsCollection.get().then(
-      (snapshot) {
-        for (DocumentSnapshot ds in snapshot.docs) {
-          ds.reference.delete();
-        }
-      },
-    );
   }
 
   Future eraseDoctorDocument() async {
     /* used in the delete my account function to delete document associated with
     doctor's uid
      */
-    await doctorProfileCollection.doc(_auth.currentUser!.uid).delete();
+    await doctorPatientsCollection.get().then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((DocumentSnapshot doc) {
+        //iterate through all the doctor's patients
+        patientProfileCollection
+            .doc(doc
+                .id) //find the current patient from doctorPatients in the patientProfile Collection
+            .collection('patientDoctors')
+            .doc(_auth.currentUser!
+                .uid) //find the doctor in this patient's patientDoctors collection
+            .delete(); //delete the doctor's document from the patient's patientDoctors collection
+      });
+    });
+    await doctorProfileCollection
+        .doc(_auth.currentUser!.uid)
+        .delete(); //delete the doctor from the doctorProfile collection
   }
 }
