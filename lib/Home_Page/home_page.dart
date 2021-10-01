@@ -24,7 +24,7 @@ import '/Graphs/graph_data.dart';
 
  Other than that documentation and commenting was added.
 
- The original is saved under <root>/legacy/old_home_page.dart
+ The original is saved under <root>/legacy/old_home_page.txt
  </ramble>
 */
 
@@ -314,13 +314,14 @@ class _HomePageState extends State<HomePage> {
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        BPCharts(
+        HealthCharts(
+          graphType: HealthCharts.BP,
           unitOfMeasurement: 'mmHg',
           yStart: 30,
           showDots: true,
           yLength: 180,
           xLength: 6,
-          dataList: diastolicList,
+          primaryDataList: diastolicList,
           secondaryDataList: systolicList,
         ),
         Row(
@@ -355,13 +356,14 @@ class _HomePageState extends State<HomePage> {
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        BGCharts(
+        HealthCharts(
+          graphType: HealthCharts.BG,
           unitOfMeasurement: 'mmol/L',
           yStart: 0,
           showDots: true,
           yLength: 10,
           xLength: 6,
-          dataList: glucoseList,
+          primaryDataList: glucoseList,
         ),
         SummaryCard(
           value: '$avgGlucose mmol/L',
@@ -388,13 +390,14 @@ class _HomePageState extends State<HomePage> {
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        HRCharts(
+        HealthCharts(
+          graphType: HealthCharts.HR,
           unitOfMeasurement: 'BPM',
           yStart: 30,
           showDots: true,
           yLength: 200,
           xLength: 6,
-          dataList: heartRateList,
+          primaryDataList: heartRateList,
         ),
         SummaryCard(
           value: '$avgHeartRate bpm',
