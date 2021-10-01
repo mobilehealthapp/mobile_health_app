@@ -4,7 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 /* <ramble>
  This is the updated/simplified version of this file.
  it's been tested and seems to be working the same.
- The original graph_info.dart had a lot of vaugely named variables
+ The original graph_info.dart had a lot of vaguely named variables
  And some essentially copy and pasted classes.
  This file SHOULD*** replace it's functionality in an easier to read/maintain way.
  with some slight optimizations.
