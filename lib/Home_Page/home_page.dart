@@ -4,6 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:async/async.dart';
 import '/constants.dart';
 import '/Analysis/health_analysis.dart';
 import '/Graphs/graph_info.dart';
@@ -65,6 +66,7 @@ class _HomePageState extends State<HomePage> {
   late final CollectionReference bloodPressureCollection;
   late final CollectionReference heartRateCollection;
 
+
   @override
   void initState() {
     // initialize functions
@@ -73,9 +75,6 @@ class _HomePageState extends State<HomePage> {
     generateGreeting();
     fetchCurrentUser();
 
-    fetchBGData();
-    fetchBPData();
-    fetchHRData();
     fetchUploadedData();
     super.initState();
   }
@@ -129,7 +128,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void fetchBPData() async {
+  Future<void> fetchBPData() async {
     /// gets list of 6 most recent BP (systolic) points to use in Graphs
 
     this.systolicList.clear(); //Cleared in case function is used to update data
@@ -157,7 +156,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void fetchBGData() async {
+  Future<void> fetchBGData() async {
     /// gets list of 6 most recent BG points to use in Graphs
     this.glucoseList.clear(); //Cleared in case function is used to update data
 
@@ -179,7 +178,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void fetchHRData() async {
+  Future<void> fetchHRData() async {
     /// gets list of 6 most recent HR points to use in Graphs
 
     this.heartRateList.clear(); //Cleared in case this is used to update data
@@ -282,9 +281,45 @@ class _HomePageState extends State<HomePage> {
           SizedBox(
             height: 20.0,
           ),
-          Container(child: extractBP()),
-          Container(child: extractBG()),
-          Container(child: extractHR()),
+          Container(
+            child:
+            FutureBuilder<void>(
+              future: fetchBPData(),
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<void> snapshot,){
+                if (snapshot.connectionState == ConnectionState.waiting){
+                  return CircularProgressIndicator();
+                } else {return extractBP();}
+              }
+              )
+            ),
+          Container(
+              child:
+              FutureBuilder<void>(
+                  future: fetchBGData(),
+                  builder: (
+                      BuildContext context,
+                      AsyncSnapshot<void> snapshot,){
+                    if (snapshot.connectionState == ConnectionState.waiting){
+                      return CircularProgressIndicator();
+                    } else {return extractBG();}
+                  }
+              )
+          ),
+          Container(
+              child:
+              FutureBuilder<void>(
+                  future: fetchHRData(),
+                  builder: (
+                      BuildContext context,
+                      AsyncSnapshot<void> snapshot,){
+                    if (snapshot.connectionState == ConnectionState.waiting){
+                      return CircularProgressIndicator();
+                    } else {return extractHR();}
+                  }
+              )
+          ),
           SizedBox(
             height: 70.0,
           ),
@@ -342,7 +377,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget extractBG() {
+  Widget extractBG()  {
     if (this.glucoseList.isEmpty) {
       return NoDataCard(
         textBody:
@@ -377,6 +412,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget extractHR() {
+
     if (this.heartRateList.isEmpty) {
       return NoDataCard(
         textBody:
