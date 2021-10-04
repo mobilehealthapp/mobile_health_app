@@ -43,6 +43,9 @@ import 'Authentication/verify.dart';
 import 'Authentication/splash_screen.dart';
 import 'Authentication/welcome_screen.dart';
 
+//Machine learning imports
+import 'Machine_Learning/ml.dart';
+
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('Handling a background message ${message.messageId}');
@@ -196,6 +199,7 @@ class MyApp extends StatelessWidget {
         '/alertDoctorAcc': (context) => AlertDoctorAccount(),
         '/alertDoctorData': (context) => AlertDoctorData(),
         '/resetpass': (context) => ResetScreen(),
+        '/ml': (context) => MachineLearning(),
       },
       navigatorKey: navigator,
     );

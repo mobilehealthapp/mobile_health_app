@@ -47,6 +47,12 @@ class Drawers extends StatelessWidget {
                 icon: Icons.logout,
                 onClicked: () => select(context, 5),
               ),
+              SizedBox(height: 10),
+              addItem(
+                text: 'ML ',
+                icon: Icons.add_chart,
+                onClicked: () => select(context, 6),
+              ),
               // SizedBox
             ],
           ),
@@ -88,6 +94,10 @@ class Drawers extends StatelessWidget {
       case 5:
         Navigator.of(context).pushNamed('/physHome'); // ONLY FOR EASE OF NAVIGATION! PLEASE TAKE OUT OF FINAL PRODUCT
         break;
+      case 6:
+        Navigator.of(context).pushNamed('/ml'); // ONLY FOR EASE OF NAVIGATION! PLEASE TAKE OUT OF FINAL PRODUCT
+        break;
+
     }
   }
 }
