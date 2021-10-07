@@ -9,10 +9,10 @@ import '/Graphs/graph_info.dart';
 
 //This file is identical to the health analysis file on the patient side of the app, except several variables must be declared multiple times in various functions
 //The purpose of this file is for doctors to view each patient's data
-List<FlSpot> data1 = [];
-List<FlSpot> data2 = [];
-List<FlSpot> data2a = [];
-List<FlSpot> data3 = [];
+List<FlSpot> heartRateList = [];
+List<FlSpot> diastolicList = [];
+List<FlSpot> systolicList = [];
+List<FlSpot> glucoseList = [];
 late int numberOfBGPoints = 0;
 late int numberOfBPPoints = 0;
 late int numberOfHRPoints = 0;
@@ -207,7 +207,7 @@ class _PatientDataState extends State<PatientData> {
 
   Future<List<FlSpot>> getHRData() async {
     // gets list of HR points to use in Graphs
-    data1 = [];
+    heartRateList = [];
     var patientData = FirebaseFirestore.instance
         .collection('patientData')
         .doc(widget.patientUID);
@@ -218,21 +218,21 @@ class _PatientDataState extends State<PatientData> {
     for (var val in value) {
       int heartrate = val.get('heart rate');
       setState(() {
-        data1.add(FlSpot(index++, heartrate.toDouble()));
+        heartRateList.add(FlSpot(index++, heartrate.toDouble()));
       });
     }
-    return data1;
+    return heartRateList;
   }
 
   hrFilledYN() {
-    if (data1 == []) {
+    if (heartRateList == []) {
       isHRFilled = false;
     }
   }
 
   Future<List<FlSpot>> getDiasData() async {
     // gets list of BP (diastolic) points to use in Graphs
-    data2 = [];
+    diastolicList = [];
     var patientData = FirebaseFirestore.instance
         .collection('patientData')
         .doc(widget.patientUID);
@@ -243,15 +243,15 @@ class _PatientDataState extends State<PatientData> {
     for (var val in value) {
       double dias = val.get('diastolic');
       setState(() {
-        data2.add(FlSpot(index++, dias.toDouble()));
+        diastolicList.add(FlSpot(index++, dias.toDouble()));
       });
     }
-    return data2;
+    return diastolicList;
   }
 
   Future<List<FlSpot>> getSysData() async {
     // gets list of BP (systolic) points to use in Graphs
-    data2a = [];
+    systolicList = [];
     var patientData = FirebaseFirestore.instance
         .collection('patientData')
         .doc(widget.patientUID);
@@ -262,15 +262,15 @@ class _PatientDataState extends State<PatientData> {
     for (var val in value) {
       double sys = val.get('systolic');
       setState(() {
-        data2a.add(FlSpot(index2++, sys.toDouble()));
+        systolicList.add(FlSpot(index2++, sys.toDouble()));
       });
     }
-    return data2a;
+    return systolicList;
   }
 
   Future<List<FlSpot>> getBGData() async {
     // gets list of BG points to use in Graphs
-    data3 = [];
+    glucoseList = [];
     var patientData = FirebaseFirestore.instance
         .collection('patientData')
         .doc(widget.patientUID);
@@ -281,10 +281,10 @@ class _PatientDataState extends State<PatientData> {
     for (var val in value) {
       double glucose = val.get('blood glucose (mmol|L)');
       setState(() {
-        data3.add(FlSpot(index++, glucose.toDouble()));
+        glucoseList.add(FlSpot(index++, glucose.toDouble()));
       });
     }
-    return data3;
+    return glucoseList;
   }
 
   @override
@@ -325,8 +325,8 @@ class _PatientDataState extends State<PatientData> {
             height: 30.0,
           ),
           Container(
-            child: data2.isNotEmpty
-                ? extractData2()
+            child: diastolicList.isNotEmpty
+                ? extractBP()
                 : NoDataCard(
                     textBody:
                         'The patient hasnt uploaded any data for Blood pressure'),
@@ -335,8 +335,8 @@ class _PatientDataState extends State<PatientData> {
             height: 25.0,
           ),
           Container(
-            child: data3.isNotEmpty
-                ? extractData3()
+            child: glucoseList.isNotEmpty
+                ? extractBG()
                 : NoDataCard(
                     textBody:
                         'The patient hasnt uploaded any data for Blood pressure'),
@@ -345,8 +345,8 @@ class _PatientDataState extends State<PatientData> {
             height: 25.0,
           ),
           Container(
-            child: data1.isNotEmpty
-                ? extractData()
+            child: heartRateList.isNotEmpty
+                ? extractHR()
                 : NoDataCard(
                     textBody:
                         'The patient hasnt uploaded any data for Blood pressure'),
@@ -356,22 +356,23 @@ class _PatientDataState extends State<PatientData> {
     );
   }
 
-  Widget extractData() {
+  Widget extractHR() {
     // graph of HR data
     return Column(
       children: [
         Text(
-          'Pulse Rate',
+          'Heart Rate',
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        HRCharts(
+        HealthCharts(
+          graphType: HealthCharts.HR,
           unitOfMeasurement: 'BPM',
-          yStart: 30,
+          minY: 30,
           showDots: false,
-          yLength: 200,
-          xLength: numberOfHRPoints.toDouble(),
-          dataList: data1,
+          maxY: 200,
+          maxX: numberOfHRPoints.toDouble(),
+          primaryDataList: heartRateList,
         ),
         FullSummaryCard(
           avgValue: '$avgHeartRate BPM',
@@ -384,7 +385,7 @@ class _PatientDataState extends State<PatientData> {
     );
   }
 
-  Widget extractData2() {
+  Widget extractBP() {
     // graph of BP data
     return Column(
       children: [
@@ -393,14 +394,15 @@ class _PatientDataState extends State<PatientData> {
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        BPCharts(
+        HealthCharts(
+          graphType: HealthCharts.BP,
           unitOfMeasurement: 'mmHg',
-          yStart: 10,
+          minY: 10,
           showDots: false,
-          yLength: 180,
-          xLength: numberOfBPPoints.toDouble(),
-          dataList: data2,
-          list2: data2a,
+          maxY: 180,
+          maxX: numberOfBPPoints.toDouble(),
+          primaryDataList: diastolicList,
+          secondaryDataList: systolicList,
         ),
         FullSummaryCard(
           avgValue: '$avgPressureSys/$avgPressureDia mmHg',
@@ -415,7 +417,7 @@ class _PatientDataState extends State<PatientData> {
     );
   }
 
-  Widget extractData3() {
+  Widget extractBG() {
     // graph of BG data
     return Column(children: [
       Text(
@@ -423,13 +425,14 @@ class _PatientDataState extends State<PatientData> {
         style: kGraphTitleTextStyle,
         textAlign: TextAlign.center,
       ),
-      BGCharts(
+      HealthCharts(
+        graphType: HealthCharts.BG,
         unitOfMeasurement: 'mmol/L',
-        yStart: 0,
+        minY: 0,
         showDots: false,
-        yLength: 10,
-        xLength: numberOfBGPoints.toDouble(),
-        dataList: data3,
+        maxY: 10,
+        maxX: numberOfBGPoints.toDouble(),
+        primaryDataList: glucoseList,
       ),
       FullSummaryCard(
         avgValue: '$avgGlucose mmol/L',

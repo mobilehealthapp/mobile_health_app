@@ -1,23 +1,36 @@
+import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:mobile_health_app/Graphs/graph_info.dart';
-import 'package:mobile_health_app/Drawers/drawers.dart';
-import 'package:mobile_health_app/constants.dart';
-import 'package:mobile_health_app/Graphs/graph_data.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:mobile_health_app/Analysis/health_analysis.dart';
 
-var name; // patient's name
-var avgGlucose; // average BG
-var avgPressureDia; // average diastolic BP
-var avgPressureSys; // average systolic BP
-var avgHeartRate; // average HR
+import 'package:async/async.dart';
+import '/constants.dart';
+import '/Analysis/health_analysis.dart';
+import '/Graphs/graph_info.dart';
+import '/Drawers/drawers.dart';
+import '/Graphs/graph_data.dart';
 
-List<FlSpot> sys = []; // used for systolic BP in fl_chart
-List<FlSpot> dia = []; // used for diastolic BP in fl_chart
-List<FlSpot> bg = []; // used for BG in fl_chart
-List<FlSpot> hr = []; // used for HR in fl_chart
+/// This file contains the HomePage widget, which the user should reach either
+/// after logging in, or (if already logged in) they'll land here on start.
+/// It accesses the database, loads averages and recent data points,
+/// and displays that data on graphs.
+///
+
+/* <ramble>
+ This is the updated/simplified version of this file.
+ it's been tested and seems to be working the same.
+ While nothing MAJOUR was changed, there were some optimizations,
+ and restructuring to code.
+
+ Other than that documentation and commenting was added.
+
+ The original is saved under <root>/legacy/old_home_page.txt
+ </ramble>
+*/
+
+// TODO:Find a way to test for fields existence that isn't a try/on StateError block
+// ctrl+F -> StateError
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -28,167 +41,191 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _auth = FirebaseAuth.instance;
-  var loggedInUser;
-  var uid; //declare below state
+  late final User loggedInUser;
+  late final String uid; //It's a string, as it acts as the database key
 
- final patientData = FirebaseFirestore.instance.collection('patientData').doc(
-    FirebaseAuth.instance.currentUser!.uid); // DocumentReference used to access patient's uploaded medical data on Firestore
-final patientRef = FirebaseFirestore.instance.collection('patientprofile'); // CollectionReference used to access patient's profile data on Firestore
-var bloodGlucose; 
-var bloodPressure; 
-var heartRate;
+  String greeting = 'Hello'; // Message for top of app bar(check for name later)
+  num avgGlucose = 0;
+  num avgPressureDia = 0;
+  num avgPressureSys = 0;
+  num avgHeartRate = 0;
 
-  void getCurrentUser() async {
+  List<FlSpot> systolicList = [];
+  List<FlSpot> diastolicList = [];
+  List<FlSpot> glucoseList = [];
+  List<FlSpot> heartRateList = [];
+
+  // DocumentReference used to access the uploaded measurements on Firestore
+  late final DocumentReference patientMedicalDoc;
+
+  // CollectionReference used to access patient's profile info on Firestore
+  late final CollectionReference patientProfileCollection;
+
+  //Collection references to the collections within measurement doc
+  late final CollectionReference bloodGlucoseCollection;
+  late final CollectionReference bloodPressureCollection;
+  late final CollectionReference heartRateCollection;
+
+
+  @override
+  void initState() {
+    // initialize functions
+    fetchFirebaseReferences();
+
+    generateGreeting();
+    fetchCurrentUser();
+
+    fetchUploadedData();
+    super.initState();
+  }
+
+  void fetchFirebaseReferences() {
+    ///Fetches and initialises document and collection references.
+    this.patientMedicalDoc = FirebaseFirestore.instance
+        .collection('patientData')
+        .doc(FirebaseAuth.instance.currentUser!.uid);
+
+    this.patientProfileCollection =
+        FirebaseFirestore.instance.collection('patientprofile');
+
+    this.bloodPressureCollection =
+        patientMedicalDoc.collection('bloodPressure');
+
+    this.bloodGlucoseCollection = patientMedicalDoc.collection('bloodGlucose');
+
+    this.heartRateCollection = patientMedicalDoc.collection('heartRate');
+  }
+
+  void fetchCurrentUser() {
+    ///Initialize loggedInUser and string of uid
     try {
       final user = _auth.currentUser;
+      //TODO: what happens if user is null?
       if (user != null) {
-        loggedInUser = user;
-        print(loggedInUser.email);
-        uid = user.uid.toString(); //convert to string in this method
+        this.loggedInUser = user;
+        this.uid = user.uid.toString();
       }
     } catch (e) {
       print(e);
     }
   }
 
-  getUserData(uid) async {
-    // get user's first name from Firestore collection patientprofile to display in AppBar
-    final DocumentSnapshot patientInfo = await patientRef.doc(_auth.currentUser!.uid).get();
-    setState(() {
-      name = patientInfo.get('first name');
-    });
+  void generateGreeting() async {
+    /// Add name to AppBar greeting, if it can be found in database
+    final DocumentSnapshot patientInfo =
+    await this.patientProfileCollection.doc(_auth.currentUser!.uid).get();
+    try { //if field doesn't exist it throws a StateError
+      String? name = patientInfo.get('first name');
+      setState(() {
+        this.greeting = 'Hello, $name';
+      }
+      );
+    } on StateError {
+      setState(() {
+        this.greeting = 'Hello';
+      }
+      );
+    }
   }
 
-  Future<List<FlSpot>> getSysData() async {
-    // gets list of 6 most recent BP (systolic) points to use in Graphs
-    sys = [];
-    bloodPressure = patientData.collection('bloodPressure');
-    final bpData = await patientData
-        .collection('bloodPressure')
-        .orderBy('uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
-        .limitToLast(6) // only calls on last 6 docs in collection
+  Future<void> fetchBPData() async {
+    /// gets list of 6 most recent BP (systolic) points to use in Graphs
+
+    this.systolicList.clear(); //Cleared in case function is used to update data
+    this.diastolicList.clear();
+
+    final bpData = await this
+        .bloodPressureCollection
+        .orderBy('uploaded') // i.e. oldest to newest
+        .limitToLast(6) // Calls last 6 uploaded docs
         .get();
     final value = bpData.docs; // calls on the docs in the collection
-    double index2 = 1.0;
+    double xPos = 1.0;
+    double syst;
+    double dias;
     for (var val in value) {
-      double syst = val.get('systolic');
-      sys.add(FlSpot(index2++, syst.toDouble()));
+      try { //if field doesn't exist it throws a StateError
+        syst = await val.get('systolic');
+        dias = await val.get('diastolic');
+      } on StateError {
+        break;
+      }
+      systolicList.add(FlSpot(xPos, syst.toDouble()));
+      diastolicList.add(FlSpot(xPos, dias.toDouble()));
+      ++xPos;
     }
-    return sys;
   }
 
-  Future<List<FlSpot>> getDiasData() async {
-    // gets list of 6 most recent BP (diastolic) points to use in Graphs
-    dia = [];
-    bloodPressure = patientData.collection('bloodPressure');
-    final bpData = await bloodPressure
-        .orderBy(
-            'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
-        .limitToLast(6) // only calls on last 6 docs in collection
-        .get();
-    final value = bpData.docs; // calls on the docs in the collection
-    double index = 1.0;
-    for (var val in value) {
-      double dias = val.get('diastolic');
-      dia.add(FlSpot(index++, dias.toDouble()));
-    }
-    return dia;
-  }
+  Future<void> fetchBGData() async {
+    /// gets list of 6 most recent BG points to use in Graphs
+    this.glucoseList.clear(); //Cleared in case function is used to update data
 
-  Future<List<FlSpot>> getBGData() async {
-    // gets list of 6 most recent BG points to use in Graphs
-    bg = [];
-    bloodGlucose = patientData.collection('bloodGlucose');
-    final bgData = await bloodGlucose
-        .orderBy('uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
-        .limitToLast(6) // only calls on last 6 docs in collection
+    final bgData = await this
+        .bloodGlucoseCollection
+        .orderBy('uploaded') // i.e. oldest to newest
+        .limitToLast(6) // Calls last 6 uploaded docs
         .get();
     final value = bgData.docs; // calls on the docs in the collection
-    double index = 1.0;
+    double xPos = 1.0;
+    double glucose;
     for (var val in value) {
-      double glucose = val.get('blood glucose (mmol|L)');
-      bg.add(FlSpot(index++, glucose.toDouble()));
+      try { //if field doesn't exist it throws a StateError
+        glucose = await val.get('blood glucose (mmol|L)');
+      } on StateError {
+        break;
+      }
+      glucoseList.add(FlSpot(xPos++, glucose.toDouble()));
     }
-    return bg;
   }
 
-  Future<List<FlSpot>> getHRData() async {
-    // gets list of 6 most recent HR points to use in Graphs
-    hr = [];
-    heartRate = patientData.collection('heartRate');
-    final hrData = await heartRate
-        .orderBy('uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
-        .limitToLast(6) // only calls on last 6 docs in collection
+  Future<void> fetchHRData() async {
+    /// gets list of 6 most recent HR points to use in Graphs
+
+    this.heartRateList.clear(); //Cleared in case this is used to update data
+
+    final hrData = await this
+        .heartRateCollection
+        .orderBy('uploaded') // i.e. oldest to newest
+        .limitToLast(6) // Calls last 6 uploaded docs
         .get();
     final value = hrData.docs; // calls on the docs in the collection
-    double index = 1.0;
+    double xPos = 1.0;
+    int heartRate;
     for (var val in value) {
-      int heartRate = val.get('heart rate');
-      hr.add(FlSpot(index++, heartRate.toDouble()));
+      try { //if field doesn't exist it throws a StateError
+        heartRate = await val.get('heart rate');
+      } on StateError {
+        break;
+      }
+      heartRateList.add(FlSpot(xPos++, heartRate.toDouble()));
     }
-    return hr;
   }
 
-  getUploadedData() async {
-    // gets averages of each data type for user
-    bloodPressure = patientData.collection('bloodPressure'); 
-    bloodGlucose = patientData.collection('bloodGlucose'); 
-    heartRate = patientData.collection('heartRate'); 
-    final bpData = await bloodPressure
-        .orderBy(
-        'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
-        .get();
-    final bpData1 = bpData.docs;
-    final bgData = await bloodGlucose
-        .orderBy(
-        'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
-        .get();
-    final bgData1 = bgData.docs;
-    final hrData = await heartRate
-        .orderBy(
-        'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
-        .get();
-    final hrData1 = hrData.docs;
-    final DocumentSnapshot uploadedData = await patientData.get();
-    setState(
-      () {
-        if (bpData1.isNotEmpty) {
-          avgPressureSys =
-              uploadedData.get('Average Blood Pressure (systolic)');
-        } else {
-          avgPressureSys = 0;
-        }
-        if (bpData1.isNotEmpty) {
-          avgPressureDia =
-              uploadedData.get('Average Blood Pressure (diastolic)');
-        } else {
-          avgPressureDia = 0;
-        }
-        if (bgData1.isNotEmpty) {
-          avgGlucose = uploadedData.get('Average Blood Glucose (mmol|L)');
-        } else {
-          avgGlucose = 0;
-        }
-        if (hrData1.isNotEmpty) {
-          avgHeartRate = uploadedData.get('Average Heart Rate');
-        } else {
-          avgHeartRate = 0;
-        }
-      },
-    );
-  }
+  void fetchUploadedData() async {
+    /// gets averages of each data type for user
+    final DocumentSnapshot uploadedData = await this.patientMedicalDoc.get();
 
-  @override
-  void initState() {
-    // initialize functions
-    getCurrentUser();
-    getUserData(_auth.currentUser!.uid);
-    getBGData();
-    getSysData();
-    getDiasData();
-    getHRData();
-    getUploadedData();
-    super.initState();
+    //If doc doesn't have the entry, it'll throw a StateError
+    try {
+      avgPressureSys = await uploadedData.get('Average Blood Pressure (systolic)');
+    } on StateError {
+      avgPressureSys = 0;
+    }
+    try {
+      avgPressureDia = await uploadedData.get('Average Blood Pressure (diastolic)');
+    } on StateError {
+      avgPressureDia = 0;
+    }
+    try {
+      avgGlucose = await uploadedData.get('Average Blood Glucose (mmol|L)');
+    } on StateError {
+      avgGlucose = 0;
+    }
+    try {
+      avgHeartRate = await uploadedData.get('Average Heart Rate');
+    } on StateError {
+      avgHeartRate = 0;
+    }
   }
 
   @override
@@ -212,15 +249,7 @@ var heartRate;
             ),
           )
         ],
-        title: name != ''
-            ? Text(
-                // if name is not empty, display user's name
-                'Hello, $name',
-              )
-            : Text(
-                // if name is empty, remove comma to only display 'Hello'
-                'Hello',
-              ),
+        title: Text(this.greeting),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
@@ -253,28 +282,43 @@ var heartRate;
             height: 20.0,
           ),
           Container(
-            child: sys.isNotEmpty // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
-                ? extractBP()
-                : NoDataCard(
-                    textBody:
-                        'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
-                  ),
+            child:
+            FutureBuilder<void>(
+              future: fetchBPData(),
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<void> snapshot,){
+                if (snapshot.connectionState == ConnectionState.waiting){
+                  return CircularProgressIndicator();
+                } else {return extractBP();}
+              }
+              )
+            ),
+          Container(
+              child:
+              FutureBuilder<void>(
+                  future: fetchBGData(),
+                  builder: (
+                      BuildContext context,
+                      AsyncSnapshot<void> snapshot,){
+                    if (snapshot.connectionState == ConnectionState.waiting){
+                      return CircularProgressIndicator();
+                    } else {return extractBG();}
+                  }
+              )
           ),
           Container(
-            child: bg.isNotEmpty // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
-                ? extractBG()
-                : NoDataCard(
-                    textBody:
-                        'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
-                  ),
-          ),
-          Container(
-            child: hr.isNotEmpty // if list is not empty, display the graph and summary card; if empty, display text telling user to input data
-                ? extractHR()
-                : NoDataCard(
-                    textBody:
-                        'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
-                  ),
+              child:
+              FutureBuilder<void>(
+                  future: fetchHRData(),
+                  builder: (
+                      BuildContext context,
+                      AsyncSnapshot<void> snapshot,){
+                    if (snapshot.connectionState == ConnectionState.waiting){
+                      return CircularProgressIndicator();
+                    } else {return extractHR();}
+                  }
+              )
           ),
           SizedBox(
             height: 70.0,
@@ -284,7 +328,20 @@ var heartRate;
     );
   }
 
+  // Note to future coders:
+  // I hate with a passion I'm leaving 3 copy-and-paste functions.
+  // with just a few different parameters. I just want you to know that.
+  // To save you from scrolling up and down, looking for differences...
+  // the differences are: the mentioning of their specific data/it's unit;
+  // yStart; yLength; unitOfMeasurement; and the fact BP has an extra data list.
+
   Widget extractBP() {
+    if (this.systolicList.isEmpty) {
+      return NoDataCard(
+        textBody:
+        'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
+      );
+    }
     return Column(
       children: [
         Text(
@@ -292,14 +349,15 @@ var heartRate;
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        BPCharts(
+        HealthCharts(
+          graphType: HealthCharts.BP,
           unitOfMeasurement: 'mmHg',
-          yStart: 30,
+          minY: 30,
           showDots: true,
-          yLength: 180,
-          xLength: 6,
-          dataList: dia,
-          list2: sys,
+          maxY: 180,
+          maxX: 6,
+          primaryDataList: diastolicList,
+          secondaryDataList: systolicList,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -319,7 +377,13 @@ var heartRate;
     );
   }
 
-  Widget extractBG() {
+  Widget extractBG()  {
+    if (this.glucoseList.isEmpty) {
+      return NoDataCard(
+        textBody:
+        'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
+      );
+    }
     return Column(
       children: [
         Text(
@@ -327,13 +391,14 @@ var heartRate;
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        BGCharts(
+        HealthCharts(
+          graphType: HealthCharts.BG,
           unitOfMeasurement: 'mmol/L',
-          yStart: 0,
+          minY: 0,
           showDots: true,
-          yLength: 10,
-          xLength: 6,
-          dataList: bg,
+          maxY: 10,
+          maxX: 6,
+          primaryDataList: glucoseList,
         ),
         SummaryCard(
           value: '$avgGlucose mmol/L',
@@ -347,20 +412,28 @@ var heartRate;
   }
 
   Widget extractHR() {
+
+    if (this.heartRateList.isEmpty) {
+      return NoDataCard(
+        textBody:
+        'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
+      );
+    }
     return Column(
       children: [
         Text(
-          'Pulse Rate',
+          'Heart Rate',
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        HRCharts(
+        HealthCharts(
+          graphType: HealthCharts.HR,
           unitOfMeasurement: 'BPM',
-          yStart: 30,
+          minY: 30,
           showDots: true,
-          yLength: 200,
-          xLength: 6,
-          dataList: hr,
+          maxY: 200,
+          maxX: 6,
+          primaryDataList: heartRateList,
         ),
         SummaryCard(
           value: '$avgHeartRate bpm',

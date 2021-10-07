@@ -12,13 +12,19 @@ class SCRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text(
-          type,
-          style: kTextLabel2,
+        Expanded(
+          flex: 2,
+          child: Text(
+            type,
+            style: kTextLabel2,
+          ),
         ),
-        Text(
-          value,
-          style: kTextLabel2,
+        Expanded(
+          flex: 1,
+          child: Text(
+            value,
+            style: kTextLabel2,
+          ),
         )
       ],
     );

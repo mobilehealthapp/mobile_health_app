@@ -432,14 +432,15 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        BPCharts(
+        HealthCharts(
+          graphType: HealthCharts.BP,
           unitOfMeasurement: 'mmHg',
-          yStart: 10,
+          minY: 10,
           showDots: false,
-          yLength: 180,
-          xLength: numberOfBPPoints.toDouble(),
-          dataList: sysChart,
-          list2: diaChart,
+          maxY: 180,
+          maxX: numberOfBPPoints.toDouble(),
+          primaryDataList: sysChart,
+          secondaryDataList: diaChart,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -470,13 +471,14 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        BGCharts(
+        HealthCharts(
+          graphType: HealthCharts.BG,
           unitOfMeasurement: 'mmol/L',
-          yStart: 0,
+          minY: 0,
           showDots: false,
-          yLength: 10,
-          xLength: numberOfBGPoints.toDouble(),
-          dataList: bgChart,
+          maxY: 10,
+          maxX: numberOfBGPoints.toDouble(),
+          primaryDataList: bgChart,
         ),
         FullSummaryCard(
           avgValue: '$avgGlucose mmol/L',
@@ -500,13 +502,14 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           style: kGraphTitleTextStyle,
           textAlign: TextAlign.center,
         ),
-        HRCharts(
+        HealthCharts(
+          graphType: HealthCharts.HR,
           unitOfMeasurement: 'BPM',
-          yStart: 30,
+          minY: 30,
           showDots: false,
-          yLength: 200,
-          xLength: numberOfHRPoints.toDouble(),
-          dataList: hrChart,
+          maxY: 200,
+          maxX: numberOfHRPoints.toDouble(),
+          primaryDataList: hrChart,
         ),
         FullSummaryCard(
           avgValue: '$avgHeartRate BPM',

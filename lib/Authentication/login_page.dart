@@ -15,10 +15,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final formKey = GlobalKey<
-      FormState>(); //Form must be declared for validators to function properly
-  final _auth = FirebaseAuth
-      .instance; //_auth variable is used to perform firebase authentication functions
+  final formKey = GlobalKey<FormState>(); //Form must be declared for validators to function properly
+  final _auth = FirebaseAuth.instance; //_auth variable is used to perform firebase authentication functions
   bool showSpinner = false;
   bool isHidden = true;
   var user;
