@@ -65,6 +65,9 @@ class _PatientDataState extends State<PatientData> {
     final value = bgData.docs;
     for (var val in value) {
       double bgGet = val.get('blood glucose (mmol|L)');
+      if (bgGet < 1) {
+        return;
+      }
       bg.add(bgGet.toDouble());
     }
 
@@ -91,6 +94,9 @@ class _PatientDataState extends State<PatientData> {
     final value = hrData.docs;
     for (var val in value) {
       int hrGet = val.get('heart rate');
+      if (hrGet < 1) {
+        return;
+      }
       hr.add(hrGet.toDouble());
     }
 
@@ -116,6 +122,9 @@ class _PatientDataState extends State<PatientData> {
     final value = bpData.docs;
     for (var val in value) {
       double bpGet = val.get('systolic');
+      if (bpGet < 1) {
+        return;
+      }
       sys.add(bpGet.toDouble());
     }
     sys.sort();
@@ -142,6 +151,9 @@ class _PatientDataState extends State<PatientData> {
     final value = bpData.docs;
     for (var val in value) {
       double bpGet = val.get('diastolic');
+      if (bpGet < 1) {
+        return;
+      }
       dia.add(bpGet.toDouble());
     }
     var doubles = dia.map((e) => e as double).toList();
