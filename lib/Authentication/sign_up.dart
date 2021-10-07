@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,16 +19,44 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   final formKey =
       GlobalKey<FormState>(); //Form key for textformfield validation
+  final CollectionReference patientProfileCollection =
+      FirebaseFirestore.instance.collection('patientprofile');
+  final CollectionReference doctorProfileCollection =
+      FirebaseFirestore.instance.collection('doctorprofile');
   final _auth = FirebaseAuth.instance;
   bool showSpinner = false;
-  bool isHidden = true;
   var firstName;
   var lastName;
   var email;
   var password;
   var accountType;
   var _chosenValue;
+  bool isHidden = true;
   bool areCredsValid = false;
+  bool validemail = true;
+  bool validformat = true;
+
+  void checkEmail(String email, CollectionReference collection) {
+    validemail = true;
+    //checks if an email is being used in a collection already
+    //value is the email itself. This method could be adapted to work on other fields
+    collection.get().then((docSnap) => {
+          //take snapshot of the collection's documents
+          if (docSnap.size >
+              0) //if the collection isn't empty, iterate through each document
+            {
+              docSnap.docs.forEach((DocumentSnapshot doc) {
+                String comparedemail = doc.get('email');
+                if (email == comparedemail) {
+                  //if the email matches any of the
+                  //emails stored in the same valuetype, set validity to false
+                  validemail = false;
+                }
+              })
+            }
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ModalProgressHUD(
@@ -74,15 +103,18 @@ class _SignupPageState extends State<SignupPage> {
                     children: [
                       SizedBox(height: 5.0),
                       TextFormField(
-                          decoration: InputDecoration(labelText: 'First Name',
-                          labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15    
-                            ),
-                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
-                          border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                        decoration: InputDecoration(
+                          labelText: 'First Name',
+                          labelStyle:
+                              TextStyle(color: Colors.black, fontSize: 15),
+                          contentPadding:
+                              EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue)),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey)),
                         ),
                         onChanged: (value) {
                           firstName = value;
@@ -92,58 +124,77 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                       SizedBox(height: 15.0),
                       TextFormField(
-                          decoration: InputDecoration(labelText: 'Last Name',
-                          labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15    
-                            ),
-                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
-                          border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                        decoration: InputDecoration(
+                          labelText: 'Last Name',
+                          labelStyle:
+                              TextStyle(color: Colors.black, fontSize: 15),
+                          contentPadding:
+                              EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue)),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey)),
                         ),
                         onChanged: (value) {
                           lastName = value;
                         },
-                        validator:
-                            Validators.required('Last name is required'),
+                        validator: Validators.required('Last name is required'),
                       ),
                       SizedBox(height: 15.0),
                       TextFormField(
-                          decoration: InputDecoration(labelText: 'Email',
-                          labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15    
-                            ),
-                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
-                          border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                        decoration: InputDecoration(
+                          labelText: 'Email',
+                          labelStyle:
+                              TextStyle(color: Colors.black, fontSize: 15),
+                          contentPadding:
+                              EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue)),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey)),
                         ),
                         onChanged: (value) {
                           email = value;
+                          checkEmail(email!, patientProfileCollection);
+                          checkEmail(email!, doctorProfileCollection);
+                          validformat = RegExp(
+                                  r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                              .hasMatch(email);
                         },
                         validator: Validators.compose([
                           Validators.required('Email is required'),
-                          Validators.email('Invalid email address'),
+                          (value) {
+                            if (!validformat) {
+                              return 'Please enter a valid email adress.';
+                            } else if (!validemail) {
+                              return 'This email address is already in use.';
+                            }
+                          },
                         ]),
                       ),
                       SizedBox(height: 15.0),
                       TextFormField(
-                          decoration: InputDecoration(labelText: 'Password',
-                          labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15    
-                            ),
-                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
-                          border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-                          suffix: InkWell(
-                            onTap: togglePasswordView,
-                            child: Icon(
-                                    isHidden 
-                                    ? Icons.visibility 
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            labelStyle:
+                                TextStyle(color: Colors.black, fontSize: 15),
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 10),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.blue)),
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            suffix: InkWell(
+                              onTap: togglePasswordView,
+                              child: Icon(
+                                isHidden
+                                    ? Icons.visibility
                                     : Icons.visibility_off,
                               ),
                             ),
@@ -157,26 +208,27 @@ class _SignupPageState extends State<SignupPage> {
                             Validators.required('Password is required'),
                             Validators.minLength(
                                 6, 'Password must be at least 6 characters'),
-                          ]
-                        )
-                      ),
+                          ])),
                       SizedBox(height: 15.0),
                       TextFormField(
-                        decoration: InputDecoration(labelText: 'Confirm Password',
-                          labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15    
-                            ),
-                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
-                          border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                        decoration: InputDecoration(
+                          labelText: 'Confirm Password',
+                          labelStyle:
+                              TextStyle(color: Colors.black, fontSize: 15),
+                          contentPadding:
+                              EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue)),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey)),
                           suffix: InkWell(
                             onTap: togglePasswordView,
                             child: Icon(
-                                    isHidden 
-                                    ? Icons.visibility 
-                                    : Icons.visibility_off,
+                              isHidden
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                             ),
                           ),
                         ),
@@ -306,6 +358,7 @@ class _SignupPageState extends State<SignupPage> {
       ),
     );
   }
+
   void togglePasswordView() {
     setState(() {
       isHidden = !isHidden;
