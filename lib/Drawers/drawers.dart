@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class Drawers extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -53,6 +52,12 @@ class Drawers extends StatelessWidget {
                 icon: Icons.add_chart,
                 onClicked: () => select(context, 6),
               ),
+              SizedBox(height: 10),
+              addItem(
+                text: 'Predictions',
+                icon: Icons.add_chart,
+                onClicked: () => select(context, 7),
+              ),
               // SizedBox
             ],
           ),
@@ -77,27 +82,39 @@ class Drawers extends StatelessWidget {
     Navigator.of(context).pop();
     switch (i) {
       case 0:
-        Navigator.of(context).pushNamed('/home'); // navigate to the patient home page
+        Navigator.of(context)
+            .pushNamed('/home'); // navigate to the patient home page
         break;
       case 1:
-        Navigator.of(context).pushNamed('/settings'); // navigate to the patient settings page
+        Navigator.of(context)
+            .pushNamed('/settings'); // navigate to the patient settings page
         break;
       case 2:
-        Navigator.of(context).pushNamed('/healthAnalysis'); // navigate to the health analysis page
+        Navigator.of(context).pushNamed(
+            '/healthAnalysis'); // navigate to the health analysis page
         break;
       case 3:
-        Navigator.of(context).pushNamed('/healthAnalysisForm'); // navigate to the health analysis form
+        Navigator.of(context).pushNamed(
+            '/healthAnalysisForm'); // navigate to the health analysis form
         break;
       case 4:
-        Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false); // navigate to the welcome page (logout)
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            '/',
+            (Route<dynamic> route) =>
+                false); // navigate to the welcome page (logout)
         break;
       case 5:
-        Navigator.of(context).pushNamed('/physHome'); // ONLY FOR EASE OF NAVIGATION! PLEASE TAKE OUT OF FINAL PRODUCT
+        Navigator.of(context).pushNamed(
+            '/physHome'); // ONLY FOR EASE OF NAVIGATION! PLEASE TAKE OUT OF FINAL PRODUCT
         break;
       case 6:
-        Navigator.of(context).pushNamed('/ml'); // ONLY FOR EASE OF NAVIGATION! PLEASE TAKE OUT OF FINAL PRODUCT
+        Navigator.of(context).pushNamed(
+            '/ml'); // ONLY FOR EASE OF NAVIGATION! PLEASE TAKE OUT OF FINAL PRODUCT
         break;
-
+      case 7:
+        Navigator.of(context).pushNamed(
+            '/PredictiveGraph'); // ONLY FOR EASE OF NAVIGATION! PLEASE TAKE OUT OF FINAL PRODUCT
+        break;
     }
   }
 }

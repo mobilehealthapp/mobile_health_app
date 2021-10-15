@@ -31,6 +31,7 @@ dependencies:
   # Analysis packages
   calc: ^0.2.1 # used for health analysis (variance, standard deviation)
   fl_chart: ^0.40.0 # used to draw charts (graphs) for blood pressure, blood glucose, and heart rate
+  charts_flutter: ^0.11.0 # used to draw charts for predictive graphs
 
   # Notification packages
   flutter_local_notifications: ^8.0.0
