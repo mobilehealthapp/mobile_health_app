@@ -1,120 +1,97 @@
 import 'package:flutter/material.dart';
 
+class DrawerEntry {
+  ///A [DrawerEntry] object is a quick way to define all the info needed to
+  ///make an entry to the list of drawers.
+  ///
+  /// An entry in the sidebar will visually show [icon] next to [name].
+  ///
+  /// When tapped, [path] will be pushed with pushNamed onto the navigator,
+  /// if [removeUntilEmpty] (default false) is set to true, pushNamedAndRemoveUntil
+  /// will be used instead. This is included as 'logout' uses it.
+
+  String name; //The name to be displayed on the entry in the Drawer menu
+  IconData icon; //The icon to be displayed on the entry in the Drawer menu
+  String path; //The Path that will be pushed onto the navigator
+  bool removeUntilEmpty; //default false. Set true to clear routes before pushed
+
+  DrawerEntry(this.name, this.path, this.icon, {this.removeUntilEmpty = false});
+
+  ListTile addListTile(BuildContext context) {
+    ///Make a ListTile to display in Drawers.
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(name),
+      onTap: () => this.removeUntilEmpty
+          ? Navigator.of(context).pushNamed(path)
+          : //Normally, path is pushed to navigator
+      Navigator.of(context).pushNamedAndRemoveUntil(
+          path, //Removes all routes below pushed route
+              (Route<dynamic> route) => false),
+    );
+  }
+}
+
 class Drawers extends StatelessWidget {
+  ///Drawers creates a Drawer from a list of [DrawerEntry]'s, that when tapped push
+  ///a path to the navigator. To choose between the physician/patient
+  ///drawers, specify [isPhysician] in the constructor.
+  ///
+  ///To add a new drawer entry for patients, add a [DrawerEntry] to [normalDrawerEntries],
+  ///for doctor drawer, add to [physicianDrawerEntries]
+  ///In both cases, create a new DrawerEntry and specify the [name], [path], and [icon].
+  ///The entry's will appear in the sidebar in the order they are in the list.
+  ///
+  ///Hint!! Don't forget to specify where your path points.
+  ///Do that in the routes map in main.dart
+
+  late final bool isPhysician;
+  Drawers({this.isPhysician = false,});
+
+  static final List<DrawerEntry> normalDrawerEntries = [
+    DrawerEntry('Home', '/home', Icons.home),
+    DrawerEntry('Settings', '/settings', Icons.settings),
+    DrawerEntry('Health Analysis', '/healthAnalysis', Icons.health_and_safety),
+    DrawerEntry('Health Analysis Form', '/healthAnalysisForm', Icons.health_and_safety),
+    DrawerEntry('Logout', '/', Icons.logout, removeUntilEmpty:true),
+    DrawerEntry('Physician Side', '/physHome', Icons.logout),
+    DrawerEntry('ML', '/ml', Icons.add_chart),
+    DrawerEntry('Predictions', '/PredictiveGraph', Icons.add_chart),
+  ];
+
+  static final List<DrawerEntry> physicianDrawerEntries = [
+    DrawerEntry('PhysHome', '/physHome', Icons.home),
+    DrawerEntry('My Patients', '/physHome', Icons.perm_identity),
+    DrawerEntry('Settings', '/drSettings', Icons.settings),
+    DrawerEntry('Logout', '/', Icons.logout, removeUntilEmpty:true),
+    DrawerEntry('Patient Side', '/home', Icons.logout),
+    DrawerEntry('ML', '/ml', Icons.add_chart),
+    DrawerEntry('Predictions', '/PredictiveGraph', Icons.add_chart),
+  ];
+
+  //Getter function just returns whichever list matches [isPhysician] state.
+  get drawerEntries => isPhysician ? physicianDrawerEntries : normalDrawerEntries;
+
+  ListView generateListView(BuildContext context, {bool physician = false}) {
+    List<Widget> returnList = [SizedBox(height: 100)];
+    for (DrawerEntry entry in drawerEntries) {
+      returnList.add(SizedBox(height: 10));
+      returnList.add(entry.addListTile(context));
+    }
+    return ListView(children: returnList);
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: Material(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30.0),
-          child: ListView(
-            children: <Widget>[
-              SizedBox(height: 100),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Home',
-                icon: Icons.home,
-                onClicked: () => select(context, 0),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Health Analysis',
-                icon: Icons.health_and_safety,
-                onClicked: () => select(context, 2),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Health Analysis Form',
-                icon: Icons.health_and_safety,
-                onClicked: () => select(context, 3),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Settings',
-                icon: Icons.settings,
-                onClicked: () => select(context, 1),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Logout',
-                icon: Icons.logout,
-                onClicked: () => select(context, 4),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Physician Side ',
-                icon: Icons.logout,
-                onClicked: () => select(context, 5),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'ML ',
-                icon: Icons.add_chart,
-                onClicked: () => select(context, 6),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Predictions',
-                icon: Icons.add_chart,
-                onClicked: () => select(context, 7),
-              ),
-              // SizedBox
-            ],
-          ),
+          child: generateListView(context),
+
         ),
       ),
     );
-  }
-
-  Widget addItem({
-    required String text,
-    required IconData icon,
-    VoidCallback? onClicked,
-  }) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(text),
-      onTap: onClicked,
-    );
-  }
-
-  select(BuildContext context, int i) {
-    Navigator.of(context).pop();
-    switch (i) {
-      case 0:
-        Navigator.of(context)
-            .pushNamed('/home'); // navigate to the patient home page
-        break;
-      case 1:
-        Navigator.of(context)
-            .pushNamed('/settings'); // navigate to the patient settings page
-        break;
-      case 2:
-        Navigator.of(context).pushNamed(
-            '/healthAnalysis'); // navigate to the health analysis page
-        break;
-      case 3:
-        Navigator.of(context).pushNamed(
-            '/healthAnalysisForm'); // navigate to the health analysis form
-        break;
-      case 4:
-        Navigator.of(context).pushNamedAndRemoveUntil(
-            '/',
-            (Route<dynamic> route) =>
-                false); // navigate to the welcome page (logout)
-        break;
-      case 5:
-        Navigator.of(context).pushNamed(
-            '/physHome'); // ONLY FOR EASE OF NAVIGATION! PLEASE TAKE OUT OF FINAL PRODUCT
-        break;
-      case 6:
-        Navigator.of(context).pushNamed(
-            '/ml'); // ONLY FOR EASE OF NAVIGATION! PLEASE TAKE OUT OF FINAL PRODUCT
-        break;
-      case 7:
-        Navigator.of(context).pushNamed(
-            '/PredictiveGraph'); // ONLY FOR EASE OF NAVIGATION! PLEASE TAKE OUT OF FINAL PRODUCT
-        break;
-    }
   }
 }
