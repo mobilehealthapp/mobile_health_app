@@ -7,7 +7,7 @@ class DrawerEntry {
   /// An entry in the sidebar will visually show [icon] next to [name].
   ///
   /// When tapped, [path] will be pushed with pushNamed onto the navigator,
-  /// [removeUntilEmpty] (default false) is set to true, pushNamedAndRemoveUntil
+  /// if [removeUntilEmpty] (default false) is set to true, pushNamedAndRemoveUntil
   /// will be used instead. This is included as 'logout' uses it.
 
   String name; //The name to be displayed on the entry in the Drawer menu
@@ -33,13 +33,13 @@ class DrawerEntry {
 }
 
 class Drawers extends StatelessWidget {
-  ///Drawers creates a ListView of [DrawerEntry]'s, that when tapped push
+  ///Drawers creates a Drawer from a list of [DrawerEntry]'s, that when tapped push
   ///a path to the navigator. To choose between the physician/patient
   ///drawers, specify [isPhysician] in the constructor.
   ///
   ///To add a new drawer entry for patients, add a [DrawerEntry] to [normalDrawerEntries],
-  ///for doctors, add to [physicianDrawerEntries]
-  ///In both cases, specifying the [name], [path], and [icon].
+  ///for doctor drawer, add to [physicianDrawerEntries]
+  ///In both cases, create a new DrawerEntry and specify the [name], [path], and [icon].
   ///The entry's will appear in the sidebar in the order they are in the list.
   ///
   ///Hint!! Don't forget to specify where your path points.
@@ -81,6 +81,7 @@ class Drawers extends StatelessWidget {
     return ListView(children: returnList);
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -88,6 +89,7 @@ class Drawers extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30.0),
           child: generateListView(context),
+
         ),
       ),
     );
