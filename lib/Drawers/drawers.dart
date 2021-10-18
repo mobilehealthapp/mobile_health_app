@@ -34,15 +34,21 @@ class DrawerEntry {
 
 class Drawers extends StatelessWidget {
   ///Drawers creates a ListView of [DrawerEntry]'s, that when tapped push
-  ///a path to the navigator.
-  ///To add a new drawer entry, add a [DrawerEntry] to [drawerEntries],
-  ///specifying the [name], [path], and [icon].
+  ///a path to the navigator. To choose between the physician/patient
+  ///drawers, specify [isPhysician] in the constructor.
+  ///
+  ///To add a new drawer entry for patients, add a [DrawerEntry] to [normalDrawerEntries],
+  ///for doctors, add to [physicianDrawerEntries]
+  ///In both cases, specifying the [name], [path], and [icon].
   ///The entry's will appear in the sidebar in the order they are in the list.
   ///
   ///Hint!! Don't forget to specify where your path points.
   ///Do that in the routes map in main.dart
 
-  final List<DrawerEntry> drawerEntries = [
+  late final bool isPhysician;
+  Drawers({this.isPhysician = false,});
+
+  static final List<DrawerEntry> normalDrawerEntries = [
     DrawerEntry('Home', '/home', Icons.home),
     DrawerEntry('Settings', '/settings', Icons.settings),
     DrawerEntry('Health Analysis', '/healthAnalysis', Icons.health_and_safety),
@@ -53,7 +59,20 @@ class Drawers extends StatelessWidget {
     DrawerEntry('Predictions', '/PredictiveGraph', Icons.add_chart),
   ];
 
-  ListView generateListView(BuildContext context) {
+  static final List<DrawerEntry> physicianDrawerEntries = [
+    DrawerEntry('PhysHome', '/physHome', Icons.home),
+    DrawerEntry('My Patients', '/physHome', Icons.perm_identity),
+    DrawerEntry('Settings', '/drSettings', Icons.settings),
+    DrawerEntry('Logout', '/', Icons.logout, removeUntilEmpty:true),
+    DrawerEntry('Patient Side', '/home', Icons.logout),
+    DrawerEntry('ML', '/ml', Icons.add_chart),
+    DrawerEntry('Predictions', '/PredictiveGraph', Icons.add_chart),
+  ];
+
+  //Getter function just returns whichever list matches [isPhysician] state.
+  get drawerEntries => isPhysician ? physicianDrawerEntries : normalDrawerEntries;
+
+  ListView generateListView(BuildContext context, {bool physician = false}) {
     List<Widget> returnList = [SizedBox(height: 100)];
     for (DrawerEntry entry in drawerEntries) {
       returnList.add(SizedBox(height: 10));
