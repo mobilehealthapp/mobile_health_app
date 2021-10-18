@@ -14,6 +14,7 @@ import 'Camera/data_input_page.dart';
 // home page imports
 import 'Physician_Side/physician_home.dart';
 import 'package:mobile_health_app/Home_Page/home_page.dart';
+import 'Machine_Learning/predictive_graph.dart';
 import 'package:mobile_health_app/constants.dart';
 
 // settings imports
@@ -138,7 +139,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: true,
       title: 'Mobile Health App',
       // Below is the App theme, if something is meant to be consistent
       // throughout the entire app, please implement it here rather than
@@ -200,6 +201,7 @@ class MyApp extends StatelessWidget {
         '/alertDoctorData': (context) => AlertDoctorData(),
         '/resetpass': (context) => ResetScreen(),
         '/ml': (context) => MachineLearning(),
+        '/PredictiveGraph': (context) => PredictiveGraph(),
       },
       navigatorKey: navigator,
     );
