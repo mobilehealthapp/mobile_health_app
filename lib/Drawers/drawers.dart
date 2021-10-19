@@ -45,7 +45,7 @@ class Drawers extends StatelessWidget {
   ///a path to the navigator. To choose between the physician/patient
   ///drawers, specify [isPhysician] in the constructor.
   ///
-  ///To add a new drawer entry for patients, add a [DrawerEntry] to [normalDrawerEntries],
+  ///To add a new drawer entry for patients, add a [DrawerEntry] to [patientDrawerEntries],
   ///for doctor drawer, add to [physicianDrawerEntries]
   ///In both cases, create a new DrawerEntry and specify the [name], [path], and [icon].
   ///The entry's will appear in the sidebar in the order they are in the list.
@@ -53,11 +53,7 @@ class Drawers extends StatelessWidget {
   ///Hint!! Don't forget to specify where your path points.
   ///Do that in the routes map in main.dart
 
-  final bool isPhysician;
-
-  const Drawers({this.isPhysician = false});
-
-  static final List<DrawerEntry> normalDrawerEntries = [
+  final List<DrawerEntry> drawerEntries = [
     DrawerEntry('Home', '/home', Icons.home),
     DrawerEntry('Settings', '/settings', Icons.settings),
     DrawerEntry('Health Analysis', '/healthAnalysis', Icons.health_and_safety),
@@ -68,20 +64,6 @@ class Drawers extends StatelessWidget {
     DrawerEntry('ML', '/ml', Icons.add_chart),
     DrawerEntry('Predictions', '/PredictiveGraph', Icons.add_chart),
   ];
-
-  static final List<DrawerEntry> physicianDrawerEntries = [
-    DrawerEntry('PhysHome', '/physHome', Icons.home),
-    DrawerEntry('My Patients', '/physHome', Icons.perm_identity),
-    DrawerEntry('Settings', '/drSettings', Icons.settings),
-    LogoutEntry(),
-    DrawerEntry('Patient Side', '/home', Icons.logout),
-    DrawerEntry('ML', '/ml', Icons.add_chart),
-    DrawerEntry('Predictions', '/PredictiveGraph', Icons.add_chart),
-  ];
-
-  //Getter function just returns whichever list matches [isPhysician] state.
-  get drawerEntries =>
-      isPhysician ? physicianDrawerEntries : normalDrawerEntries;
 
   ListView generateListView(BuildContext context) {
     List<Widget> returnList = [SizedBox(height: 100)];
@@ -103,4 +85,15 @@ class Drawers extends StatelessWidget {
       ),
     );
   }
+}
+class PhysicianDrawers extends Drawers{
+  final List<DrawerEntry> drawerEntries = [
+    DrawerEntry('PhysHome', '/physHome', Icons.home),
+    DrawerEntry('My Patients', '/physHome', Icons.perm_identity),
+    DrawerEntry('Settings', '/drSettings', Icons.settings),
+    LogoutEntry(),
+    DrawerEntry('Patient Side', '/home', Icons.logout),
+    DrawerEntry('ML', '/ml', Icons.add_chart),
+    DrawerEntry('Predictions', '/PredictiveGraph', Icons.add_chart),
+  ];
 }

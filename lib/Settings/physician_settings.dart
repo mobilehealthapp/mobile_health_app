@@ -13,7 +13,7 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawers(isPhysician: true),
+      drawer: PhysicianDrawers(),
       backgroundColor: kSecondaryColour,
       appBar: AppBar(
         title: Text('Settings'),
