@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/Home_Page/logout.dart';
 
 class DrawerEntry {
   ///A [DrawerEntry] object is a quick way to define all the info needed to
@@ -17,19 +18,26 @@ class DrawerEntry {
 
   DrawerEntry(this.name, this.path, this.icon, {this.removeUntilEmpty = false});
 
+  void push(BuildContext context) => Navigator.of(context).pushNamed(path);
+
   ListTile addListTile(BuildContext context) {
     ///Make a ListTile to display in Drawers.
     return ListTile(
       leading: Icon(icon),
       title: Text(name),
-      onTap: () => this.removeUntilEmpty
-          ? Navigator.of(context).pushNamed(path)
-          : //Normally, path is pushed to navigator
-      Navigator.of(context).pushNamedAndRemoveUntil(
-          path, //Removes all routes below pushed route
-              (Route<dynamic> route) => false),
+      onTap: () => push(context)
     );
   }
+}
+
+class LogoutEntry extends DrawerEntry {
+  ///Extends DrawerEntry. Logout removes everything from the stack
+  ///so you can't just hit back to go back in, it also logs out of Firebase.
+  LogoutEntry():super('logout', '/', Icons.logout);
+
+  @override
+  void push(BuildContext context) async => LogoutButton.logout(context);
+
 }
 
 class Drawers extends StatelessWidget {
@@ -45,15 +53,17 @@ class Drawers extends StatelessWidget {
   ///Hint!! Don't forget to specify where your path points.
   ///Do that in the routes map in main.dart
 
-  late final bool isPhysician;
-  Drawers({this.isPhysician = false,});
+  final bool isPhysician;
+
+  const Drawers({this.isPhysician = false});
 
   static final List<DrawerEntry> normalDrawerEntries = [
     DrawerEntry('Home', '/home', Icons.home),
     DrawerEntry('Settings', '/settings', Icons.settings),
     DrawerEntry('Health Analysis', '/healthAnalysis', Icons.health_and_safety),
-    DrawerEntry('Health Analysis Form', '/healthAnalysisForm', Icons.health_and_safety),
-    DrawerEntry('Logout', '/', Icons.logout, removeUntilEmpty:true),
+    DrawerEntry(
+        'Health Analysis Form', '/healthAnalysisForm', Icons.health_and_safety),
+    LogoutEntry(),
     DrawerEntry('Physician Side', '/physHome', Icons.logout),
     DrawerEntry('ML', '/ml', Icons.add_chart),
     DrawerEntry('Predictions', '/PredictiveGraph', Icons.add_chart),
@@ -63,16 +73,17 @@ class Drawers extends StatelessWidget {
     DrawerEntry('PhysHome', '/physHome', Icons.home),
     DrawerEntry('My Patients', '/physHome', Icons.perm_identity),
     DrawerEntry('Settings', '/drSettings', Icons.settings),
-    DrawerEntry('Logout', '/', Icons.logout, removeUntilEmpty:true),
+    LogoutEntry(),
     DrawerEntry('Patient Side', '/home', Icons.logout),
     DrawerEntry('ML', '/ml', Icons.add_chart),
     DrawerEntry('Predictions', '/PredictiveGraph', Icons.add_chart),
   ];
 
   //Getter function just returns whichever list matches [isPhysician] state.
-  get drawerEntries => isPhysician ? physicianDrawerEntries : normalDrawerEntries;
+  get drawerEntries =>
+      isPhysician ? physicianDrawerEntries : normalDrawerEntries;
 
-  ListView generateListView(BuildContext context, {bool physician = false}) {
+  ListView generateListView(BuildContext context) {
     List<Widget> returnList = [SizedBox(height: 100)];
     for (DrawerEntry entry in drawerEntries) {
       returnList.add(SizedBox(height: 10));
@@ -81,7 +92,6 @@ class Drawers extends StatelessWidget {
     return ListView(children: returnList);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -89,7 +99,6 @@ class Drawers extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30.0),
           child: generateListView(context),
-
         ),
       ),
     );

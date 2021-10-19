@@ -3,8 +3,8 @@ import 'package:fl_chart/fl_chart.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobile_health_app/Home_Page/logout.dart';
 
-import 'package:async/async.dart';
 import '/constants.dart';
 import '/Analysis/health_analysis.dart';
 import '/Graphs/graph_info.dart';
@@ -66,7 +66,6 @@ class _HomePageState extends State<HomePage> {
   late final CollectionReference bloodPressureCollection;
   late final CollectionReference heartRateCollection;
 
-
   @override
   void initState() {
     // initialize functions
@@ -113,18 +112,17 @@ class _HomePageState extends State<HomePage> {
   void generateGreeting() async {
     /// Add name to AppBar greeting, if it can be found in database
     final DocumentSnapshot patientInfo =
-    await this.patientProfileCollection.doc(_auth.currentUser!.uid).get();
-    try { //if field doesn't exist it throws a StateError
+        await this.patientProfileCollection.doc(_auth.currentUser!.uid).get();
+    try {
+      //if field doesn't exist it throws a StateError
       String? name = patientInfo.get('first name');
       setState(() {
         this.greeting = 'Hello, $name';
-      }
-      );
+      });
     } on StateError {
       setState(() {
         this.greeting = 'Hello';
-      }
-      );
+      });
     }
   }
 
@@ -144,7 +142,8 @@ class _HomePageState extends State<HomePage> {
     double syst;
     double dias;
     for (var val in value) {
-      try { //if field doesn't exist it throws a StateError
+      try {
+        //if field doesn't exist it throws a StateError
         syst = await val.get('systolic');
         dias = await val.get('diastolic');
       } on StateError {
@@ -169,7 +168,8 @@ class _HomePageState extends State<HomePage> {
     double xPos = 1.0;
     double glucose;
     for (var val in value) {
-      try { //if field doesn't exist it throws a StateError
+      try {
+        //if field doesn't exist it throws a StateError
         glucose = await val.get('blood glucose (mmol|L)');
       } on StateError {
         break;
@@ -192,7 +192,8 @@ class _HomePageState extends State<HomePage> {
     double xPos = 1.0;
     int heartRate;
     for (var val in value) {
-      try { //if field doesn't exist it throws a StateError
+      try {
+        //if field doesn't exist it throws a StateError
         heartRate = await val.get('heart rate');
       } on StateError {
         break;
@@ -207,12 +208,14 @@ class _HomePageState extends State<HomePage> {
 
     //If doc doesn't have the entry, it'll throw a StateError
     try {
-      avgPressureSys = await uploadedData.get('Average Blood Pressure (systolic)');
+      avgPressureSys =
+          await uploadedData.get('Average Blood Pressure (systolic)');
     } on StateError {
       avgPressureSys = 0;
     }
     try {
-      avgPressureDia = await uploadedData.get('Average Blood Pressure (diastolic)');
+      avgPressureDia =
+          await uploadedData.get('Average Blood Pressure (diastolic)');
     } on StateError {
       avgPressureDia = 0;
     }
@@ -228,27 +231,30 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Container graphFutureBuilder(
+      {required Function future, required Function uponCompletion}) {
+    return Container(
+        child: FutureBuilder<void>(
+            future: future(),
+            builder: (
+              BuildContext context,
+              AsyncSnapshot<void> snapshot,
+            ) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              } else {
+                return uponCompletion();
+              }
+            }));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kSecondaryColour,
       drawer: Drawers(),
       appBar: AppBar(
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GestureDetector(
-              child: Icon(
-                Icons.logout,
-              ),
-              onTap: () async {
-                FirebaseAuth.instance.signOut();
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/', (Route<dynamic> route) => false);
-              },
-            ),
-          )
-        ],
+        actions: [ LogoutButton(),],
         title: Text(this.greeting),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -281,45 +287,9 @@ class _HomePageState extends State<HomePage> {
           SizedBox(
             height: 20.0,
           ),
-          Container(
-            child:
-            FutureBuilder<void>(
-              future: fetchBPData(),
-              builder: (
-                BuildContext context,
-                AsyncSnapshot<void> snapshot,){
-                if (snapshot.connectionState == ConnectionState.waiting){
-                  return CircularProgressIndicator();
-                } else {return extractBP();}
-              }
-              )
-            ),
-          Container(
-              child:
-              FutureBuilder<void>(
-                  future: fetchBGData(),
-                  builder: (
-                      BuildContext context,
-                      AsyncSnapshot<void> snapshot,){
-                    if (snapshot.connectionState == ConnectionState.waiting){
-                      return CircularProgressIndicator();
-                    } else {return extractBG();}
-                  }
-              )
-          ),
-          Container(
-              child:
-              FutureBuilder<void>(
-                  future: fetchHRData(),
-                  builder: (
-                      BuildContext context,
-                      AsyncSnapshot<void> snapshot,){
-                    if (snapshot.connectionState == ConnectionState.waiting){
-                      return CircularProgressIndicator();
-                    } else {return extractHR();}
-                  }
-              )
-          ),
+          graphFutureBuilder(future: fetchBPData, uponCompletion: extractBP),
+          graphFutureBuilder(future: fetchBGData, uponCompletion: extractBG),
+          graphFutureBuilder(future: fetchHRData, uponCompletion: extractHR),
           SizedBox(
             height: 70.0,
           ),
@@ -339,7 +309,7 @@ class _HomePageState extends State<HomePage> {
     if (this.systolicList.isEmpty) {
       return NoDataCard(
         textBody:
-        'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
+            'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
       );
     }
     return Column(
@@ -377,11 +347,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget extractBG()  {
+  Widget extractBG() {
     if (this.glucoseList.isEmpty) {
       return NoDataCard(
         textBody:
-        'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
+            'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
       );
     }
     return Column(
@@ -412,11 +382,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget extractHR() {
-
     if (this.heartRateList.isEmpty) {
       return NoDataCard(
         textBody:
-        'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
+            'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
       );
     }
     return Column(
