@@ -236,10 +236,7 @@ class _HomePageState extends State<HomePage> {
     return Container(
         child: FutureBuilder<void>(
             future: future(),
-            builder: (
-              BuildContext context,
-              AsyncSnapshot<void> snapshot,
-            ) {
+            builder: (BuildContext context,AsyncSnapshot<void> snapshot,) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return CircularProgressIndicator();
               } else {
@@ -263,16 +260,12 @@ class _HomePageState extends State<HomePage> {
         onPressed: () {
           Navigator.of(context).pushNamed('/dataInput');
         },
-        child: Icon(
-          Icons.camera_alt_rounded,
-        ),
+        child: Icon(Icons.camera_alt_rounded,),
       ),
       body: ListView(
         shrinkWrap: true,
         children: [
-          SizedBox(
-            height: 10.0,
-          ),
+          SizedBox(height: 10.0,),
           Padding(
             padding: EdgeInsets.only(left: 10.0),
             child: Text(
@@ -284,15 +277,11 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          SizedBox(
-            height: 20.0,
-          ),
+          SizedBox(height: 20.0,),
           graphFutureBuilder(future: fetchBPData, uponCompletion: extractBP),
           graphFutureBuilder(future: fetchBGData, uponCompletion: extractBG),
           graphFutureBuilder(future: fetchHRData, uponCompletion: extractHR),
-          SizedBox(
-            height: 70.0,
-          ),
+          SizedBox(height: 70.0,),
         ],
       ),
     );
