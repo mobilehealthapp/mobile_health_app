@@ -42,12 +42,10 @@ class LogoutEntry extends DrawerEntry {
 
 class Drawers extends StatelessWidget {
   ///Drawers creates a Drawer from a list of [DrawerEntry]'s, that when tapped push
-  ///a path to the navigator. To choose between the physician/patient
-  ///drawers, specify [isPhysician] in the constructor.
+  ///a path to the navigator. Meant for patients! PhysicianDrawers is defined below.
   ///
-  ///To add a new drawer entry for patients, add a [DrawerEntry] to [patientDrawerEntries],
-  ///for doctor drawer, add to [physicianDrawerEntries]
-  ///In both cases, create a new DrawerEntry and specify the [name], [path], and [icon].
+  ///To add a new drawer entry for patients, add a [DrawerEntry] to [drawerEntries],
+  ///Create a new DrawerEntry and specify the [name], [path], and [icon].
   ///The entry's will appear in the sidebar in the order they are in the list.
   ///
   ///Hint!! Don't forget to specify where your path points.
@@ -86,7 +84,18 @@ class Drawers extends StatelessWidget {
     );
   }
 }
+
+
 class PhysicianDrawers extends Drawers{
+  ///Drawers creates a Drawer from a list of [DrawerEntry]'s, that when tapped push
+  ///a path to the navigator. Meant for physicians! Drawers is defined above.
+  ///
+  ///To add a new drawer entry for patients, add a [DrawerEntry] to [drawerEntries],
+  ///Create a new DrawerEntry and specify the [name], [path], and [icon].
+  ///The entry's will appear in the sidebar in the order they are in the list.
+  ///
+  ///Hint!! Don't forget to specify where your path points.
+  ///Do that in the routes map in main.dart
   final List<DrawerEntry> drawerEntries = [
     DrawerEntry('PhysHome', '/physHome', Icons.home),
     DrawerEntry('My Patients', '/physHome', Icons.perm_identity),
