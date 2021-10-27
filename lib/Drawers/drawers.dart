@@ -1,120 +1,68 @@
 import 'package:flutter/material.dart';
+import 'drawer_entries.dart';
 
 class Drawers extends StatelessWidget {
+  ///Drawers creates a Drawer from a list of [DrawerEntry]'s, that when tapped push
+  ///a path to the navigator. Meant for patients! PhysicianDrawers is defined below.
+  ///
+  ///To add a new drawer entry for patients, add a [DrawerEntry] to [drawerEntries],
+  ///Create a new DrawerEntry and specify the [name], [path], and [icon].
+  ///The entry's will appear in the sidebar in the order they are in the list.
+  ///
+  ///Hint!! Don't forget to specify where your path points.
+  ///Do that in the routes map in main.dart
+
+  final List<DrawerEntry> drawerEntries = [
+    DrawerEntry('Home', '/home', Icons.home),
+    DrawerEntry('Settings', '/settings', Icons.settings),
+    DrawerEntry('Health Analysis', '/healthAnalysis', Icons.health_and_safety),
+    DrawerEntry(
+        'Health Analysis Form', '/healthAnalysisForm', Icons.health_and_safety),
+    LogoutEntry(),
+    DrawerEntry('Physician Side', '/physHome', Icons.logout),
+    DrawerEntry('ML', '/ml', Icons.add_chart),
+    //DrawerEntry('Predictions', '/PredictiveGraph', Icons.add_chart), dont wan't patients seeing predicted data
+  ];
+
+  ListView generateListView(BuildContext context) {
+    List<Widget> returnList = [SizedBox(height: 100)];
+    for (DrawerEntry entry in drawerEntries) {
+      returnList.add(SizedBox(height: 10));
+      returnList.add(entry.addListTile(context));
+    }
+    return ListView(children: returnList);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: Material(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30.0),
-          child: ListView(
-            children: <Widget>[
-              SizedBox(height: 100),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Home',
-                icon: Icons.home,
-                onClicked: () => select(context, 0),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Health Analysis',
-                icon: Icons.health_and_safety,
-                onClicked: () => select(context, 2),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Health Analysis Form',
-                icon: Icons.health_and_safety,
-                onClicked: () => select(context, 3),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Settings',
-                icon: Icons.settings,
-                onClicked: () => select(context, 1),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Logout',
-                icon: Icons.logout,
-                onClicked: () => select(context, 4),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Physician Side ',
-                icon: Icons.logout,
-                onClicked: () => select(context, 5),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'ML ',
-                icon: Icons.add_chart,
-                onClicked: () => select(context, 6),
-              ),
-              SizedBox(height: 10),
-              addItem(
-                text: 'Predictions',
-                icon: Icons.add_chart,
-                onClicked: () => select(context, 7),
-              ),
-              // SizedBox
-            ],
-          ),
+          child: generateListView(context),
         ),
       ),
     );
   }
+}
 
-  Widget addItem({
-    required String text,
-    required IconData icon,
-    VoidCallback? onClicked,
-  }) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(text),
-      onTap: onClicked,
-    );
-  }
-
-  select(BuildContext context, int i) {
-    Navigator.of(context).pop();
-    switch (i) {
-      case 0:
-        Navigator.of(context)
-            .pushNamed('/home'); // navigate to the patient home page
-        break;
-      case 1:
-        Navigator.of(context)
-            .pushNamed('/settings'); // navigate to the patient settings page
-        break;
-      case 2:
-        Navigator.of(context).pushNamed(
-            '/healthAnalysis'); // navigate to the health analysis page
-        break;
-      case 3:
-        Navigator.of(context).pushNamed(
-            '/healthAnalysisForm'); // navigate to the health analysis form
-        break;
-      case 4:
-        Navigator.of(context).pushNamedAndRemoveUntil(
-            '/',
-            (Route<dynamic> route) =>
-                false); // navigate to the welcome page (logout)
-        break;
-      case 5:
-        Navigator.of(context).pushNamed(
-            '/physHome'); // ONLY FOR EASE OF NAVIGATION! PLEASE TAKE OUT OF FINAL PRODUCT
-        break;
-      case 6:
-        Navigator.of(context).pushNamed(
-            '/ml'); // ONLY FOR EASE OF NAVIGATION! PLEASE TAKE OUT OF FINAL PRODUCT
-        break;
-      case 7:
-        Navigator.of(context).pushNamed(
-            '/PredictiveGraph'); // ONLY FOR EASE OF NAVIGATION! PLEASE TAKE OUT OF FINAL PRODUCT
-        break;
-    }
-  }
+class PhysicianDrawers extends Drawers {
+  ///Drawers creates a Drawer from a list of [DrawerEntry]'s, that when tapped push
+  ///a path to the navigator. Meant for physicians! Drawers is defined above.
+  ///
+  ///To add a new drawer entry for patients, add a [DrawerEntry] to [drawerEntries],
+  ///Create a new DrawerEntry and specify the [name], [path], and [icon].
+  ///The entry's will appear in the sidebar in the order they are in the list.
+  ///
+  ///Hint!! Don't forget to specify where your path points.
+  ///Do that in the routes map in main.dart
+  final List<DrawerEntry> drawerEntries = [
+    DrawerEntry('PhysHome', '/physHome', Icons.home),
+    DrawerEntry('My Patients', '/physHome', Icons.perm_identity),
+    DrawerEntry('Settings', '/drSettings', Icons.settings),
+    LogoutEntry(),
+    DrawerEntry('Patient Side', '/home', Icons.logout),
+    DrawerEntry('ML', '/ml', Icons.add_chart),
+    DrawerEntry('Patient Predictions', '/PatientSelect', Icons.add_chart),
+  ];
 }

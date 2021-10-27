@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobile_health_app/Home_Page/logout.dart';
 
-import 'package:async/async.dart';
 import '/constants.dart';
 import '/Analysis/health_analysis.dart';
 import '/Graphs/graph_info.dart';
 import '/Drawers/drawers.dart';
 import '/Graphs/graph_data.dart';
+import '/Notification/notifications.dart';
 
 /// This file contains the HomePage widget, which the user should reach either
 /// after logging in, or (if already logged in) they'll land here on start.
@@ -60,20 +60,25 @@ class _HomePageState extends State<HomePage> {
 
   // CollectionReference used to access patient's profile info on Firestore
   late final CollectionReference patientProfileCollection;
+  late final CollectionReference patientDoctorsCollection;
 
   //Collection references to the collections within measurement doc
   late final CollectionReference bloodGlucoseCollection;
   late final CollectionReference bloodPressureCollection;
   late final CollectionReference heartRateCollection;
 
-
   @override
   void initState() {
     // initialize functions
     fetchFirebaseReferences();
 
+    NotificationApi.init(initScheduled: true);
+    listenNotifications();
+
     generateGreeting();
     fetchCurrentUser();
+    firstSession();
+    hasDoctor();
 
     fetchUploadedData();
     super.initState();
@@ -87,6 +92,10 @@ class _HomePageState extends State<HomePage> {
 
     this.patientProfileCollection =
         FirebaseFirestore.instance.collection('patientprofile');
+
+    this.patientDoctorsCollection = patientProfileCollection
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('patientDoctors');
 
     this.bloodPressureCollection =
         patientMedicalDoc.collection('bloodPressure');
@@ -110,21 +119,57 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void listenNotifications() {
+    NotificationApi.onNotifications.stream.listen(onClickedNotification);
+  }
+
+  void onClickedNotification(String? payload) =>
+      Navigator.of(context).pushNamed(
+        payload!,
+      );
+
+  Future firstSession() async {
+    DocumentSnapshot snapshot = await patientProfileCollection.doc(uid).get();
+    var session = snapshot.get('First Session');
+    if (session != null) {
+      //if first session is true show a notification for them to edit their profile
+      NotificationApi.showNotification(
+          title: 'First Login!',
+          body: 'Welcome to MedScan! Click Here to Update Your Profile!',
+          payload: "/profileEdit");
+      await patientProfileCollection.doc(uid).update({'First Session': null});
+      return;
+    }
+    return;
+  }
+
+  Future hasDoctor() async {
+    QuerySnapshot snapshot = await patientDoctorsCollection.get();
+    if (snapshot.size > 0) {
+      return;
+    } else {
+      NotificationApi.showScheduledNotification(
+        title: 'Add a Doctor',
+        body: 'Click Here to Add your Doctor to your Profile!',
+        payload: '/addDoctors',
+      );
+    }
+  }
+
   void generateGreeting() async {
     /// Add name to AppBar greeting, if it can be found in database
     final DocumentSnapshot patientInfo =
-    await this.patientProfileCollection.doc(_auth.currentUser!.uid).get();
-    try { //if field doesn't exist it throws a StateError
+        await this.patientProfileCollection.doc(_auth.currentUser!.uid).get();
+    try {
+      //if field doesn't exist it throws a StateError
       String? name = patientInfo.get('first name');
       setState(() {
         this.greeting = 'Hello, $name';
-      }
-      );
+      });
     } on StateError {
       setState(() {
         this.greeting = 'Hello';
-      }
-      );
+      });
     }
   }
 
@@ -141,10 +186,11 @@ class _HomePageState extends State<HomePage> {
         .get();
     final value = bpData.docs; // calls on the docs in the collection
     double xPos = 1.0;
-    double syst;
-    double dias;
+    num syst;
+    num dias;
     for (var val in value) {
-      try { //if field doesn't exist it throws a StateError
+      try {
+        //if field doesn't exist it throws a StateError
         syst = await val.get('systolic');
         dias = await val.get('diastolic');
       } on StateError {
@@ -169,7 +215,8 @@ class _HomePageState extends State<HomePage> {
     double xPos = 1.0;
     double glucose;
     for (var val in value) {
-      try { //if field doesn't exist it throws a StateError
+      try {
+        //if field doesn't exist it throws a StateError
         glucose = await val.get('blood glucose (mmol|L)');
       } on StateError {
         break;
@@ -192,7 +239,8 @@ class _HomePageState extends State<HomePage> {
     double xPos = 1.0;
     int heartRate;
     for (var val in value) {
-      try { //if field doesn't exist it throws a StateError
+      try {
+        //if field doesn't exist it throws a StateError
         heartRate = await val.get('heart rate');
       } on StateError {
         break;
@@ -207,12 +255,14 @@ class _HomePageState extends State<HomePage> {
 
     //If doc doesn't have the entry, it'll throw a StateError
     try {
-      avgPressureSys = await uploadedData.get('Average Blood Pressure (systolic)');
+      avgPressureSys =
+          await uploadedData.get('Average Blood Pressure (systolic)');
     } on StateError {
       avgPressureSys = 0;
     }
     try {
-      avgPressureDia = await uploadedData.get('Average Blood Pressure (diastolic)');
+      avgPressureDia =
+          await uploadedData.get('Average Blood Pressure (diastolic)');
     } on StateError {
       avgPressureDia = 0;
     }
@@ -228,6 +278,23 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Container graphFutureBuilder(
+      {required Function future, required Function uponCompletion}) {
+    return Container(
+        child: FutureBuilder<void>(
+            future: future(),
+            builder: (
+              BuildContext context,
+              AsyncSnapshot<void> snapshot,
+            ) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              } else {
+                return uponCompletion();
+              }
+            }));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -235,19 +302,7 @@ class _HomePageState extends State<HomePage> {
       drawer: Drawers(),
       appBar: AppBar(
         actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GestureDetector(
-              child: Icon(
-                Icons.logout,
-              ),
-              onTap: () async {
-                FirebaseAuth.instance.signOut();
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/', (Route<dynamic> route) => false);
-              },
-            ),
-          )
+          LogoutButton(),
         ],
         title: Text(this.greeting),
       ),
@@ -281,45 +336,9 @@ class _HomePageState extends State<HomePage> {
           SizedBox(
             height: 20.0,
           ),
-          Container(
-            child:
-            FutureBuilder<void>(
-              future: fetchBPData(),
-              builder: (
-                BuildContext context,
-                AsyncSnapshot<void> snapshot,){
-                if (snapshot.connectionState == ConnectionState.waiting){
-                  return CircularProgressIndicator();
-                } else {return extractBP();}
-              }
-              )
-            ),
-          Container(
-              child:
-              FutureBuilder<void>(
-                  future: fetchBGData(),
-                  builder: (
-                      BuildContext context,
-                      AsyncSnapshot<void> snapshot,){
-                    if (snapshot.connectionState == ConnectionState.waiting){
-                      return CircularProgressIndicator();
-                    } else {return extractBG();}
-                  }
-              )
-          ),
-          Container(
-              child:
-              FutureBuilder<void>(
-                  future: fetchHRData(),
-                  builder: (
-                      BuildContext context,
-                      AsyncSnapshot<void> snapshot,){
-                    if (snapshot.connectionState == ConnectionState.waiting){
-                      return CircularProgressIndicator();
-                    } else {return extractHR();}
-                  }
-              )
-          ),
+          graphFutureBuilder(future: fetchBPData, uponCompletion: extractBP),
+          graphFutureBuilder(future: fetchBGData, uponCompletion: extractBG),
+          graphFutureBuilder(future: fetchHRData, uponCompletion: extractHR),
           SizedBox(
             height: 70.0,
           ),
@@ -339,7 +358,7 @@ class _HomePageState extends State<HomePage> {
     if (this.systolicList.isEmpty) {
       return NoDataCard(
         textBody:
-        'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
+            'No data has been uploaded for Blood Pressure. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
       );
     }
     return Column(
@@ -377,11 +396,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget extractBG()  {
+  Widget extractBG() {
     if (this.glucoseList.isEmpty) {
       return NoDataCard(
         textBody:
-        'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
+            'No data has been uploaded for Blood Glucose. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
       );
     }
     return Column(
@@ -412,11 +431,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget extractHR() {
-
     if (this.heartRateList.isEmpty) {
       return NoDataCard(
         textBody:
-        'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
+            'No data has been uploaded for Heart Rate. Please use the Data Input Page if you wish to add any.', // these texts can be changed to whatever is seen as fit! they are just a placeholder
       );
     }
     return Column(

@@ -31,11 +31,17 @@ dependencies:
   # Analysis packages
   calc: ^0.2.1 # used for health analysis (variance, standard deviation)
   fl_chart: ^0.40.0 # used to draw charts (graphs) for blood pressure, blood glucose, and heart rate
-  charts_flutter: ^0.11.0 # used to draw charts for predictive graphs
+  charts_flutter: # used to draw charts for predictive graphs
+    git:
+      url: git://github.com/google/charts.git
+      path: charts_flutter
+
 
   # Notification packages
   flutter_local_notifications: ^8.0.0
+  flutter_native_timezone: ^2.0.0
   firebase_messaging: ^10.0.4
+  rxdart: ^0.27.2
 
   # Miscellaneous
   wc_form_validators: ^1.0.0

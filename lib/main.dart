@@ -12,6 +12,7 @@ import 'Camera/camera_input.dart';
 import 'Camera/data_input_page.dart';
 
 // home page imports
+import 'Machine_Learning/patientselect.dart';
 import 'Physician_Side/physician_home.dart';
 import 'package:mobile_health_app/Home_Page/home_page.dart';
 import 'Machine_Learning/predictive_graph.dart';
@@ -92,18 +93,16 @@ Future<void> main() async {
   // <meta-data
   // android:name="com.google.firebase.messaging.default_notification_icon"
   // android:resource="@drawable/companyicon2" />
-
   // Add the icon image, in this case, its companyicon2, to app/src/res/drawable
-  const AndroidInitializationSettings initializationSettingsAndroid =
+  var initializationSettingsAndroid =
       AndroidInitializationSettings('companyicon2');
 
   /// Note: permissions aren't requested here just to demonstrate that can be
   /// done later
-  final IOSInitializationSettings initializationSettingsIOS =
-      IOSInitializationSettings(
-    requestAlertPermission: false,
-    requestBadgePermission: false,
-    requestSoundPermission: false,
+  var initializationSettingsIOS = IOSInitializationSettings(
+    requestAlertPermission: true,
+    requestBadgePermission: true,
+    requestSoundPermission: true,
   );
   final InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
@@ -201,7 +200,7 @@ class MyApp extends StatelessWidget {
         '/alertDoctorData': (context) => AlertDoctorData(),
         '/resetpass': (context) => ResetScreen(),
         '/ml': (context) => MachineLearning(),
-        '/PredictiveGraph': (context) => PredictiveGraph(),
+        '/PatientSelect': (context) => PatientSelect(),
       },
       navigatorKey: navigator,
     );
