@@ -46,7 +46,8 @@ class Drawers extends StatelessWidget {
   }
 }
 
-class PhysicianDrawers extends Drawers {
+
+class PhysicianDrawers extends Drawers{
   ///Drawers creates a Drawer from a list of [DrawerEntry]'s, that when tapped push
   ///a path to the navigator. Meant for physicians! Drawers is defined above.
   ///
