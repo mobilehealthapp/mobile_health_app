@@ -1,30 +1,32 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:firebase_core/firebase_core.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/material.dart';
 import '/Drawers/drawers.dart';
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
-User? user = _auth.currentUser;
-final uid = user!.uid;
-
 final CollectionReference patientDataCollection =
     FirebaseFirestore.instance.collection('patientData');
 
-final CollectionReference patientBGCollection =
-    patientDataCollection.doc(uid).collection('bloodGlucose');
-
-final CollectionReference patientBPCollection =
-    patientDataCollection.doc(uid).collection('bloodPressure');
-
 class PredictiveGraph extends StatefulWidget {
-  PredictiveGraph({Key? key}) : super(key: key);
+  final String patientid;
+  final String name;
+  PredictiveGraph({Key? key, required this.patientid, required this.name})
+      : super(key: key);
+
   @override
   PredictiveGraphState createState() => PredictiveGraphState();
 }
 
 class PredictiveGraphState extends State<PredictiveGraph> {
+  String patientid = "";
+  String name = "";
+  String firstname = "";
+
+  CollectionReference patientBPCollection = patientDataCollection;
+  CollectionReference patientBGCollection = patientDataCollection;
+
   var bgdata = <BloodGlucose>[];
   var bgpredict = 4; //days that can be predicted into the future accurately -1
   List<charts.Series<BloodGlucose, int>> bglist = [];
@@ -35,6 +37,26 @@ class PredictiveGraphState extends State<PredictiveGraph> {
 
   Widget bgchart = Text("Loading...");
   Widget bpchart = Text("Loading...");
+
+  @override
+  void initState() {
+    super.initState();
+    patientid = widget.patientid;
+    name = widget.name;
+    firstname = name.split(" ")[0];
+    initializeReferences();
+  }
+
+  void initializeReferences() {
+    //initialize BP and BG references
+    print(patientid + name);
+    patientBPCollection =
+        patientDataCollection.doc(patientid).collection('bloodPressure');
+    patientBGCollection =
+        patientDataCollection.doc(patientid).collection('bloodGlucose');
+    generateBGList();
+    generateBPList();
+  }
 
   dayAssembler(num value) {
     //returns a string according to the day for the day axis labels, assumes 1x daily bg recording
@@ -67,7 +89,15 @@ class PredictiveGraphState extends State<PredictiveGraph> {
     });
     patientBGCollection.get().then((docSnapshot) => {
           //if the patient has bg readings, than take the last documents, based off of how many days can be accurrately predicted
-          if (docSnapshot.size > 0 && docSnapshot.size >= bgpredict)
+          if (docSnapshot.size == 0)
+            {
+              bgchart = Text('No Blood Glucose Data'),
+            },
+          if (docSnapshot.size < bgpredict && docSnapshot.size > 0)
+            {
+              bgpredict = docSnapshot.size,
+            },
+          if (docSnapshot.size >= bgpredict)
             {
               placemarker = docSnapshot.size - bgpredict,
               docSnapshot.docs.forEach((DocumentSnapshot doc) {
@@ -117,10 +147,10 @@ class PredictiveGraphState extends State<PredictiveGraph> {
                         titleOutsideJustification:
                             charts.OutsideJustification.middleDrawArea),
                   ]),
-              setState(() {
-                //update bg chart when this function is called
-              }),
-            }
+            },
+          setState(() {
+            //update bg chart when this function is called
+          })
         });
   }
 
@@ -135,7 +165,15 @@ class PredictiveGraphState extends State<PredictiveGraph> {
     });
     patientBPCollection.get().then((docSnapshot) => {
           //if the patient has bg readings, than take the last documents, based off of how many days can be accurrately predicted
-          if (docSnapshot.size > 0 && docSnapshot.size >= bppredict)
+          if (docSnapshot.size == 0)
+            {
+              bpchart = Text('No Blood Pressure Data'),
+            },
+          if (docSnapshot.size < bppredict && docSnapshot.size > 0)
+            {
+              bppredict = docSnapshot.size,
+            },
+          if (docSnapshot.size >= bppredict)
             {
               placemarker = docSnapshot.size - bppredict,
               docSnapshot.docs.forEach((DocumentSnapshot doc) {
@@ -201,18 +239,11 @@ class PredictiveGraphState extends State<PredictiveGraph> {
                         titleOutsideJustification:
                             charts.OutsideJustification.middleDrawArea),
                   ]),
-              setState(() {
-                //update bp chart when this function is called
-              }),
-            }
+            },
+          setState(() {
+            //update bp chart when this function is called
+          }),
         });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    generateBGList();
-    generateBPList();
   }
 
   @override
@@ -221,8 +252,12 @@ class PredictiveGraphState extends State<PredictiveGraph> {
       body: DefaultTabController(
         length: 2,
         child: Scaffold(
-          drawer: Drawers(),
           appBar: AppBar(
+            leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                }),
             backgroundColor: Color(0xff1976d2),
             bottom: TabBar(
               indicatorColor: Color(0xff9962D0),
@@ -233,7 +268,8 @@ class PredictiveGraphState extends State<PredictiveGraph> {
                 Tab(icon: Icon(FontAwesomeIcons.heartbeat)),
               ],
             ),
-            title: Text('Future Predictions'),
+            title: Text('$firstname\'s Future Predictions',
+                style: TextStyle(fontSize: 22)),
           ),
           body: TabBarView(
             children: [

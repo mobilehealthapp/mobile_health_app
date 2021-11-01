@@ -21,7 +21,7 @@ class Drawers extends StatelessWidget {
     LogoutEntry(),
     DrawerEntry('Physician Side', '/physHome', Icons.logout),
     DrawerEntry('ML', '/ml', Icons.add_chart),
-    DrawerEntry('Predictions', '/PredictiveGraph', Icons.add_chart),
+    //DrawerEntry('Predictions', '/PredictiveGraph', Icons.add_chart), dont wan't patients seeing predicted data
   ];
 
   ListView generateListView(BuildContext context) {
@@ -64,6 +64,6 @@ class PhysicianDrawers extends Drawers{
     LogoutEntry(),
     DrawerEntry('Patient Side', '/home', Icons.logout),
     DrawerEntry('ML', '/ml', Icons.add_chart),
-    DrawerEntry('Predictions', '/PredictiveGraph', Icons.add_chart),
+    DrawerEntry('Patient Predictions', '/PatientSelect', Icons.add_chart),
   ];
 }

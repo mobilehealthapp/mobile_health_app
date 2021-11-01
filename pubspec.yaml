@@ -39,7 +39,9 @@ dependencies:
 
   # Notification packages
   flutter_local_notifications: ^8.0.0
+  flutter_native_timezone: ^2.0.0
   firebase_messaging: ^10.0.4
+  rxdart: ^0.27.2
 
   # Miscellaneous
   wc_form_validators: ^1.0.0

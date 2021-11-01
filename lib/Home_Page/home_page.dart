@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_health_app/Home_Page/logout.dart';
@@ -10,6 +9,7 @@ import '/Analysis/health_analysis.dart';
 import '/Graphs/graph_info.dart';
 import '/Drawers/drawers.dart';
 import '/Graphs/graph_data.dart';
+import '/Notification/notifications.dart';
 
 /// This file contains the HomePage widget, which the user should reach either
 /// after logging in, or (if already logged in) they'll land here on start.
@@ -60,6 +60,7 @@ class _HomePageState extends State<HomePage> {
 
   // CollectionReference used to access patient's profile info on Firestore
   late final CollectionReference patientProfileCollection;
+  late final CollectionReference patientDoctorsCollection;
 
   //Collection references to the collections within measurement doc
   late final CollectionReference bloodGlucoseCollection;
@@ -71,8 +72,13 @@ class _HomePageState extends State<HomePage> {
     // initialize functions
     fetchFirebaseReferences();
 
+    NotificationApi.init(initScheduled: true);
+    listenNotifications();
+
     generateGreeting();
     fetchCurrentUser();
+    firstSession();
+    hasDoctor();
 
     fetchUploadedData();
     super.initState();
@@ -86,6 +92,10 @@ class _HomePageState extends State<HomePage> {
 
     this.patientProfileCollection =
         FirebaseFirestore.instance.collection('patientprofile');
+
+    this.patientDoctorsCollection = patientProfileCollection
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('patientDoctors');
 
     this.bloodPressureCollection =
         patientMedicalDoc.collection('bloodPressure');
@@ -106,6 +116,43 @@ class _HomePageState extends State<HomePage> {
       }
     } catch (e) {
       print(e);
+    }
+  }
+
+  void listenNotifications() {
+    NotificationApi.onNotifications.stream.listen(onClickedNotification);
+  }
+
+  void onClickedNotification(String? payload) =>
+      Navigator.of(context).pushNamed(
+        payload!,
+      );
+
+  Future firstSession() async {
+    DocumentSnapshot snapshot = await patientProfileCollection.doc(uid).get();
+    var session = snapshot.get('First Session');
+    if (session != null) {
+      //if first session is true show a notification for them to edit their profile
+      NotificationApi.showNotification(
+          title: 'First Login!',
+          body: 'Welcome to MedScan! Click Here to Update Your Profile!',
+          payload: "/profileEdit");
+      await patientProfileCollection.doc(uid).update({'First Session': null});
+      return;
+    }
+    return;
+  }
+
+  Future hasDoctor() async {
+    QuerySnapshot snapshot = await patientDoctorsCollection.get();
+    if (snapshot.size > 0) {
+      return;
+    } else {
+      NotificationApi.showScheduledNotification(
+        title: 'Add a Doctor',
+        body: 'Click Here to Add your Doctor to your Profile!',
+        payload: '/addDoctors',
+      );
     }
   }
 
@@ -139,8 +186,8 @@ class _HomePageState extends State<HomePage> {
         .get();
     final value = bpData.docs; // calls on the docs in the collection
     double xPos = 1.0;
-    double syst;
-    double dias;
+    num syst;
+    num dias;
     for (var val in value) {
       try {
         //if field doesn't exist it throws a StateError
