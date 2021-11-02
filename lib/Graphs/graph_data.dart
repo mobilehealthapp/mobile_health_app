@@ -14,11 +14,11 @@ class SCRow extends StatelessWidget {
       children: <Widget>[
         Text(
           type,
-          style: kTextLabel2,
+          style: summaryCardText,
         ),
         Text(
           value,
-          style: kTextLabel2,
+          style: summaryCardText,
         )
       ],
     );

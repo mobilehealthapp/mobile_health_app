@@ -140,6 +140,7 @@ class MyApp extends StatelessWidget {
       // Below is the App theme, if something is meant to be consistent
       // throughout the entire app, please implement it here rather than
       // everywhere it is used.
+      
       theme: ThemeData(
         appBarTheme: AppBarTheme(
           backwardsCompatibility: false,

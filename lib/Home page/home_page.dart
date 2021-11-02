@@ -312,8 +312,8 @@ var heartRate;
           type: 'Average Blood Pressure:',
           value: '$avgPressureSys/$avgPressureDia mmHg',
         ),
-        SizedBox(
-          height: 25.0,
+        FittedBox(
+          fit: BoxFit.fill,
         ),
       ],
     );

@@ -20,6 +20,11 @@ const kTextLabel2 = TextStyle(
   fontWeight: FontWeight.w400,
 );
 
+const summaryCardText = TextStyle(
+  fontSize: 17.5,
+  fontWeight: FontWeight.w400,
+);
+
 // AppBar text style
 final kAppBarLabelStyle = GoogleFonts.rubik(
   // style of app bar labels

@@ -130,7 +130,7 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        width: 170,
+                        width: 140,
                         child: Text(
                           'Age',
                           style: kTempTextStyle.copyWith(fontSize: 20),
@@ -181,8 +181,8 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
                         ),
                       ),
                       SizedBox(
-                        height: 100,
-                        width: 220,
+                        height: 140,
+                        width: 180,
                         child: Column(
                           children: [
                             Expanded(
@@ -244,14 +244,14 @@ class _HealthAnalysisFormState extends State<HealthAnalysisForm> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        width: 130,
+                        width: 110,
                         child: Text(
                           'Diabetic?',
                           style: kTempTextStyle.copyWith(fontSize: 20),
                         ),
                       ),
                       SizedBox(
-                        height: 100,
+                        height: 140,
                         width: 200,
                         child: Column(
                           children: [
