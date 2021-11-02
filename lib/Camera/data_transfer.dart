@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 // Firestore variables
 final patientData = FirebaseFirestore.instance.collection('patientData');
+var userData;
 final _auth = FirebaseAuth.instance;
 var loggedInUser;
 var uid;
@@ -89,10 +90,41 @@ class Data {
     }
   }
 
+  void adjustData(String subcollection) async {
+    //creates the document for the next one hundred values
+    var subcol = userData.collection(subcollection);
+    num newspot = 0;
+    DocumentSnapshot snapshot = userData.get();
+    if (snapshot.get(subcollection + " readings (hundreds)") != null) {
+      newspot = snapshot.get(subcollection + " readings (hundreds)");
+      if (newspot != 1) {
+        newspot++;
+      }
+    } else {
+      userData.set({
+        subcollection + "readings (hundreds)": 0,
+      });
+    }
+    num bottom = newspot * 10;
+    num top = (newspot++) * 10;
+    String newdoc = bottom.toString() + "~" + top.toString() + " Recordings";
+    subcol.doc("Last 100 Recordings").get().then((doc) {
+      if (doc && doc.exists) {
+        var data = doc.data();
+        // saves the last 100 measurements to a new document
+        subcol.doc(newdoc).set(data).then({
+          //*******************************update document readings (hundreds) */
+          // deletes the old document
+          subcol.doc("Last 100 Recordings").delete(),
+        });
+      }
+    });
+  }
+
   // Function that uploads the data to the database
-  void processData() {
+  void processData() async {
     getCurrentUser(); // sets uid to the current user's uid
-    final userData = patientData.doc(uid); // location to patient's data
+    userData = patientData.doc(uid); // location to patient's data
     final date = getCurrentTime().toString();
     switch (type) {
       case 'Blood Pressure':
@@ -101,14 +133,49 @@ class Data {
         double dia = filterAlpha(data2);
         double systolic = (sys >= dia) ? sys : dia;
         double diastolic = (sys <= dia) ? sys : dia;
+        num measurements = 0;
+        DocumentSnapshot snapshot = await userData
+            .collection('bloodPressure')
+            .doc(
+                "Last 100 Recordings") //may not exist, create a null check for this
+            .get();
+        if (snapshot.get('Data Entries') != null) {
+          // if the user has data entries check how many there are
+          num entries = snapshot.get('Data Entries');
+          if (entries == 99) {
+            //if this is a hundredth entry adjust the document data
+            adjustData('bloodPressure');
+          } else if (entries == 98) {
+            //if this is the last entry of this document include it's date
+            userData
+                .collection('bloodPressure')
+                .doc("Last 100 Recordings")
+                .set({
+              'Most Recent Date': date,
+            });
+            measurements = entries;
+          } else {
+            measurements =
+                entries; //for measurements, the greater the measurement the longer ago it was taken
+          }
+        } else {
+          //if user has no data Entries
+          userData
+              .collection('bloodPressure')
+              .doc("Last 100 Measurements")
+              .set({
+            'Oldest Date': date,
+          });
+        }
+        measurements++;
+        String insertion = "Data Submission $measurements";
+        String data = "$systolic.$diastolic.-$date";
 
         // Creates a document under patientData/$uid/bloodPressure/
-        // the documentID is the current date, and it contains fields for
-        // systolic, diastolic, and uploaded (where uploaded is the date)
-        userData.collection('bloodPressure').doc(date).set({
-          "systolic": systolic,
-          "diastolic": diastolic,
-          "uploaded": date,
+        // that holds the last 100 data entries
+        userData.collection('bloodPressure').doc("Last 100 Measurements").set({
+          'Data Entries': measurements,
+          insertion: data,
         });
         break;
       case 'Blood Glucose':
@@ -130,7 +197,7 @@ class Data {
         // blood glucose (mmol|L), blood glucose (mg|dL),
         // and uploaded (where uploaded is the date)
         // Note: the field names cannot contain "/" in them, hence why "|" was used
-        userData.collection('bloodGlucose').doc(date).set({
+        userData.collection('bloodGlucose').doc("Last 100 Measurements").set({
           "blood glucose (mmol|L)": glucoseMMOL,
           "blood glucose (mg|dL)": glucoseMG,
           "uploaded": date,
@@ -143,7 +210,7 @@ class Data {
         // Creates a document under patientData/$uid/heartRate/
         // the documentID is the current date, and it contains fields for
         // heart rate and uploaded (where uploaded is the date)
-        userData.collection('heartRate').doc(date).set({
+        userData.collection('heartRate').doc("Last 100 Measurements").set({
           'heart rate': filteredData,
           "uploaded": date,
         });
