@@ -97,28 +97,90 @@ class Data {
     DocumentSnapshot snapshot = userData.get();
     if (snapshot.get(subcollection + " readings (hundreds)") != null) {
       newspot = snapshot.get(subcollection + " readings (hundreds)");
-      if (newspot != 1) {
-        newspot++;
-      }
     } else {
       userData.set({
-        subcollection + "readings (hundreds)": 0,
+        subcollection + " readings (hundreds)": 1,
       });
     }
-    num bottom = newspot * 10;
-    num top = (newspot++) * 10;
+    num bottom = newspot-- * 10;
+    num top = newspot * 10;
+    newspot++; //increment newspot to update the hundreds readings count for this subcollection
     String newdoc = bottom.toString() + "~" + top.toString() + " Recordings";
     subcol.doc("Last 100 Recordings").get().then((doc) {
-      if (doc && doc.exists) {
+      if (doc.exists) {
         var data = doc.data();
         // saves the last 100 measurements to a new document
         subcol.doc(newdoc).set(data).then({
-          //*******************************update document readings (hundreds) */
           // deletes the old document
           subcol.doc("Last 100 Recordings").delete(),
+          userData.update(
+            {
+              subcollection + " readings (hundreds)":
+                  newspot, //update document readings (hundreds)
+            },
+          ),
         });
       }
     });
+  }
+
+  void dataInsert(String subcollection, final date, num measurement1,
+      num? measurement2) async {
+    num measurements = 0;
+    bool noentries = false;
+    bool lastentry = false;
+    DocumentSnapshot snapshot = await userData
+        .collection(subcollection)
+        .doc(
+            "Last 100 Recordings") //may not exist, create a null check for this
+        .get();
+    if (snapshot.get('Data Entries') != null) {
+      // if the user has data entries check how many there are
+      num entries = snapshot.get('Data Entries');
+      if (entries == 99) {
+        //if this is a hundredth entry adjust the document data
+        adjustData(subcollection);
+        noentries = true;
+      } else if (entries == 98) {
+        lastentry = true;
+        measurements = entries;
+      } else {
+        measurements =
+            entries; //for measurements, the greater the measurement the longer ago it was taken
+      }
+    } else {
+      noentries = true;
+    }
+    measurements++;
+    String insertion = "Data Submission $measurements";
+    String data;
+    if (measurement2 != null) {
+      data = "$measurement1.$measurement2.-$date";
+    } else {
+      data = "$measurement1.-$date";
+    }
+    // Creates a document under patientData/$uid/subcollection/
+    // that holds the last 100 data entries
+    if (noentries) {
+      //if user has no data Entries in their last 100 put this as the oldest date
+      userData.collection(subcollection).doc("Last 100 Measurements").set({
+        'Oldest Date': date,
+        'Data Entries': measurements,
+        insertion: data,
+      });
+    } else if (lastentry) {
+      //if this is the last entry of this document include it's date
+      userData.collection(subcollection).doc("Last 100 Measurements").set({
+        'Most Recent Date': date,
+        'Data Entries': measurements,
+        insertion: data,
+      });
+    } else {
+      userData.collection(subcollection).doc("Last 100 Measurements").set({
+        'Data Entries': measurements,
+        insertion: data,
+      });
+    }
   }
 
   // Function that uploads the data to the database
@@ -133,50 +195,9 @@ class Data {
         double dia = filterAlpha(data2);
         double systolic = (sys >= dia) ? sys : dia;
         double diastolic = (sys <= dia) ? sys : dia;
-        num measurements = 0;
-        DocumentSnapshot snapshot = await userData
-            .collection('bloodPressure')
-            .doc(
-                "Last 100 Recordings") //may not exist, create a null check for this
-            .get();
-        if (snapshot.get('Data Entries') != null) {
-          // if the user has data entries check how many there are
-          num entries = snapshot.get('Data Entries');
-          if (entries == 99) {
-            //if this is a hundredth entry adjust the document data
-            adjustData('bloodPressure');
-          } else if (entries == 98) {
-            //if this is the last entry of this document include it's date
-            userData
-                .collection('bloodPressure')
-                .doc("Last 100 Recordings")
-                .set({
-              'Most Recent Date': date,
-            });
-            measurements = entries;
-          } else {
-            measurements =
-                entries; //for measurements, the greater the measurement the longer ago it was taken
-          }
-        } else {
-          //if user has no data Entries
-          userData
-              .collection('bloodPressure')
-              .doc("Last 100 Measurements")
-              .set({
-            'Oldest Date': date,
-          });
-        }
-        measurements++;
-        String insertion = "Data Submission $measurements";
-        String data = "$systolic.$diastolic.-$date";
-
-        // Creates a document under patientData/$uid/bloodPressure/
-        // that holds the last 100 data entries
-        userData.collection('bloodPressure').doc("Last 100 Measurements").set({
-          'Data Entries': measurements,
-          insertion: data,
-        });
+        //inserts latest recording into the last 100 recordings document in the bloodPressure subcollection
+        //in the format systolic.diastolic.-date
+        dataInsert('bloodPressure', date, systolic, diastolic);
         break;
       case 'Blood Glucose':
         // get filtered glucose data
@@ -191,29 +212,16 @@ class Data {
         double convertedMG = double.parse(
             convertGlucose(filteredData, "mg/dL").toStringAsFixed(1));
         double glucoseMG = (data2 == "mg/dL") ? filteredData : convertedMG;
-
-        // Creates a document under patientData/$uid/bloodGlucose/
-        // the documentID is the current date, and it contains fields for
-        // blood glucose (mmol|L), blood glucose (mg|dL),
-        // and uploaded (where uploaded is the date)
-        // Note: the field names cannot contain "/" in them, hence why "|" was used
-        userData.collection('bloodGlucose').doc("Last 100 Measurements").set({
-          "blood glucose (mmol|L)": glucoseMMOL,
-          "blood glucose (mg|dL)": glucoseMG,
-          "uploaded": date,
-        });
+        //inserts latest recording into the last 100 recordings document in the bloodGlucose subcollection
+        //in the format MMOL.MG.-date
+        dataInsert('bloodPressure', date, glucoseMMOL, glucoseMG);
         break;
       case 'Heart Rate':
         // get filtered heart rate data
         int filteredData = filterAlpha(data1.toString()).toInt();
-
-        // Creates a document under patientData/$uid/heartRate/
-        // the documentID is the current date, and it contains fields for
-        // heart rate and uploaded (where uploaded is the date)
-        userData.collection('heartRate').doc("Last 100 Measurements").set({
-          'heart rate': filteredData,
-          "uploaded": date,
-        });
+        //inserts latest recording into the last 100 recordings document in the heartRate subcollection
+        //in the format heartRate.-date
+        dataInsert('heartRate', date, filteredData, null);
         break;
       default:
         break;

@@ -12,6 +12,7 @@ import 'Camera/camera_input.dart';
 import 'Camera/data_input_page.dart';
 
 // home page imports
+import 'Machine_Learning/data_insert.dart';
 import 'Machine_Learning/patientselect.dart';
 import 'Physician_Side/physician_home.dart';
 import 'package:mobile_health_app/Home_Page/home_page.dart';
@@ -201,6 +202,7 @@ class MyApp extends StatelessWidget {
         '/resetpass': (context) => ResetScreen(),
         '/ml': (context) => MachineLearning(),
         '/PatientSelect': (context) => PatientSelect(),
+        '/DataInsert': (context) => DataInsert(),
       },
       navigatorKey: navigator,
     );

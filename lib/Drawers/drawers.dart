@@ -21,7 +21,7 @@ class Drawers extends StatelessWidget {
     LogoutEntry(),
     DrawerEntry('Physician Side', '/physHome', Icons.logout),
     DrawerEntry('ML', '/ml', Icons.add_chart),
-    //DrawerEntry('Predictions', '/PredictiveGraph', Icons.add_chart), dont wan't patients seeing predicted data
+    DrawerEntry('Data Insertion', '/DataInsert', Icons.access_alarm),
   ];
 
   ListView generateListView(BuildContext context) {
@@ -46,8 +46,7 @@ class Drawers extends StatelessWidget {
   }
 }
 
-
-class PhysicianDrawers extends Drawers{
+class PhysicianDrawers extends Drawers {
   ///Drawers creates a Drawer from a list of [DrawerEntry]'s, that when tapped push
   ///a path to the navigator. Meant for physicians! Drawers is defined above.
   ///
