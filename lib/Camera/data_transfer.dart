@@ -194,7 +194,7 @@ class Data {
         double systolic = (sys >= dia) ? sys : dia;
         double diastolic = (sys <= dia) ? sys : dia;
         //inserts latest recording into the last 100 recordings document in the bloodPressure subcollection
-        //in the format systolic.diastolic.-date
+        //in the format systolic,diastolic,-date
         dataInsert('bloodPressure', date, systolic, diastolic);
         break;
       case 'Blood Glucose':
@@ -211,14 +211,14 @@ class Data {
             convertGlucose(filteredData, "mg/dL").toStringAsFixed(1));
         double glucoseMG = (data2 == "mg/dL") ? filteredData : convertedMG;
         //inserts latest recording into the last 100 recordings document in the bloodGlucose subcollection
-        //in the format MMOL.MG.-date
-        dataInsert('bloodPressure', date, glucoseMMOL, glucoseMG);
+        //in the format MG,MMOL,-date
+        dataInsert('bloodPressure', date, glucoseMG, glucoseMMOL);
         break;
       case 'Heart Rate':
         // get filtered heart rate data
         int filteredData = filterAlpha(data1.toString()).toInt();
         //inserts latest recording into the last 100 recordings document in the heartRate subcollection
-        //in the format heartRate.-date
+        //in the format heartRate,-date
         dataInsert('heartRate', date, filteredData, null);
         break;
       default:
