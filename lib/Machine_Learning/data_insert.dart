@@ -104,12 +104,9 @@ class DataInsertState extends State<DataInsert> {
     num newspot = 0;
     DocumentSnapshot snapshot = await userData.get();
     if (snapshot.exists) {
-      print('got snapshot');
       if (snapshot.get("$subcollection Recordings (hundreds)") > 0) {
         newspot = snapshot.get("$subcollection Recordings (hundreds)");
         print(newspot);
-      } else {
-        print('null');
       }
     }
     num bottom = newspot * 100;
@@ -120,7 +117,7 @@ class DataInsertState extends State<DataInsert> {
     // saves the last 100 measurements to a new document
     // deletes the old document
     subcol.doc("Last 100 Recordings").delete();
-    userData.set(
+    userData.update(
       {
         "$subcollection Recordings (hundreds)":
             newspot, //update document readings (hundreds)
