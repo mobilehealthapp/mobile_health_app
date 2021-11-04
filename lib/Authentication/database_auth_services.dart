@@ -34,7 +34,12 @@ class DatabaseAuth {
 
   Future setPatientData(String firstName, String lastName, String email,
       String accountType) async {
-    return await patientProfileCollection.doc(uid).set(
+    await patientDataCollection.doc(uid).set({
+      "bloodGlucose Recordings (hundreds)": 0,
+      "bloodPressure Recordings (hundreds)": 0,
+      "heartRate Recordings (hundreds)": 0,
+    });
+    await patientProfileCollection.doc(uid).set(
       //Called on sign-up, this function creates a document within the patient profile collection and populates it with initial patient data.
       // The document's ID matches the UID of the user for convenience of user data management
       //Fields with empty strings can be edited later by users from the profile page
@@ -121,7 +126,7 @@ class DatabaseAuth {
       await user!.reauthenticateWithCredential(credentials);
       dataDelete('bloodGlucose', 1);
       dataDelete('bloodPressure', 1);
-      dataDelete('heartRate', 0); //patientData field is emptied here
+      dataDelete('heartRate', 0); //patientData fields are emptied here
       await updatePatientData('', '', '', '', '', '', '', '', '', '', '',
           ''); //updates patientProfile field and doctorPatients fields
       /*
@@ -317,6 +322,9 @@ class DatabaseAuth {
         'Average Blood Pressure (diastolic)': '',
         'Average Blood Pressure (systolic)': '',
         'Average Heart Rate': '',
+        "bloodPressure readings (hundreds)": null,
+        "bloodGlucose readings (hundreds)": null,
+        "heartRate readings (hundreds)": null,
       });
     }
   }
@@ -361,4 +369,6 @@ class DatabaseAuth {
         .doc(_auth.currentUser!.uid)
         .delete(); //delete the doctor from the doctorProfile collection
   }
+
+  initializeData() {}
 }

@@ -90,40 +90,6 @@ class Data {
     }
   }
 
-  void adjustData(String subcollection) async {
-    //creates the document for the next one hundred values
-    var subcol = userData.collection(subcollection);
-    num newspot = 0;
-    DocumentSnapshot snapshot = userData.get();
-    if (snapshot.get(subcollection + " readings (hundreds)") != null) {
-      newspot = snapshot.get(subcollection + " readings (hundreds)");
-    } else {
-      userData.set({
-        subcollection + " readings (hundreds)": 1,
-      });
-    }
-    num bottom = newspot-- * 10;
-    num top = newspot * 10;
-    newspot++; //increment newspot to update the hundreds readings count for this subcollection
-    String newdoc = bottom.toString() + "~" + top.toString() + " Recordings";
-    subcol.doc("Last 100 Recordings").get().then((doc) {
-      if (doc.exists) {
-        var data = doc.data();
-        // saves the last 100 measurements to a new document
-        subcol.doc(newdoc).set(data).then({
-          // deletes the old document
-          subcol.doc("Last 100 Recordings").delete(),
-          userData.update(
-            {
-              subcollection + " readings (hundreds)":
-                  newspot, //update document readings (hundreds)
-            },
-          ),
-        });
-      }
-    });
-  }
-
   void dataInsert(String subcollection, final date, num measurement1,
       num? measurement2) async {
     num measurements = 0;
@@ -131,20 +97,18 @@ class Data {
     bool lastentry = false;
     DocumentSnapshot snapshot = await userData
         .collection(subcollection)
-        .doc(
-            "Last 100 Recordings") //may not exist, create a null check for this
+        .doc("Last 100 Recordings")
         .get();
-    if (snapshot.get('Data Entries') != null) {
+    if (snapshot.exists) {
       // if the user has data entries check how many there are
       num entries = snapshot.get('Data Entries');
       if (entries == 99) {
-        //if this is a hundredth entry adjust the document data
-        adjustData(subcollection);
+        await adjustData(subcollection, snapshot.data());
         noentries = true;
-      } else if (entries == 98) {
-        lastentry = true;
-        measurements = entries;
       } else {
+        if (entries == 98) {
+          lastentry = true;
+        }
         measurements =
             entries; //for measurements, the greater the measurement the longer ago it was taken
       }
@@ -152,35 +116,72 @@ class Data {
       noentries = true;
     }
     measurements++;
-    String insertion = "Data Submission $measurements";
+    String insertion;
+    if (measurements < 10) {
+      insertion =
+          "Data Submission 0$measurements"; //helps with layout inside database
+    } else {
+      insertion = "Data Submission $measurements";
+    }
     String data;
     if (measurement2 != null) {
-      data = "$measurement1.$measurement2.-$date";
+      //puts the data and date into a parsable String
+      data = "$measurement1,$measurement2,-$date";
     } else {
-      data = "$measurement1.-$date";
+      data = "$measurement1,-$date";
     }
     // Creates a document under patientData/$uid/subcollection/
     // that holds the last 100 data entries
     if (noentries) {
       //if user has no data Entries in their last 100 put this as the oldest date
-      userData.collection(subcollection).doc("Last 100 Measurements").set({
+      userData.collection(subcollection).doc("Last 100 Recordings").set({
         'Oldest Date': date,
         'Data Entries': measurements,
         insertion: data,
       });
     } else if (lastentry) {
       //if this is the last entry of this document include it's date
-      userData.collection(subcollection).doc("Last 100 Measurements").set({
+      userData.collection(subcollection).doc("Last 100 Recordings").update({
         'Most Recent Date': date,
         'Data Entries': measurements,
         insertion: data,
       });
     } else {
-      userData.collection(subcollection).doc("Last 100 Measurements").set({
+      userData.collection(subcollection).doc("Last 100 Recordings").update({
         'Data Entries': measurements,
         insertion: data,
       });
     }
+  }
+
+  Future<void> adjustData(String subcollection, Object? data) async {
+    //creates the document for the next one hundred values
+    var subcol = userData.collection(subcollection);
+    num newspot = 0;
+    DocumentSnapshot snapshot = await userData.get();
+    if (snapshot.exists) {
+      print('got snapshot');
+      if (snapshot.get("$subcollection Recordings (hundreds)") > 0) {
+        newspot = snapshot.get("$subcollection Recordings (hundreds)");
+        print(newspot);
+      } else {
+        print('null');
+      }
+    }
+    num bottom = newspot * 100;
+    num top = (newspot + 1) * 100;
+    newspot++; //increment newspot to update the hundreds readings count for this subcollection
+    String newdoc = bottom.toString() + "~" + top.toString() + " Recordings";
+    subcol.doc(newdoc).set(data);
+    // saves the last 100 measurements to a new document
+    // deletes the old document
+    subcol.doc("Last 100 Recordings").delete();
+    userData.set(
+      {
+        "$subcollection Recordings (hundreds)":
+            newspot, //update document readings (hundreds)
+      },
+    );
   }
 
   // Function that uploads the data to the database
