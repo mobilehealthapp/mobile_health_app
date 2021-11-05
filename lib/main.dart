@@ -13,7 +13,7 @@ import 'Camera/data_input_page.dart';
 
 // home page imports
 import 'Machine_Learning/data_insert.dart';
-import 'Machine_Learning/patientselect.dart';
+import 'Machine_Learning/patient_select.dart';
 import 'Physician_Side/physician_home.dart';
 import 'package:mobile_health_app/Home_Page/home_page.dart';
 import 'Machine_Learning/predictive_graph.dart';
