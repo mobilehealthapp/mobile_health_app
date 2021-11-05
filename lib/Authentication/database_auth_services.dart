@@ -322,9 +322,9 @@ class DatabaseAuth {
         'Average Blood Pressure (diastolic)': '',
         'Average Blood Pressure (systolic)': '',
         'Average Heart Rate': '',
-        "bloodPressure readings (hundreds)": null,
-        "bloodGlucose readings (hundreds)": null,
-        "heartRate readings (hundreds)": null,
+        "bloodPressure readings (hundreds)": 0,
+        "bloodGlucose readings (hundreds)": 0,
+        "heartRate readings (hundreds)": 0,
       });
     }
   }

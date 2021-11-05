@@ -2,6 +2,7 @@ import 'package:calc/calc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/Data/patient_data_functions.dart';
 import 'package:mobile_health_app/constants.dart';
 import 'package:mobile_health_app/Graphs/graph_data.dart';
 
@@ -51,30 +52,50 @@ class _PatientDataState extends State<PatientData> {
   bool isHRFilled = true;
   var patientData;
 
+  var bg = [];
   var bloodGlucose;
+  int bgsize = 0;
+  var bglist;
+
+  var sys = [];
+  var dia = [];
   var bloodPressure;
+  int bpsize = 0;
+  var bplist;
+
+  var hr = [];
   var heartRate;
+  int hrsize = 0;
+  var hrlist;
+
+  Datafunction datafunc = Datafunction('');
 
   bgGet() async {
-    bg = [];
-    var patientData = FirebaseFirestore.instance
-        .collection('patientData')
-        .doc(widget.patientUID);
-    var bloodGlucose = patientData.collection('bloodGlucose');
-    final bgData = await bloodGlucose.get();
-    final value = bgData.docs;
-    for (var val in value) {
-      double bgGet = val.get('blood glucose (mmol|L)');
-      if (bgGet < 1) {
-        return;
+    bgsize = await datafunc.getSize('bloodGlucose');
+    int sizelimiter;
+    if (bgsize > 100) {
+      //if there are more than 100 recordings, only take the last 99
+      sizelimiter = 99;
+    } else {
+      sizelimiter = bgsize;
+    }
+    numberOfBGPoints = sizelimiter;
+    bglist = await datafunc.getAmount(sizelimiter, 'bloodGlucose');
+    if (bglist != null) {
+      for (int i = 0; i < bglist.length; i++) {
+        String data = bglist[i];
+        double bgGet = double.parse(data.split(',')[0]);
+        bg.add(bgGet);
       }
-      bg.add(bgGet.toDouble());
+      getBGData();
+      avgGlucose = getAverage(bg);
+    } else {
+      return;
     }
 
     var doubles = bg.map((e) => e as double).toList();
 
     final sdv = doubles.standardDeviation();
-    print('sdv for bg is $sdv');
     setState(() {
       standardDeviationBG = sdv.toStringAsFixed(3);
       var sdv2 = sdv;
@@ -85,24 +106,31 @@ class _PatientDataState extends State<PatientData> {
   }
 
   hrGet() async {
-    hr = [];
-    var patientData = FirebaseFirestore.instance
-        .collection('patientData')
-        .doc(widget.patientUID);
-    var heartRate = patientData.collection('heartRate');
-    final hrData = await heartRate.get();
-    final value = hrData.docs;
-    for (var val in value) {
-      int hrGet = val.get('heart rate');
-      if (hrGet < 1) {
-        return;
-      }
-      hr.add(hrGet.toDouble());
+    hrsize = await datafunc.getSize('heartRate');
+    int sizelimiter;
+    if (hrsize > 100) {
+      //if there are more than 100 recordings, only take the last 99
+      sizelimiter = 99;
+    } else {
+      sizelimiter = hrsize;
     }
+    numberOfHRPoints = sizelimiter;
+    hrlist = await Datafunction(widget.patientUID)
+        .getAmount(sizelimiter, 'heartRate');
+    if (hrlist != null) {
+      for (int i = 0; i < hrlist.length; i++) {
+        String data = hrlist[i];
+        int hrGet = int.parse(data.split(',')[0]);
+        hr.add(hrGet);
+      }
+      avgHeartRate = getAverage(hr);
+      getHRData();
+    } else {
+      return;
+    }
+    var ints = hr.map((e) => e as int).toList();
 
-    var doubles = hr.map((e) => e as double).toList();
-
-    final sdv = doubles.standardDeviation().toDouble();
+    final sdv = ints.standardDeviation().toInt();
 
     setState(() {
       standardDeviationHR = sdv.truncateToDouble();
@@ -113,19 +141,29 @@ class _PatientDataState extends State<PatientData> {
   }
 
   sysGet() async {
-    sys = [];
-    var patientData = FirebaseFirestore.instance
-        .collection('patientData')
-        .doc(widget.patientUID);
-    var bloodPressure = patientData.collection('bloodPressure');
-    final bpData = await bloodPressure.get();
-    final value = bpData.docs;
-    for (var val in value) {
-      double bpGet = val.get('systolic');
-      if (bpGet < 1) {
-        return;
+    bpsize = await datafunc.getSize('bloodPressure');
+    int sizelimiter;
+    if (bpsize > 100) {
+      //if there are more than 100 recordings, only take the last 99
+      sizelimiter = 99;
+    } else {
+      sizelimiter = bpsize;
+    }
+    numberOfBPPoints = sizelimiter;
+    bplist = await Datafunction(widget.patientUID)
+        .getAmount(sizelimiter, 'bloodPressure');
+    diaGet(); //call diaGet() through this method
+    if (bplist != null) {
+      for (int i = 0; i < bplist.length; i++) {
+        String data = bplist[i];
+        double sysGet = double.parse(data.split(',')[0]);
+        sys.add(sysGet);
       }
-      sys.add(bpGet.toDouble());
+      avgPressureSys = getAverage(sys);
+      getSysData();
+      getDiasData();
+    } else {
+      return;
     }
     sys.sort();
 
@@ -141,20 +179,16 @@ class _PatientDataState extends State<PatientData> {
     return [standardDeviationSys, variancePressureSys, sys];
   }
 
-  diaGet() async {
-    dia = [];
-    var patientData = FirebaseFirestore.instance
-        .collection('patientData')
-        .doc(widget.patientUID);
-    var bloodPressure = patientData.collection('bloodPressure');
-    final bpData = await bloodPressure.get();
-    final value = bpData.docs;
-    for (var val in value) {
-      double bpGet = val.get('diastolic');
-      if (bpGet < 1) {
-        return;
+  diaGet() {
+    if (bplist != null) {
+      for (int i = 0; i < bplist.length; i++) {
+        String data = bplist[i];
+        double diaGet = double.parse(data.split(',')[1]);
+        dia.add(diaGet);
       }
-      dia.add(bpGet.toDouble());
+      avgPressureDia = getAverage(dia);
+    } else {
+      return;
     }
     var doubles = dia.map((e) => e as double).toList();
 
@@ -168,69 +202,29 @@ class _PatientDataState extends State<PatientData> {
     return [standardDeviationDia, variancePressureDia, dia];
   }
 
-  getNumberOfBGPoints() async {
-    // gets length of list of BG points uploaded for user
-    var patientData = FirebaseFirestore.instance
-        .collection('patientData')
-        .doc(widget.patientUID);
-    var bloodGlucose = patientData.collection('bloodGlucose');
-    QuerySnapshot<Map<String, dynamic>> getBG = await bloodGlucose.get();
-    numberOfBGPoints = getBG.docs.length;
-    return numberOfBGPoints;
-  }
-
-  getNumberOfBPPoints() async {
-    // gets length of list of BP points uploaded for user
-    var patientData = FirebaseFirestore.instance
-        .collection('patientData')
-        .doc(widget.patientUID);
-    var bloodPressure = patientData.collection('bloodPressure');
-    QuerySnapshot<Map<String, dynamic>> getBP = await bloodPressure.get();
-    numberOfBPPoints = getBP.docs.length;
-    return numberOfBPPoints;
-  }
-
-  getNumberOfHRPoints() async {
-    // gets length of list of HR points uploaded for user
-    var patientData = FirebaseFirestore.instance
-        .collection('patientData')
-        .doc(widget.patientUID);
-    var heartRate = patientData.collection('heartRate');
-    QuerySnapshot<Map<String, dynamic>> getHR = await heartRate.get();
-    numberOfHRPoints = getHR.docs.length;
-    return numberOfHRPoints;
-  }
-
-  getUploadedData() async {
-    // gets averages of each data type for user
-    var patientData = FirebaseFirestore.instance
-        .collection('patientData')
-        .doc(widget.patientUID);
-    final DocumentSnapshot uploadedData = await patientData.get();
-    setState(
-      () {
-        avgGlucose = uploadedData.get('Average Blood Glucose (mmol|L)');
-        avgPressureDia = uploadedData.get('Average Blood Pressure (diastolic)');
-        avgPressureSys = uploadedData.get('Average Blood Pressure (systolic)');
-        avgHeartRate = uploadedData.get('Average Heart Rate');
-      },
-    );
+  int getAverage(var type) {
+    //calculate the average of the list, type = bg || sys || dia || hr
+    num average = 0;
+    for (int i = 0; i < type.length; i++) {
+      average += type[i];
+    }
+    return average ~/ type.length;
   }
 
   Future<List<FlSpot>> getHRData() async {
     // gets list of HR points to use in Graphs
     heartRateList = [];
-    var patientData = FirebaseFirestore.instance
-        .collection('patientData')
-        .doc(widget.patientUID);
-    final hrData =
-        await patientData.collection('heartRate').orderBy('uploaded').get();
-    final value = hrData.docs;
     double index = 1.0;
-    for (var val in value) {
-      int heartrate = val.get('heart rate');
+    String data;
+    double hr;
+    if (hrlist == null) {
+      return heartRateList;
+    }
+    for (int i = 0; i < hrlist.length; i++) {
+      data = hrlist[i];
+      hr = double.parse(hrlist[i].split(',')[0]);
       setState(() {
-        heartRateList.add(FlSpot(index++, heartrate.toDouble()));
+        heartRateList.add(FlSpot(index++, hr));
       });
     }
     return heartRateList;
@@ -245,17 +239,17 @@ class _PatientDataState extends State<PatientData> {
   Future<List<FlSpot>> getDiasData() async {
     // gets list of BP (diastolic) points to use in Graphs
     diastolicList = [];
-    var patientData = FirebaseFirestore.instance
-        .collection('patientData')
-        .doc(widget.patientUID);
-    final bpData =
-        await patientData.collection('bloodPressure').orderBy('uploaded').get();
-    final value = bpData.docs;
     double index = 1.0;
-    for (var val in value) {
-      double dias = val.get('diastolic');
+    String data;
+    double diast;
+    if (bplist == null) {
+      return diastolicList;
+    }
+    for (int i = 0; i < bplist.length; i++) {
+      data = bplist[i];
+      diast = double.parse(bplist[i].split(',')[1]);
       setState(() {
-        diastolicList.add(FlSpot(index++, dias.toDouble()));
+        diastolicList.add(FlSpot(index++, diast));
       });
     }
     return diastolicList;
@@ -264,36 +258,36 @@ class _PatientDataState extends State<PatientData> {
   Future<List<FlSpot>> getSysData() async {
     // gets list of BP (systolic) points to use in Graphs
     systolicList = [];
-    var patientData = FirebaseFirestore.instance
-        .collection('patientData')
-        .doc(widget.patientUID);
-    final bpData =
-        await patientData.collection('bloodPressure').orderBy('uploaded').get();
-    final value = bpData.docs;
     double index2 = 1.0;
-    for (var val in value) {
-      double sys = val.get('systolic');
+    String data;
+    double syst;
+    if (bplist == null) {
+      return systolicList;
+    }
+    for (int i = 0; i < bplist.length; i++) {
+      data = bplist[i];
+      syst = double.parse(bplist[i].split(',')[0]);
       setState(() {
-        systolicList.add(FlSpot(index2++, sys.toDouble()));
+        systolicList.add(FlSpot(index2++, syst));
       });
     }
     return systolicList;
   }
 
-  Future<List<FlSpot>> getBGData() async {
+  List<FlSpot> getBGData() {
     // gets list of BG points to use in Graphs
     glucoseList = [];
-    var patientData = FirebaseFirestore.instance
-        .collection('patientData')
-        .doc(widget.patientUID);
-    final bgData =
-        await patientData.collection('bloodGlucose').orderBy('uploaded').get();
-    final value = bgData.docs;
     double index = 1.0;
-    for (var val in value) {
-      double glucose = val.get('blood glucose (mmol|L)');
+    String data;
+    double bg;
+    if (bglist == null) {
+      return glucoseList;
+    }
+    for (int i = 0; i < bglist.length; i++) {
+      data = bglist[i];
+      bg = double.parse(bglist[i].split(',')[1]); //get mmol/L value
       setState(() {
-        glucoseList.add(FlSpot(index++, glucose.toDouble()));
+        glucoseList.add(FlSpot(index++, bg));
       });
     }
     return glucoseList;
@@ -301,18 +295,10 @@ class _PatientDataState extends State<PatientData> {
 
   @override
   void initState() {
+    datafunc = Datafunction(widget.patientUID);
     bgGet();
     hrGet();
-    diaGet();
     sysGet();
-    getUploadedData();
-    getHRData();
-    getSysData();
-    getDiasData();
-    getBGData();
-    getNumberOfBPPoints();
-    getNumberOfBGPoints();
-    getNumberOfHRPoints();
     super.initState();
   }
 
@@ -341,7 +327,7 @@ class _PatientDataState extends State<PatientData> {
                 ? extractBP()
                 : NoDataCard(
                     textBody:
-                        'The patient hasnt uploaded any data for Blood pressure'),
+                        'The patient hasnt uploaded any data for blood pressure'),
           ),
           SizedBox(
             height: 25.0,
@@ -351,7 +337,7 @@ class _PatientDataState extends State<PatientData> {
                 ? extractBG()
                 : NoDataCard(
                     textBody:
-                        'The patient hasnt uploaded any data for Blood pressure'),
+                        'The patient hasnt uploaded any data for blood glucose'),
           ),
           SizedBox(
             height: 25.0,
@@ -361,7 +347,7 @@ class _PatientDataState extends State<PatientData> {
                 ? extractHR()
                 : NoDataCard(
                     textBody:
-                        'The patient hasnt uploaded any data for Blood pressure'),
+                        'The patient hasnt uploaded any data for heart rate'),
           ),
         ],
       ),

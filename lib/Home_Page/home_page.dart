@@ -21,7 +21,7 @@ import '/Data/patient_data_functions.dart';
 /* <ramble>
  This is the updated/simplified version of this file.
  it's been tested and seems to be working the same.
- While nothing MAJOUR was changed, there were some optimizations,
+ While nothing MAJOR was changed, there were some optimizations,
  and restructuring to code.
 
  Other than that documentation and commenting was added.
@@ -71,18 +71,16 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     // initialize functions
+    super.initState();
+
     fetchFirebaseReferences();
+    generateGreeting();
+    fetchCurrentUser();
 
     NotificationApi.init(initScheduled: true);
     listenNotifications();
-
-    generateGreeting();
-    fetchCurrentUser();
     firstSession();
     hasDoctor();
-
-    fetchUploadedData();
-    super.initState();
   }
 
   void fetchFirebaseReferences() {
@@ -188,12 +186,16 @@ class _HomePageState extends State<HomePage> {
     if (bplist != null) {
       for (int i = 0; i < bplist.length; i++) {
         data = bplist[i];
+        avgPressureSys += double.parse(data.split(',')[0]);
         syst = num.parse(data.split(',')[0]);
+        avgPressureDia += double.parse(data.split(',')[1]);
         dias = num.parse(data.split(',')[1]);
         systolicList.add(FlSpot(xPos, syst.toDouble()));
         diastolicList.add(FlSpot(xPos, dias.toDouble()));
         ++xPos;
       }
+      avgPressureSys = avgPressureSys ~/ bplist.length;
+      avgPressureDia = avgPressureDia ~/ bplist.length;
     }
   }
 
@@ -208,11 +210,13 @@ class _HomePageState extends State<HomePage> {
     if (bglist != null) {
       for (int i = 0; i < bglist.length; i++) {
         data = bglist[i];
+        avgGlucose += double.parse(data.split(',')[1]);
         glucose = double.parse(
-            data.split(',')[0]); //get the mg/dl recording of the user
+            data.split(',')[0]); //get the mmol/L recording of the user
         glucoseList.add(FlSpot(xPos, glucose.toDouble()));
         ++xPos;
       }
+      avgGlucose = avgGlucose ~/ bglist.length;
     }
   }
 
@@ -228,40 +232,13 @@ class _HomePageState extends State<HomePage> {
     if (hrlist != null) {
       for (int i = 0; i < hrlist.length; i++) {
         data = hrlist[i];
+        avgHeartRate += int.parse(data.split(',')[0]);
         heartRate =
-            int.parse(data.split(',')[0]); //get the mg/dl recording of the user
+            int.parse(data.split(',')[0]); //parse the recording from the String
         heartRateList.add(FlSpot(xPos, heartRate.toDouble()));
         ++xPos;
       }
-    }
-  }
-
-  void fetchUploadedData() async {
-    /// gets averages of each data type for user
-    final DocumentSnapshot uploadedData = await this.patientMedicalDoc.get();
-
-    //If doc doesn't have the entry, it'll throw a StateError
-    try {
-      avgPressureSys =
-          await uploadedData.get('Average Blood Pressure (systolic)');
-    } on StateError {
-      avgPressureSys = 0;
-    }
-    try {
-      avgPressureDia =
-          await uploadedData.get('Average Blood Pressure (diastolic)');
-    } on StateError {
-      avgPressureDia = 0;
-    }
-    try {
-      avgGlucose = await uploadedData.get('Average Blood Glucose (mmol|L)');
-    } on StateError {
-      avgGlucose = 0;
-    }
-    try {
-      avgHeartRate = await uploadedData.get('Average Heart Rate');
-    } on StateError {
-      avgHeartRate = 0;
+      avgHeartRate = avgHeartRate ~/ hrlist.length;
     }
   }
 

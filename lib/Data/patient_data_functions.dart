@@ -9,8 +9,43 @@ class Datafunction {
 
   Datafunction(this.uid);
 
+  String getbgFormat() {
+    return 'MG,MMOL,-date';
+  }
+
+  String getbpFormat() {
+    return 'systolic,diastolic,-date';
+  }
+
+  String gethrFormat() {
+    return 'heartRate,-date';
+  }
+
+  Future<int> getSize(String subcollection) async {
+    //returns the size of the specified subcollection
+    CollectionReference subcol = patientData.doc(uid).collection(subcollection);
+    DocumentSnapshot snap = await subcol.doc('Last 100 Recordings').get();
+    int lasthundred = 0;
+    int hundreds = 0;
+    if (snap.exists) {
+      //if Last 100 Recordings doesn't exist, there will be no Recordings (hundreds)
+      lasthundred = snap.get('Data Entries').toInt();
+      DocumentSnapshot docsnap = await patientData.doc(uid).get();
+      if (docsnap.exists) {
+        hundreds = docsnap.get("$subcollection Recordings (hundreds)").toInt();
+      }
+    }
+    return lasthundred +
+        hundreds *
+            99; //99 recordings for each hundred, and add the amount in the last 100 recordings
+  }
+
+  // Future<List?> getFromDates (String date1, String date2) async { //returns a list of all values between two specific dates
+
+  // }
+
   Future<List?> getAmount(int amount, String subcollection) async {
-    //function designed to get the required amount of values from a certain subcollection in order from most recent to oldest
+    //function designed to get the required amount of values from a certain subcollection in order from oldest to newest
     var list = <String>[];
     CollectionReference subcol = patientData.doc(uid).collection(subcollection);
     DocumentSnapshot snap = await subcol.doc('Last 100 Recordings').get();
@@ -53,7 +88,7 @@ class Datafunction {
   }
 
   Future<List?> getAmountHundreds(int amount, String subcollection) async {
-    //function designed to get a certain amount of recordings from a collection that has no last 100 recordings in order from newest to oldest
+    //function designed to get a certain amount of recordings from a collection that has no last 100 recordings in order from oldest to newest, should only be called through getAmount
     var list = <String>[];
     CollectionReference subcol = patientData.doc(uid).collection(subcollection);
     DocumentSnapshot collectionsnap = await patientData.doc(uid).get();
