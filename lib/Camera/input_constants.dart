@@ -18,6 +18,8 @@ const List kNumberOfVariables = [
 // Text style for dropdown menu
 const TextStyle kDropdownTextStyle =
     TextStyle(fontSize: 20.0, color: Colors.black);
+const TextStyle bpTextStyle =
+    TextStyle(fontSize: 18.0, color: Colors.black);
 
 // Variables for inputted data
 double? systolicInput;
@@ -36,12 +38,12 @@ Column bloodPressureTF = Column(
       children: [
         Text(
           'Systolic (SYS)',
-          style: kDropdownTextStyle,
+          style: bpTextStyle,
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: SizedBox(
-            width: 200,
+            width: 170,
             child: TextField(
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
@@ -62,7 +64,7 @@ Column bloodPressureTF = Column(
         ),
         Text(
           'mmHg',
-          style: kDropdownTextStyle,
+          style: bpTextStyle,
         )
       ],
     ),
@@ -71,12 +73,12 @@ Column bloodPressureTF = Column(
       children: [
         Text(
           'Diastolic (DIA)',
-          style: kDropdownTextStyle,
+          style: bpTextStyle,
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: SizedBox(
-            width: 200,
+            width: 170,
             child: TextField(
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
@@ -97,7 +99,7 @@ Column bloodPressureTF = Column(
         ),
         Text(
           'mmHg',
-          style: kDropdownTextStyle,
+          style: bpTextStyle,
         )
       ],
     ),
