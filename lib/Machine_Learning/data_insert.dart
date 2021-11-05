@@ -164,7 +164,11 @@ class DataInsertState extends State<DataInsert> {
             onPressed: () {
               print(measurement1);
               print(measurement2);
-              dataInsert(subcol, date, measurement1, measurement2);
+              if (measurement2 == 0) {
+                dataInsert(subcol, date, measurement1, null);
+              } else {
+                dataInsert(subcol, date, measurement1, measurement2);
+              }
             },
             child: Text('Send Values'),
           ),

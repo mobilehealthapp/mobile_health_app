@@ -10,6 +10,7 @@ import '/Graphs/graph_info.dart';
 import '/Drawers/drawers.dart';
 import '/Graphs/graph_data.dart';
 import '/Notification/notifications.dart';
+import '/Data/patient_data_functions.dart';
 
 /// This file contains the HomePage widget, which the user should reach either
 /// after logging in, or (if already logged in) they'll land here on start.
@@ -145,7 +146,7 @@ class _HomePageState extends State<HomePage> {
 
   Future hasDoctor() async {
     QuerySnapshot snapshot = await patientDoctorsCollection.get();
-    if (snapshot.size > 0) {
+    if (snapshot.size != 0) {
       return;
     } else {
       NotificationApi.showScheduledNotification(
@@ -178,27 +179,21 @@ class _HomePageState extends State<HomePage> {
 
     this.systolicList.clear(); //Cleared in case function is used to update data
     this.diastolicList.clear();
-
-    final bpData = await this
-        .bloodPressureCollection
-        .orderBy('uploaded') // i.e. oldest to newest
-        .limitToLast(6) // Calls last 6 uploaded docs
-        .get();
-    final value = bpData.docs; // calls on the docs in the collection
+    var bplist = await Datafunction(uid).getAmount(6, 'bloodPressure');
+    //setState(() {});
     double xPos = 1.0;
     num syst;
     num dias;
-    for (var val in value) {
-      try {
-        //if field doesn't exist it throws a StateError
-        syst = await val.get('systolic');
-        dias = await val.get('diastolic');
-      } on StateError {
-        break;
+    String data;
+    if (bplist != null) {
+      for (int i = 0; i < bplist.length; i++) {
+        data = bplist[i];
+        syst = num.parse(data.split(',')[0]);
+        dias = num.parse(data.split(',')[1]);
+        systolicList.add(FlSpot(xPos, syst.toDouble()));
+        diastolicList.add(FlSpot(xPos, dias.toDouble()));
+        ++xPos;
       }
-      systolicList.add(FlSpot(xPos, syst.toDouble()));
-      diastolicList.add(FlSpot(xPos, dias.toDouble()));
-      ++xPos;
     }
   }
 
@@ -206,22 +201,18 @@ class _HomePageState extends State<HomePage> {
     /// gets list of 6 most recent BG points to use in Graphs
     this.glucoseList.clear(); //Cleared in case function is used to update data
 
-    final bgData = await this
-        .bloodGlucoseCollection
-        .orderBy('uploaded') // i.e. oldest to newest
-        .limitToLast(6) // Calls last 6 uploaded docs
-        .get();
-    final value = bgData.docs; // calls on the docs in the collection
+    var bglist = await Datafunction(uid).getAmount(6, 'bloodGlucose');
     double xPos = 1.0;
     double glucose;
-    for (var val in value) {
-      try {
-        //if field doesn't exist it throws a StateError
-        glucose = await val.get('blood glucose (mmol|L)');
-      } on StateError {
-        break;
+    String data;
+    if (bglist != null) {
+      for (int i = 0; i < bglist.length; i++) {
+        data = bglist[i];
+        glucose = double.parse(
+            data.split(',')[0]); //get the mg/dl recording of the user
+        glucoseList.add(FlSpot(xPos, glucose.toDouble()));
+        ++xPos;
       }
-      glucoseList.add(FlSpot(xPos++, glucose.toDouble()));
     }
   }
 
@@ -230,22 +221,18 @@ class _HomePageState extends State<HomePage> {
 
     this.heartRateList.clear(); //Cleared in case this is used to update data
 
-    final hrData = await this
-        .heartRateCollection
-        .orderBy('uploaded') // i.e. oldest to newest
-        .limitToLast(6) // Calls last 6 uploaded docs
-        .get();
-    final value = hrData.docs; // calls on the docs in the collection
+    var hrlist = await Datafunction(uid).getAmount(6, 'heartRate');
     double xPos = 1.0;
     int heartRate;
-    for (var val in value) {
-      try {
-        //if field doesn't exist it throws a StateError
-        heartRate = await val.get('heart rate');
-      } on StateError {
-        break;
+    String data;
+    if (hrlist != null) {
+      for (int i = 0; i < hrlist.length; i++) {
+        data = hrlist[i];
+        heartRate =
+            int.parse(data.split(',')[0]); //get the mg/dl recording of the user
+        heartRateList.add(FlSpot(xPos, heartRate.toDouble()));
+        ++xPos;
       }
-      heartRateList.add(FlSpot(xPos++, heartRate.toDouble()));
     }
   }
 
@@ -283,7 +270,10 @@ class _HomePageState extends State<HomePage> {
     return Container(
         child: FutureBuilder<void>(
             future: future(),
-            builder: (BuildContext context,AsyncSnapshot<void> snapshot,) {
+            builder: (
+              BuildContext context,
+              AsyncSnapshot<void> snapshot,
+            ) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return CircularProgressIndicator();
               } else {
@@ -298,7 +288,9 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: kSecondaryColour,
       drawer: Drawers(),
       appBar: AppBar(
-        actions: [ LogoutButton(),],
+        actions: [
+          LogoutButton(),
+        ],
         title: Text(this.greeting),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -307,12 +299,16 @@ class _HomePageState extends State<HomePage> {
         onPressed: () {
           Navigator.of(context).pushNamed('/dataInput');
         },
-        child: Icon(Icons.camera_alt_rounded,),
+        child: Icon(
+          Icons.camera_alt_rounded,
+        ),
       ),
       body: ListView(
         shrinkWrap: true,
         children: [
-          SizedBox(height: 10.0,),
+          SizedBox(
+            height: 10.0,
+          ),
           Padding(
             padding: EdgeInsets.only(left: 10.0),
             child: Text(
@@ -324,11 +320,15 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          SizedBox(height: 20.0,),
+          SizedBox(
+            height: 20.0,
+          ),
           graphFutureBuilder(future: fetchBPData, uponCompletion: extractBP),
           graphFutureBuilder(future: fetchBGData, uponCompletion: extractBG),
           graphFutureBuilder(future: fetchHRData, uponCompletion: extractHR),
-          SizedBox(height: 70.0,),
+          SizedBox(
+            height: 70.0,
+          ),
         ],
       ),
     );

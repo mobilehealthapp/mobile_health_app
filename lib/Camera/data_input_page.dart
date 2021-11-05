@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'input_constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'data_input_alert.dart';
-import 'data_transfer.dart';
+import '../Data/data_transfer.dart';
 import 'package:mobile_health_app/constants.dart';
 
 String dataType = '';
