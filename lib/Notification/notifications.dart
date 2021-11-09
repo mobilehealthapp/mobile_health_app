@@ -58,9 +58,8 @@ class NotificationApi {
         id,
         title,
         body,
-        _scheduleDaily(Time(4, 0,
-            0)), //4pm UTC (12pm est) reminder... tz.local does not find local timezone on emulator
-        //TODO: find a way to find user's timezone, location is not shared through the app
+        _scheduleDaily(Time(12, 00,
+            0)), //schedules a notification at 12:00pm in the user's timezone
         await _notificationDetails(),
         payload: payload,
         androidAllowWhileIdle: true,
@@ -70,7 +69,6 @@ class NotificationApi {
       );
 
   static tz.TZDateTime _scheduleDaily(Time time) {
-    print('Scheduling');
     final now = tz.TZDateTime.now(tz.local);
     final scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day,
         time.hour, time.minute, time.second);

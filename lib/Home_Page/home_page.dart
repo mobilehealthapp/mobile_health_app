@@ -77,7 +77,6 @@ class _HomePageState extends State<HomePage> {
     generateGreeting();
     fetchCurrentUser();
 
-    NotificationApi.init(initScheduled: true);
     listenNotifications();
     firstSession();
     hasDoctor();
@@ -143,6 +142,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future hasDoctor() async {
+    await NotificationApi.init(
+        initScheduled: true); //this was originally called in the initState
     QuerySnapshot snapshot = await patientDoctorsCollection.get();
     if (snapshot.size != 0) {
       return;
