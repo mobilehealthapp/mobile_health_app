@@ -112,7 +112,7 @@ class PatientSelectState extends State<PatientSelect> {
                     onChanged: (value) {
                       setState(() {
                         index = patientList.indexOf(value!);
-                        print(index);
+                        //print(index);
                         chosenPatient = value;
                       });
                     },

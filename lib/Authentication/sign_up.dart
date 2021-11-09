@@ -309,7 +309,8 @@ class _SignupPageState extends State<SignupPage> {
                           var user = result.user;
                           if (accountType == 'Patient account') {
                             //Checks user account type and sets user data in Firestore Database using functions defined in database_auth_services.dart
-                            await DatabaseAuth(uid: user!.uid).setPatientData(
+                            await DatabaseAuth(uid: user!.uid).initializeData();
+                            await DatabaseAuth(uid: user.uid).setPatientData(
                                 firstName, lastName, email, accountType);
                           } else if (accountType == 'Physician account') {
                             await DatabaseAuth(uid: user!.uid).setDoctorData(

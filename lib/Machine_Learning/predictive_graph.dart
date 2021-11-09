@@ -24,8 +24,10 @@ class PredictiveGraphState extends State<PredictiveGraph> {
   String name = "";
   String firstname = "";
 
-  CollectionReference patientBPCollection = patientDataCollection;
-  CollectionReference patientBGCollection = patientDataCollection;
+  DocumentReference patientBPCollection =
+      patientDataCollection.doc('initalize');
+  DocumentReference patientBGCollection =
+      patientDataCollection.doc('initalize'); //to be initalized in initState
 
   var bgdata = <BloodGlucose>[];
   var bgpredict = 4; //days that can be predicted into the future accurately -1
@@ -49,11 +51,15 @@ class PredictiveGraphState extends State<PredictiveGraph> {
 
   void initializeReferences() {
     //initialize BP and BG references
-    print(patientid + name);
-    patientBPCollection =
-        patientDataCollection.doc(patientid).collection('bloodPressure');
-    patientBGCollection =
-        patientDataCollection.doc(patientid).collection('bloodGlucose');
+    //print(patientid + name);
+    patientBPCollection = patientDataCollection
+        .doc(patientid)
+        .collection('bloodPressure')
+        .doc("Last 100 Recordings");
+    patientBGCollection = patientDataCollection
+        .doc(patientid)
+        .collection('bloodGlucose')
+        .doc("Last 100 Recordings");
     generateBGList();
     generateBPList();
   }
@@ -61,189 +67,187 @@ class PredictiveGraphState extends State<PredictiveGraph> {
   dayAssembler(num value) {
     //returns a string according to the day for the day axis labels, assumes 1x daily bg recording
     int val = value.toInt();
-    if (val < bgpredict) {
-      if (val == bgpredict - 1) {
-        return ('1 day ago');
+    if (val < bgpredict - 1) {
+      if (val == bgpredict - 2) {
+        return ('1 Recording ago');
       }
-      int day = bgpredict - val;
-      return ('$day days ago');
-    } else if (val == bgpredict) {
-      return ('Today');
+      int recording = bgpredict - 1 - val;
+      return ('$recording Recordings ago');
+    } else if (val == bgpredict - 1) {
+      return ('Latest Recording');
     } else {
-      if (val == bgpredict + 1) {
-        return ('1 day out');
+      if (val == bgpredict) {
+        return ('Next Recording');
       }
-      int day = val - bgpredict;
-      return ('$day days out');
+      int recording = val - bgpredict;
+      return ('$recording Recordings out');
     }
   }
 
-  void generateBGList() {
+  void generateBGList() async {
     int day = 0;
-    int placemarker;
-    int currentmarker = 1;
     final customTickFormatter =
         charts.BasicNumericTickFormatterSpec((num? value) {
       //give each tick on the x-axis a name from the dayAssembler function
       return dayAssembler(value!);
     });
-    patientBGCollection.get().then((docSnapshot) => {
-          //if the patient has bg readings, than take the last documents, based off of how many days can be accurrately predicted
-          if (docSnapshot.size == 0)
-            {
-              bgchart = Text('No Blood Glucose Data'),
-            },
-          if (docSnapshot.size < bgpredict && docSnapshot.size > 0)
-            {
-              bgpredict = docSnapshot.size,
-            },
-          if (docSnapshot.size >= bgpredict)
-            {
-              placemarker = docSnapshot.size - bgpredict,
-              docSnapshot.docs.forEach((DocumentSnapshot doc) {
-                if (currentmarker >= placemarker) {
-                  //if this snapshot is in the latest measurements that we want to show
-                  num bg = doc.get(
-                      "blood glucose (mmol|L)"); //get the persons blood glucose for that day
-                  bgdata.add(new BloodGlucose(bg,
-                      day)); //create a bloodGlucose object for that day and append it to the bgdata list
-                  day++;
-                }
-                currentmarker++;
-              }),
-              //now add the 5 'predicted values' to bgdata before adding bgata to bg list
-              bglist.add(charts.Series<BloodGlucose, int>(
-                //add bgdata list to bglist (bglist is the chart list)
-                id: 'blood glucose',
-                colorFn: (BloodGlucose bloodglucose, __) {
-                  //make the predicted values red
-                  if (bloodglucose.day > bgpredict) {
-                    return charts.MaterialPalette.red.shadeDefault;
-                  } else {
-                    return charts.MaterialPalette.blue.shadeDefault;
-                  }
-                },
-                domainFn: (BloodGlucose bloodglucose, _) => bloodglucose.day,
-                measureFn: (BloodGlucose bloodglucose, _) => bloodglucose.bg,
-                data: bgdata,
-              )),
-              bgchart = charts.LineChart(bglist,
-                  defaultRenderer: new charts.LineRendererConfig(
-                      includePoints: true, stacked: true),
-                  animate: false,
-                  animationDuration: Duration(seconds: 2),
-                  domainAxis: charts.NumericAxisSpec(
-                    renderSpec: charts.SmallTickRendererSpec(
-                        labelRotation:
-                            50), //rotates the labels on the x-axis so that they dont overlap eachother
-                    tickProviderSpec: charts.BasicNumericTickProviderSpec(
-                        desiredTickCount: bgpredict * 2 +
-                            2), //make x-axis have same amount of ticks for recorded and predicted days
-                    tickFormatterSpec: customTickFormatter,
-                  ),
-                  behaviors: [
-                    new charts.ChartTitle('Blood Glucose (mmol/L)',
-                        behaviorPosition: charts.BehaviorPosition.start,
-                        titleOutsideJustification:
-                            charts.OutsideJustification.middleDrawArea),
-                  ]),
-            },
-          setState(() {
-            //update bg chart when this function is called
-          })
-        });
+    DocumentSnapshot docSnapshot = await patientBGCollection.get();
+    if (docSnapshot.exists) {
+      int docsize = docSnapshot.get("Data Entries").toInt();
+      //if the patient has bg readings, than take the last documents, based off of how many days can be accurately predicted
+      if (docsize < bgpredict && docsize > 0) {
+        bgpredict = docsize;
+      }
+      if (docsize >= bgpredict) {
+        for (int i = docsize - (bgpredict - 1); i < docsize + 1; i++) {
+          //get last measurements of the last 100
+          String bloodglucose;
+          if (i < 10) {
+            bloodglucose = docSnapshot.get("Data Submission 0$i");
+          } else {
+            bloodglucose = docSnapshot.get(
+                "Data Submission $i"); //get the persons blood glucose for that day
+          } //get the persons blood glucose for that day
+          num bg = num.parse(
+              bloodglucose.split(',')[0]); //get the mg/dl bg recording
+          bgdata.add(new BloodGlucose(bg,
+              day)); //create a bloodGlucose object for that day and append it to the bgdata list
+          day++;
+        }
+        //now add the 5 'predicted values' to bgdata before adding bgata to bg list
+        bglist.add(charts.Series<BloodGlucose, int>(
+          //add bgdata list to bglist (bglist is the chart list)
+          id: 'blood glucose',
+          colorFn: (BloodGlucose bloodglucose, __) {
+            //make the predicted values red
+            if (bloodglucose.day > bgpredict) {
+              return charts.MaterialPalette.red.shadeDefault;
+            } else {
+              return charts.MaterialPalette.blue.shadeDefault;
+            }
+          },
+          domainFn: (BloodGlucose bloodglucose, _) => bloodglucose.day,
+          measureFn: (BloodGlucose bloodglucose, _) => bloodglucose.bg,
+          data: bgdata,
+        ));
+        bgchart = charts.LineChart(bglist,
+            defaultRenderer: new charts.LineRendererConfig(
+                includePoints: true, stacked: true),
+            animate: false,
+            animationDuration: Duration(seconds: 2),
+            domainAxis: charts.NumericAxisSpec(
+              renderSpec: charts.SmallTickRendererSpec(
+                  labelRotation:
+                      50), //rotates the labels on the x-axis so that they dont overlap eachother
+              tickProviderSpec: charts.BasicNumericTickProviderSpec(
+                  desiredTickCount: bgpredict *
+                      2), //make x-axis have same amount of ticks for recorded and predicted days
+              tickFormatterSpec: customTickFormatter,
+            ),
+            behaviors: [
+              new charts.ChartTitle('Blood Glucose (mmol/L)',
+                  behaviorPosition: charts.BehaviorPosition.start,
+                  titleOutsideJustification:
+                      charts.OutsideJustification.middleDrawArea),
+            ]);
+      }
+    } else {
+      bgchart = Text('No Blood Glucose Data');
+    }
+    setState(() {
+      //update bg chart when this function is called
+    });
   }
 
-  void generateBPList() {
+  void generateBPList() async {
     int day = 0;
-    int placemarker;
-    int currentmarker = 1;
     final customTickFormatter =
         charts.BasicNumericTickFormatterSpec((num? value) {
       //give each tick on the x-axis a name from the dayAssembler function
       return dayAssembler(value!);
     });
-    patientBPCollection.get().then((docSnapshot) => {
-          //if the patient has bg readings, than take the last documents, based off of how many days can be accurrately predicted
-          if (docSnapshot.size == 0)
-            {
-              bpchart = Text('No Blood Pressure Data'),
-            },
-          if (docSnapshot.size < bppredict && docSnapshot.size > 0)
-            {
-              bppredict = docSnapshot.size,
-            },
-          if (docSnapshot.size >= bppredict)
-            {
-              placemarker = docSnapshot.size - bppredict,
-              docSnapshot.docs.forEach((DocumentSnapshot doc) {
-                if (currentmarker >= placemarker) {
-                  //if this snapshot is in the latest measurements that we want to show
-                  num dia = doc.get(
-                      "diastolic"); //get the persons blood dia/sys for that day
-                  num sys = doc.get("systolic");
-                  bpdata.add(new BloodPressure(dia, sys,
-                      day)); //create a BloodPressure object for that day and append it to the bpdata list
-                  day++;
-                }
-                currentmarker++;
-              }),
-              //now add the 5 'predicted values' to bpdata before adding bpdata to bplist
-              bplist.add(charts.Series<BloodPressure, int>(
-                //add bpdata list to bplist (bplist is the chart list)
-                id: 'diastolic',
-                colorFn: (BloodPressure bloodpressure, __) {
-                  //make the predicted values red
-                  if (bloodpressure.day > bppredict) {
-                    return charts.MaterialPalette.red.shadeDefault;
-                  } else {
-                    return charts.MaterialPalette.green.shadeDefault;
-                  }
-                },
-                domainFn: (BloodPressure bloodpressure, _) => bloodpressure.day,
-                measureFn: (BloodPressure bloodpressure, _) =>
-                    bloodpressure.dia, //do one line for diastolic
-                data: bpdata,
-              )),
-              bplist.add(charts.Series<BloodPressure, int>(
-                id: 'systolic',
-                colorFn: (BloodPressure bloodpressure, __) {
-                  if (bloodpressure.day > bppredict) {
-                    return charts.MaterialPalette.red.shadeDefault;
-                  } else {
-                    return charts.MaterialPalette.blue.shadeDefault;
-                  }
-                },
-                domainFn: (BloodPressure bloodpressure, _) => bloodpressure.day,
-                measureFn: (BloodPressure bloodpressure, _) =>
-                    bloodpressure.sys, //do one line for systolic
-                data: bpdata,
-              )),
-              bpchart = charts.LineChart(bplist,
-                  defaultRenderer: new charts.LineRendererConfig(
-                      includePoints: true, stacked: true),
-                  animate: false,
-                  animationDuration: Duration(seconds: 2),
-                  domainAxis: charts.NumericAxisSpec(
-                    renderSpec: charts.SmallTickRendererSpec(
-                        labelRotation:
-                            50), //rotates the labels on the x-axis so that they dont overlap eachother
-                    tickProviderSpec: charts.BasicNumericTickProviderSpec(
-                        desiredTickCount: bppredict * 2 +
-                            2), //make x-axis have same amount of ticks for recorded and predicted days
-                    tickFormatterSpec: customTickFormatter,
-                  ),
-                  behaviors: [
-                    new charts.ChartTitle('Systolic/Diastolic (mmHg)',
-                        behaviorPosition: charts.BehaviorPosition.start,
-                        titleOutsideJustification:
-                            charts.OutsideJustification.middleDrawArea),
-                  ]),
-            },
-          setState(() {
-            //update bp chart when this function is called
-          }),
-        });
+    DocumentSnapshot docSnapshot = await patientBPCollection.get();
+    if (docSnapshot.exists) {
+      int docsize = docSnapshot.get('Data Entries').toInt();
+      //if the patient has bg readings, than take the last documents, based off of how many days can be accurrately predicted
+      if (docsize < bppredict && docsize > 0) {
+        bppredict = docsize;
+      }
+      if (docsize >= bppredict) {
+        for (int i = docsize - (bppredict - 1); i < docsize + 1; i++) {
+          //get last measurements of the last 100
+          String bloodpressure;
+          if (i < 10) {
+            bloodpressure = docSnapshot.get("Data Submission 0$i");
+          } else {
+            bloodpressure = docSnapshot.get(
+                "Data Submission $i"); //get the persons blood glucose for that day
+          }
+          num dia = num.parse(
+              bloodpressure.split(',')[1]); //get the mg/dl bg recording
+          num sys = num.parse(bloodpressure.split(',')[0]) - dia;
+          bpdata.add(new BloodPressure(dia, sys,
+              day)); //create a bloodGlucose object for that day and append it to the bgdata list
+          day++;
+        }
+        //now add the 5 'predicted values' to bpdata before adding bpdata to bplist
+        bplist.add(charts.Series<BloodPressure, int>(
+          //add bpdata list to bplist (bplist is the chart list)
+          id: 'diastolic',
+          colorFn: (BloodPressure bloodpressure, __) {
+            //make the predicted values red
+            if (bloodpressure.day > bppredict) {
+              return charts.MaterialPalette.red.shadeDefault;
+            } else {
+              return charts.MaterialPalette.green.shadeDefault;
+            }
+          },
+          domainFn: (BloodPressure bloodpressure, _) => bloodpressure.day,
+          measureFn: (BloodPressure bloodpressure, _) =>
+              bloodpressure.dia, //do one line for diastolic
+          data: bpdata,
+        ));
+        bplist.add(charts.Series<BloodPressure, int>(
+          id: 'systolic',
+          colorFn: (BloodPressure bloodpressure, __) {
+            if (bloodpressure.day > bppredict) {
+              return charts.MaterialPalette.red.shadeDefault;
+            } else {
+              return charts.MaterialPalette.blue.shadeDefault;
+            }
+          },
+          domainFn: (BloodPressure bloodpressure, _) => bloodpressure.day,
+          measureFn: (BloodPressure bloodpressure, _) =>
+              bloodpressure.sys, //do one line for systolic
+          data: bpdata,
+        ));
+        bpchart = charts.LineChart(bplist,
+            defaultRenderer: new charts.LineRendererConfig(
+                includePoints: true, stacked: true),
+            animate: false,
+            animationDuration: Duration(seconds: 2),
+            domainAxis: charts.NumericAxisSpec(
+              renderSpec: charts.SmallTickRendererSpec(
+                  labelRotation:
+                      50), //rotates the labels on the x-axis so that they dont overlap eachother
+              tickProviderSpec: charts.BasicNumericTickProviderSpec(
+                  desiredTickCount: bppredict *
+                      2), //make x-axis have same amount of ticks for recorded and predicted days
+              tickFormatterSpec: customTickFormatter,
+            ),
+            behaviors: [
+              new charts.ChartTitle('Systolic/Diastolic (mmHg)',
+                  behaviorPosition: charts.BehaviorPosition.start,
+                  titleOutsideJustification:
+                      charts.OutsideJustification.middleDrawArea),
+            ]);
+      }
+    } else {
+      bpchart = Text('No Blood Pressure Data');
+    }
+    setState(() {
+      //update bg chart when this function is called
+    });
   }
 
   @override

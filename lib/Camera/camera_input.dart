@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:mobile_health_app/Camera/data_input_page.dart';
-import 'data_transfer.dart';
+import '../Data/data_transfer.dart';
 import 'package:mobile_health_app/main.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
