@@ -30,11 +30,11 @@ class PredictiveGraphState extends State<PredictiveGraph> {
       patientDataCollection.doc('initalize'); //to be initalized in initState
 
   var bgdata = <BloodGlucose>[];
-  var bgpredict = 4; //days that can be predicted into the future accurately -1
+  var bgpredict = 5; //days that can be predicted into the future accurately -1
   List<charts.Series<BloodGlucose, int>> bglist = [];
 
   var bpdata = <BloodPressure>[];
-  var bppredict = 4; //days that can be predicted into the future accurately -1
+  var bppredict = 5; //days that can be predicted into the future accurately -1
   List<charts.Series<BloodPressure, int>> bplist = [];
 
   Widget bgchart = Text("Loading...");
@@ -96,7 +96,8 @@ class PredictiveGraphState extends State<PredictiveGraph> {
       int docsize = docSnapshot.get("Data Entries").toInt();
       //if the patient has bg readings, than take the last documents, based off of how many days can be accurately predicted
       if (docsize < bgpredict && docsize > 0) {
-        bgpredict = docsize;
+        bgchart =
+            Text('Patients needs more blood glucose values to predict data');
       }
       if (docsize >= bgpredict) {
         for (int i = docsize - (bgpredict - 1); i < docsize + 1; i++) {
@@ -171,7 +172,8 @@ class PredictiveGraphState extends State<PredictiveGraph> {
       int docsize = docSnapshot.get('Data Entries').toInt();
       //if the patient has bg readings, than take the last documents, based off of how many days can be accurrately predicted
       if (docsize < bppredict && docsize > 0) {
-        bppredict = docsize;
+        bpchart =
+            Text('Patients needs more blood pressure values to predict data');
       }
       if (docsize >= bppredict) {
         for (int i = docsize - (bppredict - 1); i < docsize + 1; i++) {
@@ -287,7 +289,7 @@ class PredictiveGraphState extends State<PredictiveGraph> {
                           'Measured(blue) and Predicted(red) Blood Glucose Levels',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontSize: 24.0, fontWeight: FontWeight.bold),
+                              fontSize: 22.0, fontWeight: FontWeight.bold),
                         ),
                         Expanded(child: bgchart),
                       ],

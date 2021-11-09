@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'drawer_entries.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Drawers extends StatelessWidget {
   ///Drawers creates a Drawer from a list of [DrawerEntry]'s, that when tapped push
@@ -57,8 +58,10 @@ class PhysicianDrawers extends Drawers {
   ///Hint!! Don't forget to specify where your path points.
   ///Do that in the routes map in main.dart
   final List<DrawerEntry> drawerEntries = [
-    DrawerEntry('PhysHome', '/physHome', Icons.home),
+    DrawerEntry('Home', '/physHome', Icons.home),
     DrawerEntry('My Patients', '/physHome', Icons.perm_identity),
+    DrawerEntry(
+        'Patient Data', '/InteractiveGraph', FontAwesomeIcons.idCardAlt),
     DrawerEntry('Settings', '/drSettings', Icons.settings),
     LogoutEntry(),
     DrawerEntry('Patient Side', '/home', Icons.logout),

@@ -18,7 +18,7 @@ class PatientSelectState extends State<PatientSelect> {
   bool loaded =
       false; //loaded becomes true when the doctorPatients collection has been iterate through
   bool haspatients = true;
-  String? chosenPatient; //patient chosen in dropdown bar
+  String? chosenpatient; //patient chosen in dropdown bar
   int index = -1; //marks what index the current patient is in the list
   var patientList = ['']; //list of patient names
   var uidList = []; //list of uids
@@ -107,13 +107,12 @@ class PatientSelectState extends State<PatientSelect> {
                     icon: Icon(Icons.arrow_drop_down),
                     iconSize: 36,
                     isExpanded: true,
-                    value: chosenPatient,
+                    value: chosenpatient,
                     items: patientList.map(buildItem).toList(),
                     onChanged: (value) {
                       setState(() {
                         index = patientList.indexOf(value!);
-                        //print(index);
-                        chosenPatient = value;
+                        chosenpatient = value;
                       });
                     },
                   ),

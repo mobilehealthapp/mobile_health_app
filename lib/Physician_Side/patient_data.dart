@@ -295,11 +295,11 @@ class _PatientDataState extends State<PatientData> {
 
   @override
   void initState() {
+    super.initState();
     datafunc = Datafunction(widget.patientUID);
     bgGet();
     hrGet();
     sysGet();
-    super.initState();
   }
 
   @override
