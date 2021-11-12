@@ -48,16 +48,16 @@ class Datafunction {
     return year + month + day;
   }
 
-  int getYear(String recording) {
-    return int.parse(recording.split('-')[1]);
+  double getYear(String recording) {
+    return double.parse(recording.split('-')[1]);
   }
 
-  int getMonth(String recording) {
-    return int.parse(recording.split('-')[2]);
+  double getMonth(String recording) {
+    return double.parse(recording.split('-')[2]);
   }
 
-  int getDay(String recording) {
-    return int.parse(recording.split('-')[3].substring(0, 2));
+  double getDay(String recording) {
+    return double.parse(recording.split('-')[3].substring(0, 2));
   }
 
   double getTime(String recording) {
@@ -88,51 +88,91 @@ class Datafunction {
             99; //99 recordings for each hundred, and add the amount in the last 100 recordings
   }
 
-  Future<List?> getFromDates(
-      String date1, String date2, String subcollection) async {
-    //returns a list of all values between two specific dates, average recordings of every day is inserted into the list
-    double startdate = getDate(date1);
-    double enddate = getDate(
-        date2); //enddate is going to be a lower number than start date as we are looking into the past
-    var list = <String>[];
+  Future<List?> getFromToday(double startdate, String subcollection) async {
+    //returns a list of all values between the specified date and today
+    // //for dates, the higher the date the more recent it is
     CollectionReference subcol = patientData.doc(uid).collection(subcollection);
     DocumentSnapshot snap = await subcol.doc('Last 100 Recordings').get();
+    /**
+     * do if statements for each document for if contains start date && enddate
+     * or startdate or enddate or neither..
+     */
     if (snap.exists) {
       int size = snap.get('Data Entries').toInt();
       double oldestdate = getDate(snap.get('Oldest Date'));
-      double youngestdate;
-      if (size > 98) {
-        youngestdate = getDate(snap.get('Most Recent Date'));
-      }
-      if (oldestdate < enddate) {
+      if (oldestdate < startdate) {
         //if the last 100 recordings covers the time period
-        for (int i = 1; i < size + 1; i++) {
-          int day = getDay(snap.get('Data Submission 0$i'));
-          int daycheck = i + 1;
-          dayAverage(snap, day, daycheck, subcollection);
+        for (int i = size; i > 1; i--) {
+          double day;
+          String measurement;
           if (i < 10) {
-            list.add(snap.get('Data Submission 0$i'));
+            measurement = snap.get('Data Submission 0$i');
           } else {
-            list.add(snap.get('Data Submission $i'));
+            measurement = snap.get('Data Submission $i');
+          }
+          day = getDay(measurement);
+          if (day < startdate) {
+            return await getAmount(size - i + 1,
+                subcollection); //return all dates that were after the specified date
           }
         }
-      } else if (oldestdate > enddate) {
+      } else {
         //if the last 100 recordings' oldest date is more recent than the enddate
-
+        DocumentSnapshot collectionsnap = await patientData.doc(uid).get();
+        if (collectionsnap.exists) {
+          num hundreds =
+              collectionsnap.get("$subcollection Recordings (hundreds)");
+          bool dateacquired = false;
+          int hundredcount = 0;
+          int lasthundredamount = 0;
+          while (!dateacquired) {
+            if (hundreds > 0) {
+              num bottom = (hundreds - 1) * 100;
+              num top = hundreds * 100;
+              String document =
+                  bottom.toString() + "~" + top.toString() + " Recordings";
+              DocumentSnapshot hundredsnap = await subcol.doc(document).get();
+              double oldestdate = hundredsnap.get('Oldest Date');
+              if (oldestdate < startdate) {
+                //if the date is in this set of a hundred measurements count the amount of measurements that are after this date
+                for (int i = 99; i > 1; i--) {
+                  double day;
+                  String measurement;
+                  if (i < 10) {
+                    measurement = snap.get('Data Submission 0$i');
+                  } else {
+                    measurement = snap.get('Data Submission $i');
+                  }
+                  day = getDay(measurement);
+                  if (day < startdate) {
+                    lasthundredamount = 99 -
+                        i; //return all dates that were after the specified date
+                    return await getAmount(
+                        size + hundredcount * 99 + lasthundredamount,
+                        subcollection);
+                  }
+                }
+              } else {
+                //if this hundred values doesn't have the date check the next hundred
+                if (hundreds - 1 > 0) {
+                  hundredcount++;
+                  hundreds--;
+                } else {
+                  //if there is no next hundred return the list
+                  return await getAmount(
+                      size + hundredcount * 99, subcollection);
+                }
+              }
+            } else {
+              return await getAmount(size,
+                  subcollection); //return the last 100 recordings if there are no hundreds stored
+            }
+          }
+        }
       }
     } else {
       return null;
     }
-  }
-
-  String dayAverage(
-      DocumentSnapshot snap, int day, int daycheck, String subcollection) {
-    //checks if the date has multiple recordings and returns an average of those recordings for that day
-    while (getDay(snap.get('Data Submission 0$daycheck')) == day) {
-      //get all values of the same day and average them out so that we have a maximum of one measurement per day
-      return '';
-    }
-    return '';
   }
 
   Future<List?> getAmount(int amount, String subcollection) async {
@@ -157,14 +197,15 @@ class Datafunction {
         return list;
       } else {
         var listtoadd = await getAmountHundreds(remainder,
-            subcollection); //create a list to add the remaining recordings
+            subcollection); //create a list to add the remainder recordings
         if (listtoadd != null) {
           for (int i = 0; i < listtoadd.length; i++) {
-            //add the remaining recordings to the list
+            //add the remainder recordings to the list
             list.add(listtoadd[i]);
           }
         }
         for (int i = 1; i < size + 1; i++) {
+          //add the recordings from the last 100 recordings
           if (i < 10) {
             list.add(snap.get('Data Submission 0$i'));
           } else {
@@ -181,29 +222,63 @@ class Datafunction {
 
   Future<List?> getAmountHundreds(int amount, String subcollection) async {
     //function designed to get a certain amount of recordings from a collection that has no last 100 recordings in order from oldest to newest, should only be called through getAmount
+    //getAmountHundreds is currently not recursive so an amount no greater than what is covered in last 100 recordings +99 should be called
+    int hundredsdepth = amount ~/ 99;
     var list = <String>[];
     CollectionReference subcol = patientData.doc(uid).collection(subcollection);
     DocumentSnapshot collectionsnap = await patientData.doc(uid).get();
     if (collectionsnap.exists) {
-      num hundreds = collectionsnap.get("$subcollection Recordings (hundreds)");
+      int hundreds =
+          collectionsnap.get("$subcollection Recordings (hundreds)").toInt();
       if (hundreds > 0) {
-        //if the user has atleast 100 recordings stored, go get their most recent hundred documents
-        num bottom = (hundreds - 1) * 100;
-        num top = hundreds * 100;
-        String document =
-            bottom.toString() + "~" + top.toString() + " Recordings";
-        DocumentSnapshot hundredsnap = await subcol.doc(document).get();
-        int size = hundredsnap
-            .get('Data Entries')
-            .toInt(); //just incase the '100' submissions are less than 100 recordings take the size
-        for (int i = size - amount + 1; i < size + 1; i++) {
-          if (i < 10) {
-            list.add(hundredsnap.get('Data Submission 0$i'));
-          } else {
-            list.add(hundredsnap.get('Data Submission $i'));
+        if (hundredsdepth >= hundreds) {
+          for (int j = 1; j < hundreds + 1; j++) {
+            int hundred =
+                j; //if the amount is greater than total amount of insertions for the user grab all of their hundreds measurements
+            num bottom = (hundred - 1) * 100;
+            num top = hundred * 100;
+            String document =
+                bottom.toString() + "~" + top.toString() + " Recordings";
+            DocumentSnapshot hundredsnap = await subcol.doc(document).get();
+            for (int i = 1; i < 100; i++) {
+              if (i < 10) {
+                list.add(hundredsnap.get('Data Submission 0$i'));
+              } else {
+                list.add(hundredsnap.get('Data Submission $i'));
+              }
+            }
           }
+          return list;
+        } else {
+          int lasthundredamount = amount %
+              99; //how many entries need to be grabbed from the last hundreds doc
+          int lasthundred = hundreds - hundredsdepth;
+          for (int j = lasthundred; j < hundreds + 1; j++) {
+            num bottom = (hundreds - 1) * 100;
+            num top = hundreds * 100;
+            String document =
+                bottom.toString() + "~" + top.toString() + " Recordings";
+            DocumentSnapshot hundredsnap = await subcol.doc(document).get();
+            if (j == lasthundred) {
+              for (int i = 100 - lasthundredamount; i < 100; i++) {
+                if (i < 10) {
+                  list.add(hundredsnap.get('Data Submission 0$i'));
+                } else {
+                  list.add(hundredsnap.get('Data Submission $i'));
+                }
+              }
+            } else {
+              for (int i = 1; i < 100; i++) {
+                if (i < 10) {
+                  list.add(hundredsnap.get('Data Submission 0$i'));
+                } else {
+                  list.add(hundredsnap.get('Data Submission $i'));
+                }
+              }
+            }
+          }
+          return list;
         }
-        return list;
       } else {
         //if they have less than 100 recordings and no recent recordings return null
         return null;

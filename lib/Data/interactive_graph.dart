@@ -56,6 +56,18 @@ class InteractiveGraphState extends State<InteractiveGraph> {
 
   String dateunit = 'Days';
   var dateunitList = ['Days', 'Weeks', 'Months'];
+  var dateamountList = [
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10',
+  ];
 
   final CollectionReference doctorPatientsCollection = FirebaseFirestore
       .instance
@@ -66,6 +78,9 @@ class InteractiveGraphState extends State<InteractiveGraph> {
   String? subcol; //subcollection name
   String? patientuid; //patient uid
   var subcollection; //subcollection reference
+  var graphlist;
+
+  //clicking on points displays the time, dont average daily values
 
   initState() {
     super.initState();
@@ -123,6 +138,67 @@ class InteractiveGraphState extends State<InteractiveGraph> {
           .collection(
               subcol!); //makes me null check this even though I null checked it already;
       inserttab = true;
+    }
+  }
+
+  Future createList(int amount, String? datetype) async {
+    Datafunction datafunc = Datafunction(patientuid!);
+    var list;
+    if (datetype == null) {
+      list = await datafunc.getAmount(amount, subcollection);
+      graphlist = list;
+    } else {
+      double startdate =
+          double.parse(getStartDate(amount, datetype).toStringAsFixed(4));
+      print(startdate);
+      list = await datafunc.getFromToday(startdate, subcollection);
+      graphlist = list;
+    }
+  }
+
+  double getStartDate(int amount, String datetype) {
+    //TODO: person can't ask for more than 12 months or errors can happen...
+    Datafunction datafunc = Datafunction('');
+    //String today = '-' + DateTime.now().toUtc().toString();
+    String today = '-2021-05-11 24';
+    double date = datafunc.getDate(today);
+    double day = datafunc.getDay(today) * 0.0001;
+    double month = datafunc.getMonth(today) * 0.01;
+    double subtract;
+    if (datetype == "Days") {
+      //find amount we are subtracting by
+      subtract = 0.0001 * amount;
+    } else if (datetype == "Weeks") {
+      subtract = 0.0001 * 7 * amount;
+    } else {
+      subtract = 0.01 * amount;
+    }
+    if (day > subtract) {
+      //if the subtracted amount of days is less than the days in this month
+      return date - subtract;
+    } else {
+      if (subtract % 0.01 != 0 && subtract < 0.01) {
+        //if the person is subtracting days/weeks and those days/weeks are not covered in this month
+        int daysremaining = (subtract * 10000 % 30).toInt();
+        int months = subtract *
+            10000 ~/
+            30; //find how many full months can be covered by the remaining subtract amount after subtracting days+1
+        if (daysremaining < day) {
+          date -= daysremaining * 0.0001;
+        } else {
+          date += (30 - daysremaining) * 0.0001;
+          months++;
+        }
+        subtract = months * 0.01;
+      }
+      //if the person is trying to subtract months
+      if (month > subtract) {
+        return date -
+            subtract; //if the subtract amount of months is less than the months remaining in this year
+      } else {
+        print(month);
+        return date - 0.88 - subtract;
+      }
     }
   }
 
@@ -286,7 +362,7 @@ class InteractiveGraphState extends State<InteractiveGraph> {
               padding: EdgeInsets.symmetric(horizontal: 10),
               alignment: Alignment.center,
               child: Container(
-                width: 40,
+                width: 50,
                 height: 30,
                 padding: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
                 decoration: BoxDecoration(
@@ -299,7 +375,7 @@ class InteractiveGraphState extends State<InteractiveGraph> {
                     iconSize: 15,
                     isExpanded: true,
                     value: amount.toString(),
-                    items: amountList.map(buildItem).toList(),
+                    items: dateamountList.map(buildItem).toList(),
                     onChanged: (value) {
                       setState(() {
                         amount = int.parse(value!);
@@ -335,6 +411,14 @@ class InteractiveGraphState extends State<InteractiveGraph> {
                 ),
               ),
             ),
+            TextButton(
+                style: TextButton.styleFrom(backgroundColor: Colors.green),
+                child: Text('Refresh',
+                    style: TextStyle(fontSize: 16, color: Colors.white)),
+                onPressed: () {
+                  createList(amount, dateunit);
+                  //navigate to predicted graph page with data
+                }),
           ],
         );
       } else {
@@ -347,7 +431,7 @@ class InteractiveGraphState extends State<InteractiveGraph> {
               padding: EdgeInsets.symmetric(horizontal: 10),
               alignment: Alignment.center,
               child: Container(
-                width: 40,
+                width: 50,
                 height: 30,
                 padding: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
                 decoration: BoxDecoration(
@@ -372,6 +456,14 @@ class InteractiveGraphState extends State<InteractiveGraph> {
             ),
             Text('Measurements',
                 style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+            TextButton(
+                style: TextButton.styleFrom(backgroundColor: Colors.green),
+                child: Text('Refresh',
+                    style: TextStyle(fontSize: 16, color: Colors.white)),
+                onPressed: () {
+                  createList(amount, null);
+                  //navigate to predicted graph page with data
+                }),
           ],
         );
       }
