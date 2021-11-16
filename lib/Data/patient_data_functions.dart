@@ -93,26 +93,25 @@ class Datafunction {
     // //for dates, the higher the date the more recent it is
     CollectionReference subcol = patientData.doc(uid).collection(subcollection);
     DocumentSnapshot snap = await subcol.doc('Last 100 Recordings').get();
-    /**
-     * do if statements for each document for if contains start date && enddate
-     * or startdate or enddate or neither..
-     */
     if (snap.exists) {
       int size = snap.get('Data Entries').toInt();
-      double oldestdate = getDate(snap.get('Oldest Date'));
+      double oldestdate = getDate(' -' + snap.get('Oldest Date'));
       if (oldestdate < startdate) {
+        print('yoyo!');
+        print(startdate);
         //if the last 100 recordings covers the time period
         for (int i = size; i > 1; i--) {
-          double day;
+          double date;
           String measurement;
           if (i < 10) {
             measurement = snap.get('Data Submission 0$i');
           } else {
             measurement = snap.get('Data Submission $i');
           }
-          day = getDay(measurement);
-          if (day < startdate) {
-            return await getAmount(size - i + 1,
+          date = getDate(measurement);
+          if (date < startdate) {
+            //this returns the first date if the first date is older then the startdate...
+            return await getAmount(size - i,
                 subcollection); //return all dates that were after the specified date
           }
         }
@@ -132,19 +131,19 @@ class Datafunction {
               String document =
                   bottom.toString() + "~" + top.toString() + " Recordings";
               DocumentSnapshot hundredsnap = await subcol.doc(document).get();
-              double oldestdate = hundredsnap.get('Oldest Date');
+              double oldestdate = getDate('-' + hundredsnap.get('Oldest Date'));
               if (oldestdate < startdate) {
                 //if the date is in this set of a hundred measurements count the amount of measurements that are after this date
                 for (int i = 99; i > 1; i--) {
-                  double day;
+                  double date;
                   String measurement;
                   if (i < 10) {
                     measurement = snap.get('Data Submission 0$i');
                   } else {
                     measurement = snap.get('Data Submission $i');
                   }
-                  day = getDay(measurement);
-                  if (day < startdate) {
+                  date = getDate(measurement);
+                  if (date < startdate) {
                     lasthundredamount = 99 -
                         i; //return all dates that were after the specified date
                     return await getAmount(

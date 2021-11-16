@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_health_app/Drawers/drawers.dart';
 import 'package:mobile_health_app/Machine_Learning/predictive_graph.dart';
 import 'package:mobile_health_app/Data/patient_data_functions.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 User? user = _auth.currentUser;
@@ -145,22 +146,32 @@ class InteractiveGraphState extends State<InteractiveGraph> {
     Datafunction datafunc = Datafunction(patientuid!);
     var list;
     if (datetype == null) {
-      list = await datafunc.getAmount(amount, subcollection);
+      list = await datafunc.getAmount(amount, subcol!);
       graphlist = list;
+      if (graphlist != null) {
+        for (int i = 0; i < graphlist!.length; i++) {
+          print(graphlist[i]);
+        }
+      }
     } else {
       double startdate =
           double.parse(getStartDate(amount, datetype).toStringAsFixed(4));
       print(startdate);
-      list = await datafunc.getFromToday(startdate, subcollection);
+      print(subcol);
+      list = await datafunc.getFromToday(startdate, subcol!);
       graphlist = list;
+      if (graphlist != null) {
+        for (int i = 0; i < graphlist!.length; i++) {
+          print(graphlist[i]);
+        }
+      }
     }
   }
 
   double getStartDate(int amount, String datetype) {
     //TODO: person can't ask for more than 12 months or errors can happen...
     Datafunction datafunc = Datafunction('');
-    //String today = '-' + DateTime.now().toUtc().toString();
-    String today = '-2021-05-11 24';
+    String today = '-' + DateTime.now().toUtc().toString();
     double date = datafunc.getDate(today);
     double day = datafunc.getDay(today) * 0.0001;
     double month = datafunc.getMonth(today) * 0.01;
@@ -411,14 +422,27 @@ class InteractiveGraphState extends State<InteractiveGraph> {
                 ),
               ),
             ),
-            TextButton(
-                style: TextButton.styleFrom(backgroundColor: Colors.green),
-                child: Text('Refresh',
-                    style: TextStyle(fontSize: 16, color: Colors.white)),
-                onPressed: () {
-                  createList(amount, dateunit);
-                  //navigate to predicted graph page with data
-                }),
+            Container(
+              padding: EdgeInsets.only(left: 25),
+              child: Container(
+                width: 45,
+                height: 40,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.black, width: 3),
+                ),
+                child: TextButton(
+                    style: TextButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        alignment: Alignment(0.0, 0.0)),
+                    child: Icon(FontAwesomeIcons.redoAlt,
+                        color: Colors.white, size: 20),
+                    onPressed: () {
+                      createList(amount, dateunit);
+                      //navigate to predicted graph page with data
+                    }),
+              ),
+            ),
           ],
         );
       } else {
@@ -456,14 +480,27 @@ class InteractiveGraphState extends State<InteractiveGraph> {
             ),
             Text('Measurements',
                 style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-            TextButton(
-                style: TextButton.styleFrom(backgroundColor: Colors.green),
-                child: Text('Refresh',
-                    style: TextStyle(fontSize: 16, color: Colors.white)),
-                onPressed: () {
-                  createList(amount, null);
-                  //navigate to predicted graph page with data
-                }),
+            Container(
+              padding: EdgeInsets.only(left: 15),
+              child: Container(
+                width: 45,
+                height: 40,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.black, width: 3),
+                ),
+                child: TextButton(
+                    style: TextButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        alignment: Alignment(0.0, 0.0)),
+                    child: Icon(FontAwesomeIcons.redoAlt,
+                        color: Colors.white, size: 20),
+                    onPressed: () {
+                      createList(amount, null);
+                      //navigate to predicted graph page with data
+                    }),
+              ),
+            ),
           ],
         );
       }
