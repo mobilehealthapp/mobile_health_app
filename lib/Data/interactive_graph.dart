@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_health_app/Drawers/drawers.dart';
-import 'package:mobile_health_app/Machine_Learning/predictive_graph.dart';
 import 'package:mobile_health_app/Data/patient_data_functions.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 User? user = _auth.currentUser;
@@ -79,8 +79,12 @@ class InteractiveGraphState extends State<InteractiveGraph> {
   String? subcol; //subcollection name
   String? patientuid; //patient uid
   var subcollection; //subcollection reference
-  var graphlist;
+
+  var glist;
   var graphdata;
+  var graphlist;
+  Widget graphchart = Text('');
+  var datelabel;
 
   initState() {
     super.initState();
@@ -142,20 +146,20 @@ class InteractiveGraphState extends State<InteractiveGraph> {
   }
 
   Future createList(int amount, String? datetype) async {
+    graphchart = Text('Loading...');
     Datafunction datafunc = Datafunction(patientuid!);
     if (datetype == null) {
-      graphlist = await datafunc.getAmount(amount, subcol!);
+      glist = await datafunc.getAmount(amount, subcol!);
       createGraph(datetype, graphlist);
     } else {
       double startdate =
           double.parse(getStartDate(amount, datetype).toStringAsFixed(4));
-      graphlist = await datafunc.getFromToday(startdate, subcol!);
+      glist = await datafunc.getFromToday(startdate, subcol!);
       createGraph(datetype, graphlist);
     }
   }
 
   double getStartDate(int amount, String datetype) {
-    //TODO: person can't ask for more than 12 months or errors can happen...
     Datafunction datafunc = Datafunction('');
     String today = '-' + DateTime.now().toUtc().toString();
     double date = datafunc.getDate(today);
@@ -198,27 +202,144 @@ class InteractiveGraphState extends State<InteractiveGraph> {
     }
   }
 
-  createGraph(String? datetype, var graphlist) {
+  createGraph(String? datetype, var glist) {
+    final customTickFormatter =
+        charts.BasicNumericTickFormatterSpec((var label) {
+      //give each tick on the x-axis a name from the dayAssembler function
+      if (label is String) {
+        if (datelabel.contains(label)) {
+          return ('');
+        } else {
+          datelabel.add(label);
+          return label.toString();
+        }
+      } else {
+        return label.toString();
+      }
+    });
     Datafunction datafunc = Datafunction('');
     if (datetype == 'null') {
       //if this is an amount graph
       int amount = 0;
       if (subcol == 'bloodPressure') {
         //if there is two values per measurement to be displayed on ther graph
-        for (int i = 0; i < graphlist.length; i++) {
-          graphdata.add(new BloodPressure(datafunc.getSys(graphlist[i]),
-              datafunc.getDia(graphlist[i]), amount));
+        for (int i = 0; i < glist.length; i++) {
+          graphdata.add(new BloodPressure(
+              datafunc.getSys(glist[i]), datafunc.getDia(glist[i]), amount));
           amount++;
         }
       } else if (subcol == 'bloodGlucose') {
         //if there is one value to display on the graph
-        for (int i = 0; i < graphlist.length; i++) {
-          graphdata
-              .add(new OneVariable(datafunc.getMMOL(graphlist[i]), amount));
+        for (int i = 0; i < glist.length; i++) {
+          graphdata.add(new OneVariable(datafunc.getMMOL(glist[i]), amount));
+          amount++;
+        }
+      } else if (subcol == 'heartRate') {
+        for (int i = 0; i < glist.length; i++) {
+          graphdata.add(new OneVariable(datafunc.getHR(glist[i]), amount));
           amount++;
         }
       }
-    } else {}
+    } else {
+      //if this is a date graph
+      if (subcol == 'bloodPressure') {
+        //if there is two values per measurement to be displayed on ther graph
+        for (int i = 0; i < graphlist.length; i++) {
+          graphdata.add(new BloodPressure(datafunc.getSys(glist[i]),
+              datafunc.getDia(glist[i]), datafunc.getDateString(glist[i])));
+          amount++;
+        }
+      } else if (subcol == 'bloodGlucose') {
+        //if there is one value to display on the graph
+        for (int i = 0; i < glist.length; i++) {
+          graphdata.add(new OneVariable(
+              datafunc.getMMOL(glist[i]), datafunc.getDateString(glist[i])));
+          amount++;
+        }
+      } else if (subcol == 'heartRate') {
+        for (int i = 0; i < glist.length; i++) {
+          graphdata.add(new OneVariable(
+              datafunc.getHR(glist[i]), datafunc.getDateString(glist[i])));
+          amount++;
+        }
+      }
+    }
+    if (subcol == 'bloodPressure') {
+      graphlist.add(charts.Series<BloodPressure, int>(
+        //add bpdata list to bplist (bplist is the chart list)
+        id: 'diastolic',
+        colorFn: (BloodPressure bloodpressure, __) {
+          //make the predicted values red
+          return charts.MaterialPalette.green.shadeDefault;
+        },
+        domainFn: (BloodPressure bloodpressure, _) => bloodpressure.day,
+        measureFn: (BloodPressure bloodpressure, _) =>
+            bloodpressure.dia, //do one line for diastolic
+        data: graphdata,
+      ));
+      graphlist.add(charts.Series<BloodPressure, int>(
+        id: 'systolic',
+        colorFn: (BloodPressure bloodpressure, __) {
+          return charts.MaterialPalette.blue.shadeDefault;
+        },
+        domainFn: (BloodPressure bloodpressure, _) => bloodpressure.day,
+        measureFn: (BloodPressure bloodpressure, _) =>
+            bloodpressure.sys, //do one line for systolic
+        data: graphdata,
+      ));
+      graphchart = charts.LineChart(graphlist,
+          defaultRenderer:
+              new charts.LineRendererConfig(includePoints: true, stacked: true),
+          animate: false,
+          animationDuration: Duration(seconds: 2),
+          domainAxis: charts.NumericAxisSpec(
+            renderSpec: charts.SmallTickRendererSpec(
+                labelRotation:
+                    50), //rotates the labels on the x-axis so that they dont overlap eachother
+            //  tickProviderSpec: charts.BasicNumericTickProviderSpec(
+            //  ), //make x-axis have ceratin amount of texts
+            tickFormatterSpec: customTickFormatter,
+          ),
+          behaviors: [
+            new charts.ChartTitle('$chosenpatient\'s Blood Pressure',
+                behaviorPosition: charts.BehaviorPosition.start,
+                titleOutsideJustification:
+                    charts.OutsideJustification.middleDrawArea),
+          ]);
+    } else {
+      //if subcol is bloodGlucose or heartRate is
+      graphlist.add(charts.Series<OneVariable, int>(
+        //add bgdata list to bglist (bglist is the chart list)
+        id: 'blood glucose',
+        colorFn: (OneVariable onevar, __) {
+          //make the predicted values red
+          return charts.MaterialPalette.blue.shadeDefault;
+        },
+        domainFn: (OneVariable onevar, _) => onevar.day,
+        measureFn: (OneVariable onevar, _) => onevar.vari,
+        data: graphdata,
+      ));
+      graphlist = charts.LineChart(glist,
+          defaultRenderer:
+              new charts.LineRendererConfig(includePoints: true, stacked: true),
+          animate: false,
+          animationDuration: Duration(seconds: 2),
+          domainAxis: charts.NumericAxisSpec(
+            renderSpec: charts.SmallTickRendererSpec(
+                labelRotation:
+                    50), //rotates the labels on the x-axis so that they dont overlap eachother
+            // tickProviderSpec: charts.BasicNumericTickProviderSpec(
+            //   desiredTickCount: )  //make x-axis have same amount of ticks for recorded and predicted days
+            tickFormatterSpec: customTickFormatter,
+          ),
+          behaviors: [
+            new charts.ChartTitle('$chosenpatient\'s $chosendatatype',
+                behaviorPosition: charts.BehaviorPosition.start,
+                titleOutsideJustification:
+                    charts.OutsideJustification.middleDrawArea),
+          ]);
+    }
+    setState(() {});
   }
 
   DropdownMenuItem<String> buildItem(String item) => DropdownMenuItem(
@@ -343,6 +464,7 @@ class InteractiveGraphState extends State<InteractiveGraph> {
               ],
             ),
             tab(),
+            graphchart,
           ],
         ),
       );
@@ -520,7 +642,7 @@ class InteractiveGraphState extends State<InteractiveGraph> {
 
 class OneVariable {
   //for bg and hr
-  final num day;
+  var day;
   final num vari;
   OneVariable(this.vari, this.day);
 }
@@ -528,6 +650,6 @@ class OneVariable {
 class BloodPressure {
   final num dia;
   final num sys;
-  final num day;
+  var day;
   BloodPressure(this.dia, this.sys, this.day);
 }
