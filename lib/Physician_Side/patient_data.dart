@@ -84,7 +84,7 @@ class _PatientDataState extends State<PatientData> {
     if (bglist != null) {
       for (int i = 0; i < bglist.length; i++) {
         String data = bglist[i];
-        double bgGet = double.parse(data.split(',')[0]);
+        double bgGet = double.parse(data.split(',')[1]);
         bg.add(bgGet);
       }
       getBGData();

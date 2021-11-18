@@ -41,6 +41,16 @@ class Datafunction {
     return double.parse(recording.split(',')[1]);
   }
 
+  String getDateString(String recording) {
+    String secondhalf = recording.split('-')[1];
+    return secondhalf.split(' ')[0];
+  }
+
+  String getTimeString(String recording) {
+    String secondhalf = recording.split('-')[1];
+    return secondhalf.split(' ')[1].substring(0, 8);
+  }
+
   double getDate(String recording) {
     double year = double.parse(recording.split('-')[1]);
     double month = double.parse(recording.split('-')[2]) * 0.01;
@@ -97,8 +107,6 @@ class Datafunction {
       int size = snap.get('Data Entries').toInt();
       double oldestdate = getDate(' -' + snap.get('Oldest Date'));
       if (oldestdate < startdate) {
-        print('yoyo!');
-        print(startdate);
         //if the last 100 recordings covers the time period
         for (int i = size; i > 1; i--) {
           double date;
@@ -110,7 +118,6 @@ class Datafunction {
           }
           date = getDate(measurement);
           if (date < startdate) {
-            //this returns the first date if the first date is older then the startdate...
             return await getAmount(size - i,
                 subcollection); //return all dates that were after the specified date
           }
@@ -138,9 +145,9 @@ class Datafunction {
                   double date;
                   String measurement;
                   if (i < 10) {
-                    measurement = snap.get('Data Submission 0$i');
+                    measurement = hundredsnap.get('Data Submission 0$i');
                   } else {
-                    measurement = snap.get('Data Submission $i');
+                    measurement = hundredsnap.get('Data Submission $i');
                   }
                   date = getDate(measurement);
                   if (date < startdate) {
@@ -153,8 +160,8 @@ class Datafunction {
                 }
               } else {
                 //if this hundred values doesn't have the date check the next hundred
+                hundredcount++;
                 if (hundreds - 1 > 0) {
-                  hundredcount++;
                   hundreds--;
                 } else {
                   //if there is no next hundred return the list

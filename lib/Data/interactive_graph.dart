@@ -80,8 +80,7 @@ class InteractiveGraphState extends State<InteractiveGraph> {
   String? patientuid; //patient uid
   var subcollection; //subcollection reference
   var graphlist;
-
-  //clicking on points displays the time, dont average daily values
+  var graphdata;
 
   initState() {
     super.initState();
@@ -144,27 +143,14 @@ class InteractiveGraphState extends State<InteractiveGraph> {
 
   Future createList(int amount, String? datetype) async {
     Datafunction datafunc = Datafunction(patientuid!);
-    var list;
     if (datetype == null) {
-      list = await datafunc.getAmount(amount, subcol!);
-      graphlist = list;
-      if (graphlist != null) {
-        for (int i = 0; i < graphlist!.length; i++) {
-          print(graphlist[i]);
-        }
-      }
+      graphlist = await datafunc.getAmount(amount, subcol!);
+      createGraph(datetype, graphlist);
     } else {
       double startdate =
           double.parse(getStartDate(amount, datetype).toStringAsFixed(4));
-      print(startdate);
-      print(subcol);
-      list = await datafunc.getFromToday(startdate, subcol!);
-      graphlist = list;
-      if (graphlist != null) {
-        for (int i = 0; i < graphlist!.length; i++) {
-          print(graphlist[i]);
-        }
-      }
+      graphlist = await datafunc.getFromToday(startdate, subcol!);
+      createGraph(datetype, graphlist);
     }
   }
 
@@ -190,11 +176,11 @@ class InteractiveGraphState extends State<InteractiveGraph> {
     } else {
       if (subtract % 0.01 != 0 && subtract < 0.01) {
         //if the person is subtracting days/weeks and those days/weeks are not covered in this month
-        int daysremaining = (subtract * 10000 % 30).toInt();
+        double daysremaining = (subtract * 10000 % 30).toDouble();
         int months = subtract *
             10000 ~/
             30; //find how many full months can be covered by the remaining subtract amount after subtracting days+1
-        if (daysremaining < day) {
+        if (daysremaining * 0.0001 < day) {
           date -= daysremaining * 0.0001;
         } else {
           date += (30 - daysremaining) * 0.0001;
@@ -207,10 +193,32 @@ class InteractiveGraphState extends State<InteractiveGraph> {
         return date -
             subtract; //if the subtract amount of months is less than the months remaining in this year
       } else {
-        print(month);
         return date - 0.88 - subtract;
       }
     }
+  }
+
+  createGraph(String? datetype, var graphlist) {
+    Datafunction datafunc = Datafunction('');
+    if (datetype == 'null') {
+      //if this is an amount graph
+      int amount = 0;
+      if (subcol == 'bloodPressure') {
+        //if there is two values per measurement to be displayed on ther graph
+        for (int i = 0; i < graphlist.length; i++) {
+          graphdata.add(new BloodPressure(datafunc.getSys(graphlist[i]),
+              datafunc.getDia(graphlist[i]), amount));
+          amount++;
+        }
+      } else if (subcol == 'bloodGlucose') {
+        //if there is one value to display on the graph
+        for (int i = 0; i < graphlist.length; i++) {
+          graphdata
+              .add(new OneVariable(datafunc.getMMOL(graphlist[i]), amount));
+          amount++;
+        }
+      }
+    } else {}
   }
 
   DropdownMenuItem<String> buildItem(String item) => DropdownMenuItem(
@@ -508,4 +516,18 @@ class InteractiveGraphState extends State<InteractiveGraph> {
       return Text('');
     }
   }
+}
+
+class OneVariable {
+  //for bg and hr
+  final num day;
+  final num vari;
+  OneVariable(this.vari, this.day);
+}
+
+class BloodPressure {
+  final num dia;
+  final num sys;
+  final num day;
+  BloodPressure(this.dia, this.sys, this.day);
 }
