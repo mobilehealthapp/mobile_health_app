@@ -80,11 +80,9 @@ class InteractiveGraphState extends State<InteractiveGraph> {
   String? patientuid; //patient uid
   var subcollection; //subcollection reference
 
-  var glist;
-  List<charts.Series<dynamic, num>> graphlist = [];
-  var graphdata;
-  Widget graphchart = Text('');
+  Widget graphchart = Text(' ');
   var datelabel;
+  Widget title = Text('');
 
   initState() {
     super.initState();
@@ -146,12 +144,19 @@ class InteractiveGraphState extends State<InteractiveGraph> {
   }
 
   Future createList(int amount, String? datetype) async {
-    graphchart = Text('Loading...');
+    var glist;
+    setState(() {
+      graphchart = Text('Loading...',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0));
+    });
     Datafunction datafunc = Datafunction(patientuid!);
     if (datetype == null) {
       glist = await datafunc.getAmount(amount, subcol!);
-      if (glist.length == null) {
-        graphchart = Text('No Data Found');
+      if (glist == null) {
+        graphchart = Text('No Data Found',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0));
+        title = Text('');
+        setState(() {});
       } else {
         createGraph(datetype, glist);
       }
@@ -160,7 +165,17 @@ class InteractiveGraphState extends State<InteractiveGraph> {
           double.parse(getStartDate(amount, datetype).toStringAsFixed(4));
       glist = await datafunc.getFromToday(startdate, subcol!);
       if (glist == null) {
-        graphchart = Text('No Data Found');
+        graphchart = Text('No Data Found',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0));
+        title = Text('');
+        setState(() {});
+      } else if (glist.length > 100) {
+        //if more than 100 entries are found its not displayable so do not attempt to display
+        graphchart = Text(
+            'Too Many Data Entries Found \nShorten the Date Range',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0));
+        title = Text('');
+        setState(() {});
       } else {
         createGraph(datetype, glist);
       }
@@ -210,24 +225,63 @@ class InteractiveGraphState extends State<InteractiveGraph> {
     }
   }
 
+  String labelAxis(String? datatype) {
+    if (chosendatatype == 'Blood Glucose') {
+      return 'Blood Glucose (mmol/L)';
+    }
+    if (chosendatatype == 'Blood Pressure') {
+      return 'Systolic / Diastolic Blood Pressure';
+    }
+    if (chosendatatype == 'Heart Rate') {
+      return 'Heartbeats Per Minute';
+    }
+    return 'Impossible';
+  }
+
+  int getRotate(String? datetype) {
+    if (datetype != null) {
+      return 70;
+    } else {
+      return 0;
+    }
+  }
+
   createGraph(String? datetype, var glist) {
+    List<charts.Series<dynamic, num>> graphlist = [];
+    var graphdata;
     int listspot = 0;
+    var datelist = ['word'];
     final customTickFormatter =
-        charts.BasicNumericTickFormatterSpec((num? listspot) {
-      if (graphdata[listspot].date != null) {
-        return graphdata[listspot].date;
+        charts.BasicNumericTickFormatterSpec((num? value) {
+      int intval = value!.toInt();
+      if (intval > graphdata.length - 1) {
+        return '';
       }
-      return listspot.toString();
+      String? returnvalue = graphdata[intval].date;
+      if (returnvalue != null) {
+        if (datelist.contains(returnvalue)) {
+          return '';
+        } else {
+          datelist.add(
+              returnvalue); //have it so that each day is only labelled once on the axis
+          return returnvalue;
+        }
+      } else {
+        return (intval + 1).toString();
+      }
       //give each tick on the x-axis a name from the dayAssembler function
     });
     Datafunction datafunc = Datafunction('');
-    if (datetype == 'null') {
+    if (datetype == null) {
       if (subcol == 'bloodPressure') {
         graphdata = <BloodPressure>[];
         //if there is two values per measurement to be displayed on ther graph
         for (int i = 0; i < glist.length; i++) {
-          graphdata.add(new BloodPressure(datafunc.getSys(glist[i]),
-              datafunc.getDia(glist[i]), listspot, null));
+          graphdata.add(new BloodPressure(
+              datafunc.getSys(glist[i]) - datafunc.getDia(glist[i]),
+              datafunc.getDia(glist[i]),
+              listspot,
+              null));
           listspot++;
         }
       } else if (subcol == 'bloodGlucose') {
@@ -253,7 +307,7 @@ class InteractiveGraphState extends State<InteractiveGraph> {
         //if there is two values per measurement to be displayed on ther graph
         for (int i = 0; i < glist.length; i++) {
           graphdata.add(new BloodPressure(
-              datafunc.getSys(glist[i]),
+              datafunc.getSys(glist[i]) - datafunc.getDia(glist[i]),
               datafunc.getDia(glist[i]),
               listspot,
               datafunc.getDateString(glist[i])));
@@ -284,7 +338,7 @@ class InteractiveGraphState extends State<InteractiveGraph> {
           //make the predicted values red
           return charts.MaterialPalette.green.shadeDefault;
         },
-        domainFn: (BloodPressure bloodpressure, _) => bloodpressure.day,
+        domainFn: (BloodPressure bloodpressure, _) => bloodpressure.recording,
         measureFn: (BloodPressure bloodpressure, _) =>
             bloodpressure.dia, //do one line for diastolic
         data: graphdata,
@@ -294,7 +348,7 @@ class InteractiveGraphState extends State<InteractiveGraph> {
         colorFn: (BloodPressure bloodpressure, __) {
           return charts.MaterialPalette.blue.shadeDefault;
         },
-        domainFn: (BloodPressure bloodpressure, _) => bloodpressure.day,
+        domainFn: (BloodPressure bloodpressure, _) => bloodpressure.recording,
         measureFn: (BloodPressure bloodpressure, _) =>
             bloodpressure.sys, //do one line for systolic
         data: graphdata,
@@ -308,12 +362,13 @@ class InteractiveGraphState extends State<InteractiveGraph> {
             renderSpec: charts.SmallTickRendererSpec(
                 labelRotation:
                     50), //rotates the labels on the x-axis so that they dont overlap eachother
-            //  tickProviderSpec: charts.BasicNumericTickProviderSpec(
-            //  ), //make x-axis have ceratin amount of texts
+            tickProviderSpec: charts.BasicNumericTickProviderSpec(
+                desiredTickCount: graphdata
+                    .length), //make x-axis have certain amount of texts
             tickFormatterSpec: customTickFormatter,
           ),
           behaviors: [
-            new charts.ChartTitle('$chosenpatient\'s Blood Pressure',
+            new charts.ChartTitle(labelAxis(chosendatatype),
                 behaviorPosition: charts.BehaviorPosition.start,
                 titleOutsideJustification:
                     charts.OutsideJustification.middleDrawArea),
@@ -327,7 +382,7 @@ class InteractiveGraphState extends State<InteractiveGraph> {
           //make the predicted values red
           return charts.MaterialPalette.blue.shadeDefault;
         },
-        domainFn: (OneVariable onevar, _) => onevar.day,
+        domainFn: (OneVariable onevar, _) => onevar.recording,
         measureFn: (OneVariable onevar, _) => onevar.vari,
         data: graphdata,
       ));
@@ -338,19 +393,20 @@ class InteractiveGraphState extends State<InteractiveGraph> {
           animationDuration: Duration(seconds: 2),
           domainAxis: charts.NumericAxisSpec(
             renderSpec: charts.SmallTickRendererSpec(
-                labelRotation:
-                    50), //rotates the labels on the x-axis so that they dont overlap eachother
-            // tickProviderSpec: charts.BasicNumericTickProviderSpec(
-            //   desiredTickCount: )  //make x-axis have same amount of ticks for recorded and predicted days
+                labelRotation: getRotate(
+                    datetype)), //rotates the labels on the x-axis so that they dont overlap eachother
+            tickProviderSpec: charts.BasicNumericTickProviderSpec(
+                desiredTickCount: graphdata.length),
             tickFormatterSpec: customTickFormatter,
           ),
           behaviors: [
-            new charts.ChartTitle('$chosenpatient\'s $chosendatatype',
+            new charts.ChartTitle(labelAxis(chosendatatype),
                 behaviorPosition: charts.BehaviorPosition.start,
                 titleOutsideJustification:
                     charts.OutsideJustification.middleDrawArea),
           ]);
     }
+    createTitle();
     setState(() {});
   }
 
@@ -476,7 +532,11 @@ class InteractiveGraphState extends State<InteractiveGraph> {
               ],
             ),
             tab(),
+            title,
             Expanded(child: graphchart),
+            Container(
+              padding: EdgeInsets.only(top: 50),
+            )
           ],
         ),
       );
@@ -650,20 +710,28 @@ class InteractiveGraphState extends State<InteractiveGraph> {
       return Text('');
     }
   }
+
+  createTitle() {
+    title = Container(
+        padding: EdgeInsets.only(top: 15, bottom: 5, left: 10, right: 10),
+        alignment: Alignment.center,
+        child: Text('$chosenpatient\'s $chosendatatype',
+            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)));
+  }
 }
 
 class OneVariable {
   //for bg and hr
-  var day;
+  final int recording;
   final num vari;
   String? date;
-  OneVariable(this.vari, this.day, this.date);
+  OneVariable(this.vari, this.recording, this.date);
 }
 
 class BloodPressure {
   final num dia;
   final num sys;
-  var day;
+  final int recording;
   String? date;
-  BloodPressure(this.dia, this.sys, this.day, this.date);
+  BloodPressure(this.dia, this.sys, this.recording, this.date);
 }
