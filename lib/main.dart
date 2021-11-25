@@ -34,7 +34,6 @@ import 'Settings/delete_data_or_account.dart';
 import 'Settings/my_doctor_profile.dart';
 
 // analysis imports
-import 'package:mobile_health_app/Analysis/health_analysis_form.dart';
 import 'Analysis/health_analysis.dart';
 
 // authentication imports
@@ -179,7 +178,6 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomePage(),
         '/physHome': (context) => PhysHome(),
         '/healthAnalysis': (context) => HealthAnalysis(),
-        '/healthAnalysisForm': (context) => HealthAnalysisForm(),
         '/cameraInput': (context) => CameraApp(),
         '/dataInput': (context) => DataInput(),
         '/settings': (context) => SettingsPage(),

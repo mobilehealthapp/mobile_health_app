@@ -16,8 +16,6 @@ class Drawers extends StatelessWidget {
     DrawerEntry('Home', '/home', Icons.home),
     DrawerEntry('Settings', '/settings', Icons.settings),
     DrawerEntry('Health Analysis', '/healthAnalysis', Icons.health_and_safety),
-    DrawerEntry(
-        'Health Analysis Form', '/healthAnalysisForm', Icons.health_and_safety),
     LogoutEntry(),
     DrawerEntry('Physician Side', '/physHome', Icons.logout),
     DrawerEntry('ML', '/ml', Icons.add_chart),

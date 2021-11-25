@@ -53,6 +53,18 @@ class DatabaseAuth {
         'wt': '',
         'ht': '',
         'dob': '',
+        'diabetes': '',
+        'hypertension': '',
+        'hypotension': '',
+        'tachycardia': '',
+        'bradycardia': '',
+        'cvd': '',
+        'highHR': ' ',
+        'lowHR': ' ',
+        'highBG': ' ',
+        'lowBG': ' ',
+        'highBP': ' ',
+        'lowBP': ' ',
       },
     );
   }
@@ -123,7 +135,7 @@ class DatabaseAuth {
       dataDelete('bloodPressure', 1);
       dataDelete('heartRate', 0); //patientData field is emptied here
       await updatePatientData('', '', '', '', '', '', '', '', '', '', '',
-          ''); //updates patientProfile field and doctorPatients fields
+          '', '', '', '', '', '', '', '', '', '', '', '', ''); //updates patientProfile field and doctorPatients fields
       /*
       when the user inputs the correct credentials and they are verified by Firebase Auth,
       they will delete all of their data from Firestore except for their account type and email address
@@ -208,7 +220,8 @@ class DatabaseAuth {
   }
 
   Future updatePatientData(String adr, age, conds, dob, firstName, ht, lastName,
-      meds, province, sex, tele, wt) async {
+      meds, province, sex, tele, wt, diabetes, hypertension, hypotension, 
+      tachycardia, bradycardia, cvd, highHR, lowHR, highBG, lowBG, highBP, lowBP) async {
     /* used in patient profile edit page to update their data in Firestore once they
     press confirm
      */
@@ -226,6 +239,18 @@ class DatabaseAuth {
         'meds': meds,
         'tele': tele,
         'address': adr,
+        'diabetes': diabetes,
+        'hypertension': hypertension,
+        'hypotension': hypotension,
+        'tachycardia': tachycardia,
+        'bradycardia': bradycardia,
+        'cvd': cvd,
+        'highHR': highHR,
+        'lowHR': lowHR,
+        'highBG': highBG,
+        'lowBG': lowBG,
+        'highBP': highBP,
+        'lowBP': lowBP,
       },
     );
     patientDoctorsCollection.get().then((docSnapshot) => {
@@ -251,6 +276,12 @@ class DatabaseAuth {
                     'meds': meds,
                     'tele': tele,
                     'address': adr,
+                    'diabetes': diabetes,
+                    'hypertension': hypertension,
+                    'hypotension': hypotension,
+                    'tachycardia': tachycardia,
+                    'bradycardia': bradycardia,
+                    'cvd': cvd,
                   },
                 );
               })
