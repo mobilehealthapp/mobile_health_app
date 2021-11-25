@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_health_app/Data/patient_data_functions.dart';
 import 'package:mobile_health_app/constants.dart';
 import 'package:mobile_health_app/Drawers/drawers.dart';
 import 'package:mobile_health_app/Graphs/graph_data.dart';
@@ -15,9 +16,9 @@ List<FlSpot> bgChart = []; // used for BG in fl_chart
 List<FlSpot> hrChart = []; // used for HR in fl_chart
 
 // used for lengths
-late int numberOfBGPoints = 0;
-late int numberOfBPPoints = 0;
-late int numberOfHRPoints = 0;
+int bgpoints = 0;
+int bppoints = 0;
+int hrpoints = 0;
 
 // systolic BP variables
 var variancePressureSys; // variance of systolic BP
@@ -58,21 +59,24 @@ class HealthAnalysis extends StatefulWidget {
 
 class _HealthAnalysisState extends State<HealthAnalysis> {
   var patientData = FirebaseFirestore.instance
-    .collection('patientData')
-    .doc(FirebaseAuth.instance.currentUser!.uid);
+      .collection('patientData')
+      .doc(FirebaseAuth.instance.currentUser!.uid);
+  Datafunction datafunc = Datafunction(FirebaseAuth.instance.currentUser!.uid);
   var bloodGlucose;
   var bloodPressure;
   var heartRate;
-  
+
   sysGet() async {
     // calculates standard deviation, variance, and range of systolic BP
     sys = [];
-    bloodPressure = patientData.collection('bloodPressure');
-    final bpData = await bloodPressure.get();
-    final value = bpData.docs;
-    for (var val in value) {
-      double bpGet = val.get('systolic');
-      sys.add(bpGet.toDouble());
+    final value = await datafunc.getAmount(
+        50, 'bloodPressure'); //takes this persons last 50 values
+    if (value != null) {
+      for (var val in value) {
+        double bpGet = datafunc.getSys(val);
+        sys.add(bpGet.toDouble());
+        bppoints++;
+      }
     }
     sys.sort();
     var doubles = sys.map((e) => e as double).toList();
@@ -106,12 +110,12 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   diaGet() async {
     // calculates standard deviation, variance, and range of diastolic BP
     dia = [];
-    bloodPressure = patientData.collection('bloodPressure');
-    final bpData = await bloodPressure.get();
-    final value = bpData.docs;
-    for (var val in value) {
-      double bpGet = val.get('diastolic');
-      dia.add(bpGet.toDouble());
+    final value = await datafunc.getAmount(50, 'bloodPressure');
+    if (value != null) {
+      for (var val in value) {
+        double bpGet = datafunc.getDia(val);
+        dia.add(bpGet.toDouble());
+      }
     }
     dia.sort();
     var doubles = dia.map((e) => e as double).toList();
@@ -145,16 +149,19 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   bgGet() async {
     // calculates standard deviation, variance, and range of BG
     bg = [];
-    bloodGlucose = patientData.collection('bloodGlucose');
-    final bgData = await bloodGlucose.get();
-    final value = bgData.docs;
-    for (var val in value) {
-      // fetch data from firestore - and add it in the dynamic array bg.
-      double bgGet = val.get('blood glucose (mmol|L)');
-      bg.add(bgGet.toDouble());
+    final value = await datafunc.getAmount(50, 'bloodGlucose');
+    if (value != null) {
+      for (var val in value) {
+        // fetch data from firestore - and add it in the dynamic array bg.
+        double bgGet = datafunc.getMMOL(val);
+        bg.add(bgGet.toDouble());
+        bgpoints++;
+      }
     }
     bg.sort();
-    var doubles = bg.map((e) => e as double).toList(); // converts dynamic list to double list
+    var doubles = bg
+        .map((e) => e as double)
+        .toList(); // converts dynamic list to double list
 
     setState(() {
       // if there's more than 1 data point, calculate the values; if not, automatically set to 0
@@ -180,12 +187,13 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   hrGet() async {
     // calculates standard deviation, variance, and range of HR
     hr = [];
-    heartRate = patientData.collection('heartRate');
-    final hrData = await heartRate.get();
-    final value = hrData.docs;
-    for (var val in value) {
-      int hrGet = val.get('heart rate');
-      hr.add(hrGet.toDouble());
+    final value = await datafunc.getAmount(50, 'heartRate');
+    if (value != null) {
+      for (var val in value) {
+        int hrGet = datafunc.getHR(val);
+        hr.add(hrGet.toDouble());
+        hrpoints++;
+      }
     }
     hr.sort();
     var doubles = hr.map((e) => e as double).toList();
@@ -211,40 +219,31 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
 
   getNumberOfBGPoints() async {
     // gets length of list of BG points uploaded for user
-    bloodGlucose = patientData.collection('bloodGlucose');
-    QuerySnapshot<Map<String, dynamic>> getBG = await bloodGlucose.get();
-    numberOfBGPoints = getBG.docs.length;
-    return numberOfBGPoints;
+    return bgpoints;
   }
 
   getNumberOfBPPoints() async {
     // gets length of list of BP points uploaded for user
-    bloodPressure = patientData.collection('bloodPressure');
-    QuerySnapshot<Map<String, dynamic>> getBP = await bloodPressure.get();
-    numberOfBPPoints = getBP.docs.length;
-    return numberOfBPPoints;
+    return bppoints;
   }
 
   getNumberOfHRPoints() async {
     // gets length of list of HR points uploaded for user
-    heartRate = patientData.collection('heartRate');
-    QuerySnapshot<Map<String, dynamic>> getHR = await heartRate.get();
-    numberOfHRPoints = getHR.docs.length;
-    return numberOfHRPoints;
+    return hrpoints;
   }
 
   Future<List<FlSpot>> getSysData() async {
     // gets list of BP (systolic) points to use in Graphs
     sysChart = [];
-    final bpData =
-        await patientData.collection('bloodPressure').orderBy('uploaded').get();
-    final value = bpData.docs;
+    final bpData = await datafunc.getAmount(50, 'bloodPressure');
     double index2 = 1.0;
-    for (var val in value) {
-      double sys = val.get('systolic');
-      setState(() {
-        sysChart.add(FlSpot(index2++, sys.toDouble()));
-      });
+    if (bpData != null) {
+      for (var val in bpData) {
+        double sys = datafunc.getSys(val);
+        setState(() {
+          sysChart.add(FlSpot(index2++, sys.toDouble()));
+        });
+      }
     }
     return sysChart;
   }
@@ -252,14 +251,15 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   Future<List<FlSpot>> getDiasData() async {
     // gets list of BP (diastolic) points to use in Graphs
     diaChart = [];
-    final bpData = await patientData.collection('bloodPressure').orderBy('uploaded').get();
-    final value = bpData.docs;
+    final bpData = await datafunc.getAmount(50, 'bloodPressure');
     double index = 1.0;
-    for (var val in value) {
-      double dias = val.get('diastolic');
-      setState(() {
-        diaChart.add(FlSpot(index++, dias.toDouble()));
-      });
+    if (bpData != null) {
+      for (var val in bpData) {
+        double dias = datafunc.getDia(val);
+        setState(() {
+          diaChart.add(FlSpot(index++, dias.toDouble()));
+        });
+      }
     }
     return diaChart;
   }
@@ -267,14 +267,15 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   Future<List<FlSpot>> getBGData() async {
     // gets list of BG points to use in Graphs
     bgChart = [];
-    final bgData = await patientData.collection('bloodGlucose').orderBy('uploaded').get();
-    final value = bgData.docs;
+    final bgData = await datafunc.getAmount(50, 'bloodGlucose');
     double index = 1.0;
-    for (var val in value) {
-      double glucose = val.get('blood glucose (mmol|L)');
-      setState(() {
-        bgChart.add(FlSpot(index++, glucose.toDouble()));
-      });
+    if (bgData != null) {
+      for (var val in bgData) {
+        double glucose = datafunc.getMMOL(val);
+        setState(() {
+          bgChart.add(FlSpot(index++, glucose.toDouble()));
+        });
+      }
     }
     return bgChart;
   }
@@ -282,14 +283,15 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   Future<List<FlSpot>> getHRData() async {
     // gets list of HR points to use in Graphs
     hrChart = [];
-    final hrData = await patientData.collection('heartRate').orderBy('uploaded').get();
-    final value = hrData.docs;
+    final hrData = await datafunc.getAmount(50, 'heartRate');
     double index = 1.0;
-    for (var val in value) {
-      int heartrate = val.get('heart rate');
-      setState(() {
-        hrChart.add(FlSpot(index++, heartrate.toDouble()));
-      });
+    if (hrData != null) {
+      for (var val in hrData) {
+        int heartrate = datafunc.getHR(val);
+        setState(() {
+          hrChart.add(FlSpot(index++, heartrate.toDouble()));
+        });
+      }
     }
     return hrChart;
   }
@@ -299,44 +301,40 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     bloodGlucose = patientData.collection('bloodGlucose');
     heartRate = patientData.collection('heartRate');
     // gets averages of each data type for user
-    final bpData = await bloodPressure
-        .orderBy(
-        'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
-        .get();
-    final bpData1 = bpData.docs;
-    final bgData = await bloodGlucose
-        .orderBy(
-        'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
-        .get();
-    final bgData1 = bgData.docs;
-    final hrData = await heartRate
-        .orderBy(
-        'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
-        .get();
-    final hrData1 = hrData.docs;
-    final DocumentSnapshot uploadedData = await patientData.get();
+    final bpData = await datafunc.getAmount(50, 'bloodPressure');
+    final bgData = await datafunc.getAmount(50, 'bloodGlucose');
+    final hrData = await datafunc.getAmount(50, 'heartRate');
     setState(
-          () {
-            // if data is not empty, calculate avgs; if empty, automatically set to 0
-        if (bpData1.isNotEmpty) {
-          avgPressureSys =
-              uploadedData.get('Average Blood Pressure (systolic)');
+      () {
+        // if data is not empty, calculate avgs; if empty, automatically set to 0
+        if (bpData != null) {
+          double sysaverage = 0;
+          double diaaverage = 0;
+          for (int i = 0; i < bpData.length; i++) {
+            sysaverage += datafunc.getSys(bpData[i]);
+            diaaverage += datafunc.getSys(bpData[i]);
+          }
+          avgPressureSys = sysaverage / bpData.length;
+          avgPressureDia = diaaverage / bpData.length;
         } else {
           avgPressureSys = 0;
-        }
-        if (bpData1.isNotEmpty) {
-          avgPressureDia =
-              uploadedData.get('Average Blood Pressure (diastolic)');
-        } else {
           avgPressureDia = 0;
         }
-        if (bgData1.isNotEmpty) {
-          avgGlucose = uploadedData.get('Average Blood Glucose (mmol|L)');
+        if (bgData != null) {
+          double averagebg = 0;
+          for (int i = 0; i < bgData.length; i++) {
+            averagebg += datafunc.getMMOL(bgData[i]);
+          }
+          avgGlucose = averagebg / bgData.length;
         } else {
           avgGlucose = 0;
         }
-        if (hrData1.isNotEmpty) {
-          avgHeartRate = uploadedData.get('Average Heart Rate');
+        if (hrData != null) {
+          double averagehr = 0;
+          for (int i = 0; i < hrData.length; i++) {
+            averagehr += datafunc.getMMOL(hrData[i]);
+          }
+          avgHeartRate = averagehr / hrData.length;
         } else {
           avgHeartRate = 0;
         }
@@ -438,7 +436,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           minY: 10,
           showDots: false,
           maxY: 180,
-          maxX: numberOfBPPoints.toDouble(),
+          maxX: bppoints.toDouble(),
           primaryDataList: sysChart,
           secondaryDataList: diaChart,
         ),
@@ -477,7 +475,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           minY: 0,
           showDots: false,
           maxY: 10,
-          maxX: numberOfBGPoints.toDouble(),
+          maxX: bgpoints.toDouble(),
           primaryDataList: bgChart,
         ),
         FullSummaryCard(
@@ -508,7 +506,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
           minY: 30,
           showDots: false,
           maxY: 200,
-          maxX: numberOfHRPoints.toDouble(),
+          maxX: hrpoints.toDouble(),
           primaryDataList: hrChart,
         ),
         FullSummaryCard(

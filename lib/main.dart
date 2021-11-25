@@ -147,7 +147,6 @@ class MyApp extends StatelessWidget {
       // everywhere it is used.
       theme: ThemeData(
         appBarTheme: AppBarTheme(
-          backwardsCompatibility: false,
           systemOverlayStyle: SystemUiOverlayStyle.light,
           iconTheme: IconThemeData(
             color: Colors.white,

@@ -46,6 +46,8 @@ dependencies:
   # Miscellaneous
   wc_form_validators: ^1.0.0
   fluttertoast: ^8.0.7 # used for 'wrong email/password' notices in the deletion alerts
+  file_picker: ^4.2.4
+  csv: ^5.0.1
 
 
 dev_dependencies:
