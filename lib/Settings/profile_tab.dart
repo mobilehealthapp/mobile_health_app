@@ -19,6 +19,13 @@ var meds; // medications that the patient is on
 var conds; // medical conditions that the patient has
 var tele; // telephone number
 var sex; // sex of patient
+var diabetes; //does the patient have diabetes
+var tachycardia; //does the patient have tachycardia
+var bradycardia; //does the patient have bradycardia
+var hypertension; //does the patient have hypertension
+var hypotension; //does the patient have hypotension
+var cvd; //does the patient have cardiovascular disease
+
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -75,6 +82,12 @@ class _ProfilePageState extends State<ProfilePage> {
         conds = patientInfo.get('conds');
         tele = patientInfo.get('tele');
         sex = patientInfo.get('sex');
+        diabetes = patientInfo.get('diabetes');
+        tachycardia = patientInfo.get('tachycardia');
+        bradycardia = patientInfo.get('bradycardia');
+        hypertension = patientInfo.get('hypertension');
+        hypotension = patientInfo.get('hypotension');
+        cvd = patientInfo.get('cvd');
       },
     );
   }
@@ -122,6 +135,24 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           ProfileTab(
             editAnswer: 'Home Address: $adr',
+          ),
+          ProfileTab(
+            editAnswer: 'Diabetes: $diabetes',
+          ),
+          ProfileTab(
+            editAnswer: 'Hypertension: $hypertension',
+          ),
+          ProfileTab(
+            editAnswer: 'Hypotension: $hypotension',
+          ),
+          ProfileTab(
+            editAnswer: 'Tachycardia: $tachycardia',
+          ),
+          ProfileTab(
+            editAnswer: 'Bradycardia: $bradycardia',
+          ),
+          ProfileTab(
+            editAnswer: 'Cardiovascular Disease: $cvd',
           ),
           Padding(
             padding: EdgeInsets.all(10.0),
