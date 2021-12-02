@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_health_app/Drawers/drawers.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:csv/csv.dart';
 
 class DataInsert extends StatefulWidget {
   DataInsert({Key? key, text}) : super(key: key);
@@ -27,6 +31,7 @@ class DataInsertState extends State<DataInsert> {
   num measurement1 = 0;
   num measurement2 = 0;
   String subcol = "";
+  var uploadlist;
 
   initState() {
     super.initState();
@@ -34,7 +39,7 @@ class DataInsertState extends State<DataInsert> {
     date = DateTime.now().toUtc().toString();
   }
 
-  void dataInsert(String subcollection, final date, num measurement1,
+  Future<void> dataInsert(String subcollection, final date, num measurement1,
       num? measurement2) async {
     num measurements = 0;
     bool noentries = false;
@@ -141,7 +146,7 @@ class DataInsertState extends State<DataInsert> {
               subcol = text;
             },
             decoration: InputDecoration(
-              hintText: 'Enter Subcollection Type',
+              hintText: 'Enter Subcollection Type (MANDATORY)',
             ),
           ),
           TextField(
@@ -161,7 +166,7 @@ class DataInsertState extends State<DataInsert> {
             ),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               print(measurement1);
               print(measurement2);
               if (measurement2 == 0) {
@@ -172,8 +177,57 @@ class DataInsertState extends State<DataInsert> {
             },
             child: Text('Send Values'),
           ),
+          TextButton(
+            onPressed: () async {
+              await pickFile();
+              print(uploadlist.length);
+              for (int i = 0; i < uploadlist.length; i++) {
+                await dataInsert(subcol, uploadlist[i + 2], uploadlist[i],
+                    uploadlist[i + 1]);
+                i = i + 2;
+              }
+            },
+            child: Text('Choose CSV File'),
+          ),
         ],
       ),
     );
+  }
+
+  pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      PlatformFile file = result.files.first;
+      //14229460
+      print(file.path!);
+      String filepath = file.path!;
+      createList(filepath);
+    }
+  }
+
+  Future createList(String filepath) async {
+    var list = [];
+    final lines = File(filepath).readAsLinesSync(); //it can't find the file...
+    lines.removeAt(0);
+    double glucoseConversion = 18.0182;
+    //MG,MMOL,-date time is the order we want to put it in
+    int i = 1;
+    for (var line in lines) {
+      String dateandtime = line.split(',')[0];
+      double mg =
+          double.parse(double.parse(line.split(',')[1]).toStringAsFixed(2));
+      double mmol = double.parse(
+          (double.parse(line.split(',')[1]) / glucoseConversion)
+              .toStringAsFixed(2));
+      list.add(mg);
+      list.add(mmol);
+      list.add(dateandtime);
+      print('$mg,$mmol,-$dateandtime');
+      i++;
+      if (i > 3361) {
+        break;
+      }
+    }
+    uploadlist = list;
   }
 }

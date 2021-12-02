@@ -12,6 +12,7 @@ import 'Camera/camera_input.dart';
 import 'Camera/data_input_page.dart';
 
 // home page imports
+import 'Data/example.dart';
 import 'Data/interactive_graph.dart';
 import 'Machine_Learning/data_insert.dart';
 import 'Machine_Learning/patient_select.dart';
@@ -147,7 +148,6 @@ class MyApp extends StatelessWidget {
       // everywhere it is used.
       theme: ThemeData(
         appBarTheme: AppBarTheme(
-          backwardsCompatibility: false,
           systemOverlayStyle: SystemUiOverlayStyle.light,
           iconTheme: IconThemeData(
             color: Colors.white,
@@ -205,6 +205,7 @@ class MyApp extends StatelessWidget {
         '/PatientSelect': (context) => PatientSelect(),
         '/DataInsert': (context) => DataInsert(),
         '/InteractiveGraph': (context) => InteractiveGraph(),
+        '/Example': (context) => Chart(),
       },
       navigatorKey: navigator,
     );

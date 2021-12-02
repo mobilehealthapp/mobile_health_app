@@ -42,13 +42,12 @@ class Datafunction {
   }
 
   String getDateString(String recording) {
-    String secondhalf = recording.split('-')[1];
-    return secondhalf.split(' ')[0];
+    return recording.substring(
+        recording.lastIndexOf(',') + 2, recording.lastIndexOf(',') + 12);
   }
 
   String getTimeString(String recording) {
-    String secondhalf = recording.split('-')[1];
-    return secondhalf.split(' ')[1].substring(0, 8);
+    return recording.split(' ')[1].substring(0, 8);
   }
 
   double getDate(String recording) {
@@ -100,7 +99,8 @@ class Datafunction {
 
   Future<List?> getFromToday(double startdate, String subcollection) async {
     //returns a list of all values between the specified date and today
-    // //for dates, the higher the date the more recent it is
+    //for dates, the higher the date the more recent it is
+    //this method can only return an empty list... not null
     CollectionReference subcol = patientData.doc(uid).collection(subcollection);
     DocumentSnapshot snap = await subcol.doc('Last 100 Recordings').get();
     if (snap.exists) {
@@ -177,12 +177,15 @@ class Datafunction {
         }
       }
     } else {
-      return null;
+      return getAmount(0, subcollection);
     }
   }
 
   Future<List?> getAmount(int amount, String subcollection) async {
     //function designed to get the required amount of values from a certain subcollection in order from oldest to newest
+    if (amount == 0) {
+      return null;
+    }
     var list = <String>[];
     CollectionReference subcol = patientData.doc(uid).collection(subcollection);
     DocumentSnapshot snap = await subcol.doc('Last 100 Recordings').get();

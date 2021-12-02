@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -5,6 +6,8 @@ import 'package:mobile_health_app/Drawers/drawers.dart';
 import 'package:mobile_health_app/Data/patient_data_functions.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:charts_flutter/src/text_element.dart' as TextElement;
+import 'package:charts_flutter/src/text_style.dart' as style;
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 User? user = _auth.currentUser;
@@ -57,6 +60,7 @@ class InteractiveGraphState extends State<InteractiveGraph> {
 
   String dateunit = 'Days';
   var dateunitList = ['Days', 'Weeks', 'Months'];
+  int dateamount = 5;
   var dateamountList = [
     '1',
     '2',
@@ -80,11 +84,12 @@ class InteractiveGraphState extends State<InteractiveGraph> {
   String? patientuid; //patient uid
   var subcollection; //subcollection reference
 
-  var glist;
-  List<charts.Series<dynamic, num>> graphlist = [];
-  var graphdata;
-  Widget graphchart = Text('');
+  Widget graphchart = Text(' ');
   var datelabel;
+  Widget title = Text('');
+  var datelist;
+
+  CustomCircleSymbolRenderer x = CustomCircleSymbolRenderer();
 
   initState() {
     super.initState();
@@ -146,21 +151,40 @@ class InteractiveGraphState extends State<InteractiveGraph> {
   }
 
   Future createList(int amount, String? datetype) async {
-    graphchart = Text('Loading...');
+    var glist;
+    setState(() {
+      graphchart = Text('Loading...',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0));
+    });
     Datafunction datafunc = Datafunction(patientuid!);
     if (datetype == null) {
       glist = await datafunc.getAmount(amount, subcol!);
-      if (glist.length == null) {
-        graphchart = Text('No Data Found');
+      if (glist == null) {
+        graphchart = Text('No Data Found',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0));
+        title = Text('');
+        setState(() {});
       } else {
         createGraph(datetype, glist);
       }
     } else {
       double startdate =
-          double.parse(getStartDate(amount, datetype).toStringAsFixed(4));
+          double.parse(getStartDate(dateamount, datetype).toStringAsFixed(4));
       glist = await datafunc.getFromToday(startdate, subcol!);
       if (glist == null) {
-        graphchart = Text('No Data Found');
+        graphchart = Text('No Data Found',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0));
+        title = Text('');
+        setState(() {});
+      } else if (glist.length > 100) {
+        //if more than 100 entries are found its not displayable so do not attempt to display
+        graphchart = Text(
+          'Too Many Recordings Found \nShorten the Date Range',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0),
+          textAlign: TextAlign.center,
+        );
+        title = Text('');
+        setState(() {});
       } else {
         createGraph(datetype, glist);
       }
@@ -210,39 +234,72 @@ class InteractiveGraphState extends State<InteractiveGraph> {
     }
   }
 
+  String labelAxis(String? datatype) {
+    if (chosendatatype == 'Blood Glucose') {
+      return 'Blood Glucose (mmol/L)';
+    }
+    if (chosendatatype == 'Blood Pressure') {
+      return 'Systolic / Diastolic Blood Pressure';
+    }
+    if (chosendatatype == 'Heart Rate') {
+      return 'Heartbeats Per Minute';
+    }
+    return 'Impossible';
+  }
+
+  String customTickData(String date) {
+    //only adds the date to a measurement if it is the first measurement of that day
+    if (datelist.contains(date)) {
+      return '';
+    } else {
+      datelist.add(date);
+      return date;
+    }
+  }
+
   createGraph(String? datetype, var glist) {
+    List<charts.Series<dynamic, num>> graphlist = [];
+    var graphdata;
     int listspot = 0;
-    final customTickFormatter =
-        charts.BasicNumericTickFormatterSpec((num? listspot) {
-      if (graphdata[listspot].date != null) {
-        return graphdata[listspot].date;
+    datelist = [];
+    var customTickFormatter =
+        charts.BasicNumericTickFormatterSpec((num? value) {
+      int intval = value!.toInt();
+      if (intval > graphdata.length - 1) {
+        return '';
       }
-      return listspot.toString();
-      //give each tick on the x-axis a name from the dayAssembler function
+      String? returnvalue = graphdata[intval].date;
+      return returnvalue!;
     });
     Datafunction datafunc = Datafunction('');
-    if (datetype == 'null') {
+    if (datetype == null) {
       if (subcol == 'bloodPressure') {
         graphdata = <BloodPressure>[];
         //if there is two values per measurement to be displayed on ther graph
         for (int i = 0; i < glist.length; i++) {
-          graphdata.add(new BloodPressure(datafunc.getSys(glist[i]),
-              datafunc.getDia(glist[i]), listspot, null));
+          String date = customTickData(datafunc.getDateString(glist[i]));
+          graphdata.add(new BloodPressure(
+              datafunc.getSys(glist[i]) - datafunc.getDia(glist[i]),
+              datafunc.getDia(glist[i]),
+              listspot,
+              date));
           listspot++;
         }
       } else if (subcol == 'bloodGlucose') {
         graphdata = <OneVariable>[];
         //if there is one value to display on the graph
         for (int i = 0; i < glist.length; i++) {
+          String date = customTickData(datafunc.getDateString(glist[i]));
           graphdata
-              .add(new OneVariable(datafunc.getMMOL(glist[i]), listspot, null));
+              .add(new OneVariable(datafunc.getMMOL(glist[i]), listspot, date));
           listspot++;
         }
       } else if (subcol == 'heartRate') {
         graphdata = <OneVariable>[];
         for (int i = 0; i < glist.length; i++) {
+          String date = customTickData(datafunc.getDateString(glist[i]));
           graphdata
-              .add(new OneVariable(datafunc.getHR(glist[i]), listspot, null));
+              .add(new OneVariable(datafunc.getHR(glist[i]), listspot, date));
           listspot++;
         }
       }
@@ -252,26 +309,29 @@ class InteractiveGraphState extends State<InteractiveGraph> {
         graphdata = <BloodPressure>[];
         //if there is two values per measurement to be displayed on ther graph
         for (int i = 0; i < glist.length; i++) {
+          String date = customTickData(datafunc.getDateString(glist[i]));
           graphdata.add(new BloodPressure(
-              datafunc.getSys(glist[i]),
+              datafunc.getSys(glist[i]) - datafunc.getDia(glist[i]),
               datafunc.getDia(glist[i]),
               listspot,
-              datafunc.getDateString(glist[i])));
+              date));
           listspot++;
         }
       } else if (subcol == 'bloodGlucose') {
         graphdata = <OneVariable>[];
         //if there is one value to display on the graph
         for (int i = 0; i < glist.length; i++) {
-          graphdata.add(new OneVariable(datafunc.getMMOL(glist[i]), listspot,
-              datafunc.getDateString(glist[i])));
+          String date = customTickData(datafunc.getDateString(glist[i]));
+          graphdata
+              .add(new OneVariable(datafunc.getMMOL(glist[i]), listspot, date));
           listspot++;
         }
       } else if (subcol == 'heartRate') {
         graphdata = <OneVariable>[];
         for (int i = 0; i < glist.length; i++) {
-          graphdata.add(new OneVariable(datafunc.getHR(glist[i]), listspot,
-              datafunc.getDateString(glist[i])));
+          String date = customTickData(datafunc.getDateString(glist[i]));
+          graphdata
+              .add(new OneVariable(datafunc.getHR(glist[i]), listspot, date));
           listspot++;
         }
       }
@@ -284,7 +344,7 @@ class InteractiveGraphState extends State<InteractiveGraph> {
           //make the predicted values red
           return charts.MaterialPalette.green.shadeDefault;
         },
-        domainFn: (BloodPressure bloodpressure, _) => bloodpressure.day,
+        domainFn: (BloodPressure bloodpressure, _) => bloodpressure.recording,
         measureFn: (BloodPressure bloodpressure, _) =>
             bloodpressure.dia, //do one line for diastolic
         data: graphdata,
@@ -294,30 +354,49 @@ class InteractiveGraphState extends State<InteractiveGraph> {
         colorFn: (BloodPressure bloodpressure, __) {
           return charts.MaterialPalette.blue.shadeDefault;
         },
-        domainFn: (BloodPressure bloodpressure, _) => bloodpressure.day,
+        domainFn: (BloodPressure bloodpressure, _) => bloodpressure.recording,
         measureFn: (BloodPressure bloodpressure, _) =>
             bloodpressure.sys, //do one line for systolic
         data: graphdata,
       ));
-      graphchart = charts.LineChart(graphlist,
-          defaultRenderer:
-              new charts.LineRendererConfig(includePoints: true, stacked: true),
-          animate: false,
-          animationDuration: Duration(seconds: 2),
-          domainAxis: charts.NumericAxisSpec(
-            renderSpec: charts.SmallTickRendererSpec(
-                labelRotation:
-                    50), //rotates the labels on the x-axis so that they dont overlap eachother
-            //  tickProviderSpec: charts.BasicNumericTickProviderSpec(
-            //  ), //make x-axis have ceratin amount of texts
-            tickFormatterSpec: customTickFormatter,
-          ),
-          behaviors: [
-            new charts.ChartTitle('$chosenpatient\'s Blood Pressure',
-                behaviorPosition: charts.BehaviorPosition.start,
-                titleOutsideJustification:
-                    charts.OutsideJustification.middleDrawArea),
-          ]);
+      graphchart = charts.LineChart(
+        graphlist,
+        defaultRenderer:
+            new charts.LineRendererConfig(includePoints: true, stacked: true),
+        animate: false,
+        animationDuration: Duration(seconds: 2),
+        domainAxis: charts.NumericAxisSpec(
+          renderSpec: charts.SmallTickRendererSpec(
+              labelRotation:
+                  70), //rotates the labels on the x-axis so that they dont overlap eachother
+          tickProviderSpec: charts.BasicNumericTickProviderSpec(
+              desiredTickCount:
+                  graphdata.length), //make x-axis have certain amount of texts
+          tickFormatterSpec: customTickFormatter,
+        ),
+        behaviors: [
+          charts.ChartTitle(labelAxis(chosendatatype),
+              behaviorPosition: charts.BehaviorPosition.start,
+              titleOutsideJustification:
+                  charts.OutsideJustification.middleDrawArea),
+          charts.LinePointHighlighter(symbolRenderer: x),
+        ],
+        selectionModels: [
+          charts.SelectionModelConfig(
+              type: charts.SelectionModelType.info,
+              changedListener: (charts.SelectionModel model) {
+                if (model.hasDatumSelection) {
+                  String first = datafunc.getTimeString(glist[model
+                      .selectedSeries[0]
+                      .domainFn(model.selectedDatum[0].index)]);
+                  String second = model.selectedSeries[0]
+                      .measureFn(model.selectedDatum[0].index)
+                      .toString();
+                  x.define(first, second);
+                }
+              })
+        ],
+      );
     } else {
       //if subcol is bloodGlucose or heartRate is
       graphlist.add(charts.Series<OneVariable, int>(
@@ -327,30 +406,48 @@ class InteractiveGraphState extends State<InteractiveGraph> {
           //make the predicted values red
           return charts.MaterialPalette.blue.shadeDefault;
         },
-        domainFn: (OneVariable onevar, _) => onevar.day,
+        domainFn: (OneVariable onevar, _) => onevar.recording,
         measureFn: (OneVariable onevar, _) => onevar.vari,
         data: graphdata,
       ));
-      graphchart = charts.LineChart(graphlist,
-          defaultRenderer:
-              new charts.LineRendererConfig(includePoints: true, stacked: true),
-          animate: false,
-          animationDuration: Duration(seconds: 2),
-          domainAxis: charts.NumericAxisSpec(
-            renderSpec: charts.SmallTickRendererSpec(
-                labelRotation:
-                    50), //rotates the labels on the x-axis so that they dont overlap eachother
-            // tickProviderSpec: charts.BasicNumericTickProviderSpec(
-            //   desiredTickCount: )  //make x-axis have same amount of ticks for recorded and predicted days
-            tickFormatterSpec: customTickFormatter,
-          ),
-          behaviors: [
-            new charts.ChartTitle('$chosenpatient\'s $chosendatatype',
-                behaviorPosition: charts.BehaviorPosition.start,
-                titleOutsideJustification:
-                    charts.OutsideJustification.middleDrawArea),
-          ]);
+      graphchart = charts.LineChart(
+        graphlist,
+        defaultRenderer:
+            new charts.LineRendererConfig(includePoints: true, stacked: true),
+        animate: false,
+        animationDuration: Duration(seconds: 2),
+        domainAxis: charts.NumericAxisSpec(
+          renderSpec: charts.SmallTickRendererSpec(
+              labelRotation:
+                  70), //rotates the labels on the x-axis so that they dont overlap eachother
+          tickProviderSpec: charts.BasicNumericTickProviderSpec(
+              desiredTickCount: graphdata.length),
+          tickFormatterSpec: customTickFormatter,
+        ),
+        behaviors: [
+          new charts.ChartTitle(labelAxis(chosendatatype),
+              behaviorPosition: charts.BehaviorPosition.start,
+              titleOutsideJustification:
+                  charts.OutsideJustification.middleDrawArea),
+          charts.LinePointHighlighter(symbolRenderer: x),
+        ],
+        selectionModels: [
+          charts.SelectionModelConfig(
+              changedListener: (charts.SelectionModel model) {
+            if (model.hasDatumSelection) {
+              String first = datafunc.getTimeString(glist[model
+                  .selectedSeries[0]
+                  .domainFn(model.selectedDatum[0].index)]);
+              String second = model.selectedSeries[0]
+                  .measureFn(model.selectedDatum[0].index)
+                  .toString();
+              x.define(first, second);
+            }
+          })
+        ],
+      );
     }
+    createTitle();
     setState(() {});
   }
 
@@ -476,7 +573,11 @@ class InteractiveGraphState extends State<InteractiveGraph> {
               ],
             ),
             tab(),
+            Container(padding: EdgeInsets.only(bottom: 10), child: title),
             Expanded(child: graphchart),
+            Container(
+              padding: EdgeInsets.only(top: 50),
+            )
           ],
         ),
       );
@@ -527,11 +628,11 @@ class InteractiveGraphState extends State<InteractiveGraph> {
                     icon: Icon(Icons.arrow_drop_down),
                     iconSize: 15,
                     isExpanded: true,
-                    value: amount.toString(),
+                    value: dateamount.toString(),
                     items: dateamountList.map(buildItem).toList(),
                     onChanged: (value) {
                       setState(() {
-                        amount = int.parse(value!);
+                        dateamount = int.parse(value!);
                       });
                     },
                   ),
@@ -650,20 +751,60 @@ class InteractiveGraphState extends State<InteractiveGraph> {
       return Text('');
     }
   }
+
+  createTitle() {
+    title = Container(
+        padding: EdgeInsets.only(top: 15, bottom: 5, left: 10, right: 10),
+        alignment: Alignment.center,
+        child: Text('$chosenpatient\'s $chosendatatype',
+            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)));
+  }
+}
+
+class CustomCircleSymbolRenderer extends charts.CircleSymbolRenderer {
+  static String printwords = 'Undefined';
+
+  define(String time, String value) {
+    printwords = 'Time: ' + time + '\nValue: ' + value;
+  }
+
+  @override
+  void paint(charts.ChartCanvas canvas, Rectangle<num> bounds,
+      {List<int>? dashPattern,
+      charts.Color? fillColor,
+      charts.FillPatternType? fillPattern,
+      charts.Color? strokeColor,
+      double? strokeWidthPx}) {
+    super.paint(canvas, bounds,
+        dashPattern: dashPattern,
+        fillColor: fillColor,
+        fillPattern: fillPattern,
+        strokeColor: strokeColor,
+        strokeWidthPx: strokeWidthPx);
+    canvas.drawRect(
+        Rectangle(bounds.left - 5, bounds.top - 35, bounds.width + 90,
+            bounds.height + 25),
+        fill: charts.Color.fromHex(code: '#BEDAF6'));
+    var textStyle = style.TextStyle();
+    textStyle.color = charts.Color.black;
+    textStyle.fontSize = 14;
+    canvas.drawText(TextElement.TextElement(printwords, style: textStyle),
+        (bounds.left).round(), (bounds.top - 28).round());
+  }
 }
 
 class OneVariable {
   //for bg and hr
-  var day;
+  final int recording;
   final num vari;
   String? date;
-  OneVariable(this.vari, this.day, this.date);
+  OneVariable(this.vari, this.recording, this.date);
 }
 
 class BloodPressure {
   final num dia;
   final num sys;
-  var day;
+  final int recording;
   String? date;
-  BloodPressure(this.dia, this.sys, this.day, this.date);
+  BloodPressure(this.dia, this.sys, this.recording, this.date);
 }
