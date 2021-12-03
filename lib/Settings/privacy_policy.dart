@@ -7,7 +7,6 @@ class PrivacyPolicy extends StatefulWidget {
 }
 
 class _PrivacyPolicyState extends State<PrivacyPolicy> {
-  // TODO: Write Privacy Policy and display it here
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +17,11 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
       ),
       body: ListView(
         scrollDirection: Axis.vertical,
-        children: [],
+        children: [
+          Center(child: Text('Healthcare Systems R&A Inc. is committed to protecting the confidentiality of your personal information and respects your privacy. This Privacy Policy will describe')),
+        ],
       ),
     );
   }
+
 }
