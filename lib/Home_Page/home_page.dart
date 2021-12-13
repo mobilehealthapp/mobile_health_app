@@ -301,8 +301,8 @@ class _HomePageState extends State<HomePage> {
           SizedBox(
             height: 20.0,
           ),
-          graphFutureBuilder(future: fetchBPData, uponCompletion: extractBP),
           graphFutureBuilder(future: fetchBGData, uponCompletion: extractBG),
+          graphFutureBuilder(future: fetchBPData, uponCompletion: extractBP),
           graphFutureBuilder(future: fetchHRData, uponCompletion: extractHR),
           SizedBox(
             height: 70.0,

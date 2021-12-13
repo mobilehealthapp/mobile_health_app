@@ -67,6 +67,6 @@ class PhysicianDrawers extends Drawers {
     DrawerEntry('Patient Side', '/home', Icons.logout),
     DrawerEntry('ML', '/ml', Icons.add_chart),
     DrawerEntry('Patient Predictions', '/PatientSelect', Icons.add_chart),
-    DrawerEntry('Example', '/Example', Icons.add_chart),
+    DrawerEntry('Data Insertion', '/DataInsert', Icons.access_alarm),
   ];
 }
