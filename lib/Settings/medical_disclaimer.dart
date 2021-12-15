@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/constants.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class MedicalDisclaimer extends StatefulWidget {
   const MedicalDisclaimer({Key? key}) : super(key: key);
@@ -9,7 +10,23 @@ class MedicalDisclaimer extends StatefulWidget {
 }
 
 class _MedicalDisclaimerState extends State<MedicalDisclaimer> {
-   // TODO: Write Medical Disclaimer and display it here
+
+  String data = '';
+  fetchFileData() async{
+    String responseText;
+    responseText= await rootBundle.loadString('assets/medical_disclaimer2021.txt');
+
+    setState(() {
+      data = responseText;
+    });
+  }
+
+  @override
+  void initState() {
+    fetchFileData();
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +37,12 @@ class _MedicalDisclaimerState extends State<MedicalDisclaimer> {
       ),
       body: ListView(
         scrollDirection: Axis.vertical,
-        children: [],
+        padding: EdgeInsets.all(32),
+        children: [
+          Text(data),
+        ],
       ),
     );
   }
+
 }
