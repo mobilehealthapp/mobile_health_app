@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/constants.dart';
+import 'package:flutter/services.dart' show rootBundle;
+
 
 class PrivacyPolicy extends StatefulWidget {
   @override
@@ -7,7 +9,23 @@ class PrivacyPolicy extends StatefulWidget {
 }
 
 class _PrivacyPolicyState extends State<PrivacyPolicy> {
-  // TODO: Write Privacy Policy and display it here
+
+  String data = '';
+  fetchFileData() async{
+    String responseText;
+    responseText= await rootBundle.loadString('assets/privacy_policy2021.txt');
+
+    setState(() {
+      data = responseText;
+    });
+  }
+
+  @override
+  void initState() {
+   fetchFileData();
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +35,13 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
         title: Text('Privacy Policy'),
       ),
       body: ListView(
-        scrollDirection: Axis.vertical,
-        children: [],
+          scrollDirection: Axis.vertical,
+          padding: EdgeInsets.all(32),
+          children: [
+            Text(data),
+          ],
       ),
     );
   }
+
 }
