@@ -1,0 +1,60 @@
+﻿Healthcare Systems R&A Inc. is committed to protecting the confidentiality of your personal information and respects your privacy. This Privacy Policy will describe:
+* The types of personal information you may provide us when you register and use the MedScan application.
+* How we may use, collect and share your personal information.
+* How we protect your personal data 
+
+
+Please read the policy carefully to understand the personal information being collected from you and how we will treat it. By downloading, registering and using the MedScan app, you accept and agree to the practices described in this Privacy Policy. If you do not agree with the following information, please do not use the app or provide us with your personal information. 
+
+
+1. INFORMATION YOU PROVIDE US 
+Once you register and use the app, you may provide us with the following information: 
+* Personal and contact information, such as your first and last name, email address, telephone number, home address, province/territory, age, date of birth, biological sex, height, weight, medical conditions you may have, medications you may be prescribed. 
+
+
+In addition to your own personal information, the app will ask you to provide information about your doctor. This includes: 
+* First name and last name, qualifications, province/territory, clinic telephone number, clinic fax number and clinic address. 
+
+
+The application will ask you to provide your vital sign measurements to construct a patient graph that will display your average, variance and standard deviation for the following vital signs: 
+* Blood pressure 
+* Blood glucose 
+* Heart rate 
+
+
+Access to Phone Camera: 
+The application will have access to your camera and phone gallery to submit your vital signs measurements through our Optimal Character Recognition (OCR) feature. Users have the option of granting permission for the app to access the camera in the settings. A black screen will appear if you have not enabled the camera access permission in the settings.
+
+
+
+
+
+
+2. WHO IS YOUR PERSONAL DATA SHARED WITH
+The purpose of MedScan is to facilitate the transfer of self-monitored health data from patient to the physician. Medscan will be sharing your health measurements by the doctor of your choice.
+
+
+Adding a Doctor: 
+In the app, you will have the ability to add a new doctor including their full name, email and label (if they are a specialist, family physician, etc.). For security, you must also include the doctor’s unique 16-digit code that they received upon signing up for the app. This will allow you to connect to your doctor’s real account. Only patients are able to add physicians and not physicians adding patients (to prevent adding the wrong physician). 
+
+
+3. THE SECURITY OF YOUR PERSONAL DATA
+
+
+All personal information is stored in secure servers in Firebase to prevent accidental loss and from unauthorized access, use, alteration and disclosure. The app utilizes cloud storage instead of local storage to protect users from malicious applications that may jeopardize the security of their phone. 
+
+
+For further measures of data security, we have implemented “Delete My Data” and “Delete My Account” options. By pressing on these options, you will need to input your email and password for verification and the app will proceed to either delete all of your data or delete your account. 
+
+
+The safety and security of your information also depends on you as you have chosen a password to use to access your account and certain features in the app. This 6-digit password must be treated as confidential and should not be shared with any third party. If you know or suspect other than you that knows your password, we advise you to change your password with the password reset option or contact us. 
+
+
+4. CONTACT INFORMATION
+Please contact us for any questions, comments or concerns you may have regarding the protection of your privacy after reading this Privacy Policy. 
+
+
+Healthcare Systems R&A Inc. 
+180 Northfield Drive West, Suite 4
+Waterloo, ON N2L 0C7
+Email: info@healthcare-systems.ca
