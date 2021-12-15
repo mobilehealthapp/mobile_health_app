@@ -34,6 +34,8 @@ import 'Settings/settings.dart';
 import 'Settings/terms_and_conditions.dart';
 import 'Settings/delete_data_or_account.dart';
 import 'Settings/my_doctor_profile.dart';
+import 'Settings/physician_notifications.dart';
+import 'Settings/patient_notifications.dart';
 
 // analysis imports
 import 'Analysis/health_analysis.dart';
@@ -202,6 +204,8 @@ class MyApp extends StatelessWidget {
         '/ml': (context) => MachineLearning(),
         '/PatientSelect': (context) => PatientSelect(),
         '/DataInsert': (context) => DataInsert(),
+        '/drNotifications': (context) => DrNotifications(),
+        '/patientNotifications': (context) => PatientNotifications(),
       },
       navigatorKey: navigator,
     );

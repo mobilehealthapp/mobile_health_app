@@ -29,6 +29,10 @@ class _SettingsPageState extends State<SettingsPage> {
             label: 'My Doctors',
           ),
           SettingsButton(
+            route: '/patientNotifications',
+            label: 'Notifications',
+          ),
+          SettingsButton(
             route: '/privacyPolicy',
             label: 'Privacy Policy',
           ),
