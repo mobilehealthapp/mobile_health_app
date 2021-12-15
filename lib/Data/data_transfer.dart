@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '/Notification/notifications.dart';
+
 
 // Firestore variables
 final patientData = FirebaseFirestore.instance.collection('patientData');
@@ -7,6 +9,16 @@ var userData;
 final _auth = FirebaseAuth.instance;
 var loggedInUser;
 var uid;
+var highHR; // high heart rate threshold
+var lowHR;  // low heart rate threshold
+var highBG;  // high blood glucose threshold
+var lowBG;  // low blood gluscose threshold
+var highBP; // high overall blood pressure threshold
+var lowBP;  // low overall blood pressure threshold
+var highSYS;  // high systolic blood pressure threshold
+var lowSYS; // low systolic blood pressure threshold
+var highDIA;  // high diastolic blood pressure threshold
+var lowDIA; // low diastolic blood pressure threshold
 
 // Function to get the current time
 // (returns a DateTime, simply convert to String if desired)
@@ -337,4 +349,65 @@ class Data {
         break;
     }
   }
+
+  //Set of functions to notify the physician if inputted values exceed the threshold values
+  //TODO: Add notifications for predictive values- framework is created below
+
+  Future bpNotification() async {
+    if ( data1 > highSYS || data1 < lowSYS || data2 > highDIA || data2 < lowDIA ) {
+      NotificationApi.showNotification(
+        title: 'Exceeds Blood Pressure Threshold',
+        body: ' Your patient\'s Blood Pressure exceeds the threshold amount. Click here to view your patients profile.',
+        payload: '/physHome',
+      );
+    }
+  }
+
+  Future glucoseNotification() async {
+    if ( data1 > highBG || data1 < lowBG  ) {
+      NotificationApi.showNotification(
+          title: 'Exceeds Blood Glucose Threshold',
+          body: ' Your patient\'s Blood Glucose exceeds the threshold amount. Click here to view your patients profile.',
+          payload: '/physHome',
+      );
+    }
+  }
+  Future heartRateNotification() async {
+    if (  data1 > highHR || data1 < lowHR ) {
+      NotificationApi.showNotification(
+          title: 'Exceeds Heart Rate Threshold',
+          body: ' Your patient\'s Heart Rate exceeds the threshold amount. Click here to view your patients profile.',
+          payload: '/physHome',
+      );
+    }
+  }
+
+/*  Future bpPredictiveThreshold() async {
+    if (  /*  Within Threshold  */ ) {
+      NotificationApi.showNotification(
+        title: 'Predicted Blood Pressure Threshold',
+        body: ' Your patient\'s Blood Pressure is predicted to exceed the threshold. Click here to view your patients profile.',
+        payload: '/physHome',
+      );
+    }
+  }
+
+  Future glucosePredictiveThreshold() async {
+    if (  /*  Within Threshold  */ ) {
+      NotificationApi.showNotification(
+        title: 'Predicted Blood Glucose Threshold',
+        body: ' Your patient\'s Blood Glucose is predicted to exceed the threshold. Click here to view your patients profile.',
+        payload: '/physHome',
+      );
+    }
+  }
+  Future heartRatePredictiveThreshold() async {
+    if (  /*  Within Threshold  */ ) {
+      NotificationApi.showNotification(
+        title: 'Predicted Heart Rate Threshold',
+        body: ' Your patient\'s Heart Rate is predicted to exceed the threshold. Click here to view your patients profile. ',
+        payload: '/physHome',
+      );
+    }
+  } */
 }
