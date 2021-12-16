@@ -1,12 +1,29 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '/Notification/notifications.dart';
+import '/Physician_Side/physician_home.dart';
+import 'package:mobile_health_app/Settings/settings_constants.dart';
+import 'package:mobile_health_app/Authentication/database_auth_services.dart';
+import 'package:mobile_health_app/constants.dart';
 
 // Firestore variables
 final patientData = FirebaseFirestore.instance.collection('patientData');
+final patientRef = FirebaseFirestore.instance.collection(
+    'patientprofile');
 var userData;
 final _auth = FirebaseAuth.instance;
 var loggedInUser;
 var uid;
+var highHR; // high heart rate threshold
+var lowHR;  // low heart rate threshold
+var highBG;  // high blood glucose threshold
+var lowBG;  // low blood gluscose threshold
+var highBP; // high overall blood pressure threshold
+var lowBP;  // low overall blood pressure threshold
+var highSYS;  // high systolic blood pressure threshold
+var lowSYS; // low systolic blood pressure threshold
+var highDIA;  // high diastolic blood pressure threshold
+var lowDIA; // low diastolic blood pressure threshold
 
 // Function to get the current time
 // (returns a DateTime, simply convert to String if desired)
@@ -224,6 +241,7 @@ class Data {
       default:
         break;
     }
+    checkThreshold(); //notifies physician if values don't fall within threshold
   }
 
   // Function that returns the appropriate alert text once the user hits submit
@@ -336,5 +354,37 @@ class Data {
         }, SetOptions(merge: true));
         break;
     }
+  }
+
+  //Function that sets all the Threshold values
+  getThreshold() async{
+    getCurrentUser();
+    final DocumentSnapshot patientInfo = await patientRef.doc(uid).get();
+        highHR = patientInfo.get('highHR');
+        lowHR = patientInfo.get('lowHR');
+        highBG = patientInfo.get('highBG');
+        lowBG = patientInfo.get('lowBG');
+        highBP = patientInfo.get('highBP');
+        lowBP = patientInfo.get('lowBP');
+        highSYS = patientInfo.get('highSYS');
+        lowSYS = patientInfo.get('lowSYS');
+        highDIA= patientInfo.get('highDIA');
+        lowDIA = patientInfo.get('lowDIA');
+  }
+
+  //Function to determine if inputted values fall within given threshold, will notify physician if it does not
+  //TODO: Add notifications for Machine Learning predictive values
+  void checkThreshold(){
+      getThreshold();
+    if (type == 'Blood Pressure' && (data1 > highSYS || data1 < lowSYS || data2 > highDIA || data2 < lowDIA)) {
+      NotifyPhys.bpThreshold();
+    } else if (type == 'Blood Glucose' && ( data1 > highBG || data1 < lowBG  )) {
+      NotifyPhys.bgThreshold();
+    } else if (type == 'Heart Rate' && (  data1 > highHR || data1 < lowHR )) {
+      NotifyPhys.hrThreshold();
+    } else {
+      NotifyPhys.withinThreshold();
+    }
+    return;
   }
 }

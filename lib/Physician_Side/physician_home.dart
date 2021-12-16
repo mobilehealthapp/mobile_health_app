@@ -5,6 +5,8 @@ import 'package:mobile_health_app/Home_Page/logout.dart';
 import 'package:mobile_health_app/constants.dart';
 import 'package:mobile_health_app/Drawers/drawers.dart';
 import 'package:mobile_health_app/Physician_Side/patient_data.dart';
+import 'package:mobile_health_app/Notification/notifications.dart';
+import 'package:mobile_health_app/Data/data_transfer.dart';
 
 //This file contains UI and functionality for the Physician home page, which displays a searchable list of a doctor's patients
 var loggedInUser;
@@ -13,6 +15,19 @@ var uid;
 class PhysHome extends StatefulWidget {
   @override
   _PhysHomeState createState() => _PhysHomeState();
+}
+
+class NotifyPhys {
+
+  static int exceptionType = 0;
+
+  static int bpThreshold() { return exceptionType = 1; }
+  static int bgThreshold() { return exceptionType = 2; }
+  static int hrThreshold() { return exceptionType = 3; }
+  static int withinThreshold() { return exceptionType = 0; }
+
+  static int thresholdErrorValue = exceptionType;
+
 }
 
 class _PhysHomeState extends State<PhysHome> {
@@ -30,6 +45,45 @@ class _PhysHomeState extends State<PhysHome> {
     getCurrentUser(); //Method to obtain current user data
     _searchcontroller.addListener(
         onsearchchange); //Adds listener to search controller to update when text is entered
+    listenNotifications();
+    thresholdNotifications(NotifyPhys.thresholdErrorValue);
+  }
+
+  void listenNotifications() {
+    NotificationApi.onNotifications.stream.listen(onClickedNotification);
+  }
+
+  void onClickedNotification(String? payload) =>
+      Navigator.of(context).pushNamed(
+        payload!,
+      );
+
+  //Function that displays a notification to the physician if one of their patients input data outside of the threshold
+  //TODO: display notifications for when predicted values fall outside the threshold
+  Future thresholdNotifications(thresholdErrorCode) async {
+    if (thresholdErrorCode == 1) {
+      NotificationApi.showNotification(
+        title: 'Exceeds Blood Pressure Threshold',
+        body: ' Your patient\'s Blood Pressure exceeds the threshold amount. Click here to view your patients profile.',
+        payload: '/physHome',
+      );
+      thresholdErrorCode = 0;
+    } else if (thresholdErrorCode == 2) {
+      NotificationApi.showNotification(
+        title: 'Exceeds Blood Glucose Threshold',
+        body: ' Your patient\'s Blood Glucose exceeds the threshold amount. Click here to view your patients profile.',
+        payload: '/physHome',
+      );
+      thresholdErrorCode = 0;
+    } else if (thresholdErrorCode == 3) {
+      NotificationApi.showNotification(
+        title: 'Exceeds Heart Rate Threshold',
+        body: ' Your patient\'s Heart Rate exceeds the threshold amount. Click here to view your patients profile.',
+        payload: '/physHome',
+      );
+      thresholdErrorCode = 0;
+    }
+    return;
   }
 
   @override
