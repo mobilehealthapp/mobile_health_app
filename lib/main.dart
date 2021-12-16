@@ -50,7 +50,7 @@ import 'Authentication/splash_screen.dart';
 import 'Authentication/welcome_screen.dart';
 
 //Machine learning imports
-import 'Machine_Learning/ml.dart';
+import 'Machine_Learning/model_integration.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
