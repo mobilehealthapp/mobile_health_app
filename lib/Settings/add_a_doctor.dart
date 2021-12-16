@@ -29,7 +29,7 @@ class _AddDoctorsState extends State<AddDoctors> {
       body: Padding(
         padding: EdgeInsets.all(10.0),
         child: ListView(
-          children: [
+          children: <Widget>[
             Padding(
               padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
               child: Container(
@@ -42,44 +42,51 @@ class _AddDoctorsState extends State<AddDoctors> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
-              child: TextFormField(
-                decoration:
-                    kTextFieldDecoration.copyWith(hintText: 'First Name'),
-                onChanged: (value) {
-                  firstName = value;
-                },
-              ),
+              padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
             ),
-            Padding(
-              padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
-              child: TextFormField(
-                decoration:
-                    kTextFieldDecoration.copyWith(hintText: 'Last Name'),
-                onChanged: (value) {
-                  lastName = value;
-                },
-              ),
+            textFieldLabel('First Name'),
+            TextFormField(
+              decoration:
+              kTextFieldDecoration.copyWith(hintText: ''),
+              onChanged: (value) {
+                firstName = value;
+              },
             ),
-            Padding(
-              padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
-              child: TextFormField(
-                decoration:
-                    kTextFieldDecoration.copyWith(hintText: 'Email Address'),
-                onChanged: (value) {
-                  email = value;
-                },
-              ),
+            SizedBox(
+              height: 10.0,
             ),
-            Padding(
-              padding: EdgeInsets.only(top: 20.0, bottom: 5.0),
-              child: TextFormField(
-                onChanged: (value) {
-                  inputtedCode = value;
-                },
-                decoration: kTextFieldDecoration.copyWith(
-                    hintText: 'Doctor\'s Access Code'),
-              ),
+            textFieldLabel('Last Name'),
+            TextFormField(
+              decoration:
+              kTextFieldDecoration.copyWith(hintText: ''),
+              onChanged: (value) {
+                lastName = value;
+              },
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
+            textFieldLabel('Email Address'),
+            TextFormField(
+              decoration:
+              kTextFieldDecoration.copyWith(hintText: ''),
+              onChanged: (value) {
+                email = value;
+              },
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
+            textFieldLabel('Doctor\'s Access Code'),
+            TextFormField(
+              decoration: kTextFieldDecoration.copyWith(
+                  hintText: ''),
+              onChanged: (value) {
+                inputtedCode = value;
+              },
+            ),
+            SizedBox(
+              height: 10.0,
             ),
             Container(
               padding: EdgeInsets.only(right: 10.0),
@@ -105,15 +112,38 @@ class _AddDoctorsState extends State<AddDoctors> {
                 ],
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
-              child: TextFormField(
-                decoration:
-                    kTextFieldDecoration.copyWith(hintText: 'Doctor\'s Label'),
-                onChanged: (value) {
-                  label = value;
-                },
-              ),
+            Row(
+              children: <Widget>[
+                textFieldLabel('Doctor\'s Label'),
+                DropdownButton<String>(
+                  value: label,
+                  items: [
+                    //TODO: Add Doctor Types and "Other" Field for User to select
+                    DropdownMenuItem(
+                      child: Text('General Practitioner'),
+                      value: 'GP',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('Neurologist'),
+                      value: 'Neurologist',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('Pediatrician'),
+                      value: 'Pediatrician',
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(
+                          () {
+                        label = value.toString();
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 10.0,
             ),
             Container(
               padding: EdgeInsets.only(right: 10.0),
