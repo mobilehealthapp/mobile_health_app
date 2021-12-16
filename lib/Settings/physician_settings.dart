@@ -29,6 +29,10 @@ class _DrSettingsPageState extends State<DrSettingsPage> {
             label: 'Privacy Policy',
           ),
           SettingsButton(
+            route: '/drNotifications',
+            label: 'Notifications',
+          ),
+          SettingsButton(
             route: '/termsAndConditions',
             label: 'Terms and Conditions',
           ),
