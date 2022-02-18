@@ -58,12 +58,12 @@ class HealthAnalysis extends StatefulWidget {
 
 class _HealthAnalysisState extends State<HealthAnalysis> {
   var patientData = FirebaseFirestore.instance
-    .collection('patientData')
-    .doc(FirebaseAuth.instance.currentUser!.uid);
+      .collection('patientData')
+      .doc(FirebaseAuth.instance.currentUser!.uid);
   var bloodGlucose;
   var bloodPressure;
   var heartRate;
-  
+
   sysGet() async {
     // calculates standard deviation, variance, and range of systolic BP
     sys = [];
@@ -154,7 +154,9 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
       bg.add(bgGet.toDouble());
     }
     bg.sort();
-    var doubles = bg.map((e) => e as double).toList(); // converts dynamic list to double list
+    var doubles = bg
+        .map((e) => e as double)
+        .toList(); // converts dynamic list to double list
 
     setState(() {
       // if there's more than 1 data point, calculate the values; if not, automatically set to 0
@@ -252,7 +254,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   Future<List<FlSpot>> getDiasData() async {
     // gets list of BP (diastolic) points to use in Graphs
     diaChart = [];
-    final bpData = await patientData.collection('bloodPressure').orderBy('uploaded').get();
+    final bpData =
+        await patientData.collection('bloodPressure').orderBy('uploaded').get();
     final value = bpData.docs;
     double index = 1.0;
     for (var val in value) {
@@ -267,7 +270,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   Future<List<FlSpot>> getBGData() async {
     // gets list of BG points to use in Graphs
     bgChart = [];
-    final bgData = await patientData.collection('bloodGlucose').orderBy('uploaded').get();
+    final bgData =
+        await patientData.collection('bloodGlucose').orderBy('uploaded').get();
     final value = bgData.docs;
     double index = 1.0;
     for (var val in value) {
@@ -282,7 +286,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   Future<List<FlSpot>> getHRData() async {
     // gets list of HR points to use in Graphs
     hrChart = [];
-    final hrData = await patientData.collection('heartRate').orderBy('uploaded').get();
+    final hrData =
+        await patientData.collection('heartRate').orderBy('uploaded').get();
     final value = hrData.docs;
     double index = 1.0;
     for (var val in value) {
@@ -301,23 +306,23 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     // gets averages of each data type for user
     final bpData = await bloodPressure
         .orderBy(
-        'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
+            'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
         .get();
     final bpData1 = bpData.docs;
     final bgData = await bloodGlucose
         .orderBy(
-        'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
+            'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
         .get();
     final bgData1 = bgData.docs;
     final hrData = await heartRate
         .orderBy(
-        'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
+            'uploaded') // orders by the field 'uploaded' which is same as ordering from oldest to newest
         .get();
     final hrData1 = hrData.docs;
     final DocumentSnapshot uploadedData = await patientData.get();
     setState(
-          () {
-            // if data is not empty, calculate avgs; if empty, automatically set to 0
+      () {
+        // if data is not empty, calculate avgs; if empty, automatically set to 0
         if (bpData1.isNotEmpty) {
           avgPressureSys =
               uploadedData.get('Average Blood Pressure (systolic)');

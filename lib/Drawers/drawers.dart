@@ -14,12 +14,13 @@ class Drawers extends StatelessWidget {
 
   final List<DrawerEntry> drawerEntries = [
     DrawerEntry('Home', '/home', Icons.home),
-    DrawerEntry('Settings', '/settings', Icons.settings),
     DrawerEntry('Health Analysis', '/healthAnalysis', Icons.health_and_safety),
-    LogoutEntry(),
     DrawerEntry('Physician Side', '/physHome', Icons.logout),
-    DrawerEntry('ML', '/ml', Icons.add_chart),
     DrawerEntry('Data Insertion', '/DataInsert', Icons.access_alarm),
+    DrawerEntry('Reminders', '/reminderHomepage', Icons.access_alarm),
+    DrawerEntry('ML', '/ml', Icons.add_chart),
+    DrawerEntry('Settings', '/settings', Icons.settings),
+    LogoutEntry(),
   ];
 
   ListView generateListView(BuildContext context) {

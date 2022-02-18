@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 // camera/data input imports
 import 'Camera/camera_input.dart';
@@ -21,6 +22,8 @@ import 'Machine_Learning/predictive_graph.dart';
 import 'package:mobile_health_app/constants.dart';
 
 // settings imports
+import 'Reminder/event_provider.dart';
+import 'Reminder/reminder_homepage.dart';
 import 'Settings/add_a_doctor.dart';
 import 'Settings/physician_profile.dart';
 import 'Settings/physician_profile_edit.dart';
@@ -140,74 +143,78 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: true,
-      title: 'Mobile Health App',
-      // Below is the App theme, if something is meant to be consistent
-      // throughout the entire app, please implement it here rather than
-      // everywhere it is used.
-      theme: ThemeData(
-        appBarTheme: AppBarTheme(
-          backwardsCompatibility: false,
-          systemOverlayStyle: SystemUiOverlayStyle.light,
-          iconTheme: IconThemeData(
-            color: Colors.white,
+    return ChangeNotifierProvider(
+      create: (context) => EventProvider(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: true,
+        title: 'Mobile Health App',
+        // Below is the App theme, if something is meant to be consistent
+        // throughout the entire app, please implement it here rather than
+        // everywhere it is used.
+        theme: ThemeData(
+          appBarTheme: AppBarTheme(
+            backwardsCompatibility: false,
+            systemOverlayStyle: SystemUiOverlayStyle.light,
+            iconTheme: IconThemeData(
+              color: Colors.white,
+            ),
+            titleTextStyle: kAppBarLabelStyle,
+            backgroundColor: kPrimaryColour,
+            centerTitle: true,
           ),
-          titleTextStyle: kAppBarLabelStyle,
-          backgroundColor: kPrimaryColour,
-          centerTitle: true,
+          primaryColor: Color(0xFF00BCD4),
+          primaryColorDark: Color(0xFF0097A7),
+          primaryColorLight: Color(0xFFB2EBF2),
+          accentColor: Color(0xFF607D8B),
+          textTheme: TextTheme().apply(
+            bodyColor: Color(0xFF212121),
+            displayColor: Color(0xFF757575),
+          ),
         ),
-        primaryColor: Color(0xFF00BCD4),
-        primaryColorDark: Color(0xFF0097A7),
-        primaryColorLight: Color(0xFFB2EBF2),
-        accentColor: Color(0xFF607D8B),
-        textTheme: TextTheme().apply(
-          bodyColor: Color(0xFF212121),
-          displayColor: Color(0xFF757575),
-        ),
+        initialRoute:
+            '/splash', //FirebaseAuth.instance.currentUser != null ? '/home' : '/',
+        routes: {
+          /*
+          named routes like these make it easier to navigate within the app and clean the code
+          they mean files require less imports as they are all named here
+           */
+          "/splash": (context) => SplashScreen(),
+          '/': (context) => WelcomeScreen(),
+          '/login': (context) => LoginPage(),
+          '/signup': (context) => SignupPage(),
+          '/verify': (context) => EmailVerificationScreen(),
+          '/reset': (context) => ResetScreen(),
+          '/home': (context) => HomePage(),
+          '/physHome': (context) => PhysHome(),
+          '/healthAnalysis': (context) => HealthAnalysis(),
+          '/cameraInput': (context) => CameraApp(),
+          '/dataInput': (context) => DataInput(),
+          '/settings': (context) => SettingsPage(),
+          '/drSettings': (context) => DrSettingsPage(),
+          '/profile': (context) => ProfilePage(),
+          '/drProfile': (context) => DrProfilePage(),
+          '/profileEdit': (context) => ProfileEdit(),
+          '/drProfileEdit': (context) => DrProfileEdit(),
+          '/myDoctors': (context) => MyDoctors(),
+          '/addDoctors': (context) => AddDoctors(),
+          '/myDoctorProfile': (context) => MyDoctorProfile(),
+          '/privacyPolicy': (context) => PrivacyPolicy(),
+          '/termsAndConditions': (context) => TermsAndConditions(),
+          '/medicalDisclaimer': (context) => MedicalDisclaimer(),
+          '/alertPatientAcc': (context) => AlertPatientAccount(),
+          '/alertPatientData': (context) => AlertPatientData(),
+          '/alertDoctorAcc': (context) => AlertDoctorAccount(),
+          '/alertDoctorData': (context) => AlertDoctorData(),
+          '/resetpass': (context) => ResetScreen(),
+          '/ml': (context) => MachineLearning(),
+          '/PatientSelect': (context) => PatientSelect(),
+          '/DataInsert': (context) => DataInsert(),
+          '/drNotifications': (context) => DrNotifications(),
+          '/patientNotifications': (context) => PatientNotifications(),
+          '/reminderHomepage': (context) => ReminderHompage(),
+        },
+        navigatorKey: navigator,
       ),
-      initialRoute:
-          '/splash', //FirebaseAuth.instance.currentUser != null ? '/home' : '/',
-      routes: {
-        /*
-        named routes like these make it easier to navigate within the app and clean the code
-        they mean files require less imports as they are all named here
-         */
-        "/splash": (context) => SplashScreen(),
-        '/': (context) => WelcomeScreen(),
-        '/login': (context) => LoginPage(),
-        '/signup': (context) => SignupPage(),
-        '/verify': (context) => EmailVerificationScreen(),
-        '/reset': (context) => ResetScreen(),
-        '/home': (context) => HomePage(),
-        '/physHome': (context) => PhysHome(),
-        '/healthAnalysis': (context) => HealthAnalysis(),
-        '/cameraInput': (context) => CameraApp(),
-        '/dataInput': (context) => DataInput(),
-        '/settings': (context) => SettingsPage(),
-        '/drSettings': (context) => DrSettingsPage(),
-        '/profile': (context) => ProfilePage(),
-        '/drProfile': (context) => DrProfilePage(),
-        '/profileEdit': (context) => ProfileEdit(),
-        '/drProfileEdit': (context) => DrProfileEdit(),
-        '/myDoctors': (context) => MyDoctors(),
-        '/addDoctors': (context) => AddDoctors(),
-        '/myDoctorProfile': (context) => MyDoctorProfile(),
-        '/privacyPolicy': (context) => PrivacyPolicy(),
-        '/termsAndConditions': (context) => TermsAndConditions(),
-        '/medicalDisclaimer': (context) => MedicalDisclaimer(),
-        '/alertPatientAcc': (context) => AlertPatientAccount(),
-        '/alertPatientData': (context) => AlertPatientData(),
-        '/alertDoctorAcc': (context) => AlertDoctorAccount(),
-        '/alertDoctorData': (context) => AlertDoctorData(),
-        '/resetpass': (context) => ResetScreen(),
-        '/ml': (context) => MachineLearning(),
-        '/PatientSelect': (context) => PatientSelect(),
-        '/DataInsert': (context) => DataInsert(),
-        '/drNotifications': (context) => DrNotifications(),
-        '/patientNotifications': (context) => PatientNotifications(),
-      },
-      navigatorKey: navigator,
     );
   }
 }
