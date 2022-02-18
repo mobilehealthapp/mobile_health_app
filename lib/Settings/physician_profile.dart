@@ -88,7 +88,7 @@ class _DrProfilePageState extends State<DrProfilePage> {
             editAnswer: 'Province/Territory: $province',
           ),
           ProfileTab(
-            editAnswer: 'Unique Code: $doctorCode',
+            editAnswer: 'Doctor ID: $doctorCode',
           ),
           ProfileTab(
             editAnswer: 'Telephone Number: $drTele',
