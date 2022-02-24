@@ -1,12 +1,15 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_health_app/Authentication/authentication_button.dart';
-import 'package:mobile_health_app/Authentication/database_auth_services.dart';
 import 'package:mobile_health_app/constants.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
+
+import 'database_auth_services.dart';
 
 //TODO: Make textfield style more consistent with the rest of the app, clean up UI
 //This file contains the UI and firebase functionality for user signup
@@ -17,8 +20,14 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-  final formKey =
-      GlobalKey<FormState>(); //Form key for textformfield validation
+  final formKey0 = GlobalKey<FormState>(); //Form key for first name validation
+  final formKey1 = GlobalKey<FormState>(); //Form key for last name validation
+  final formKey2 = GlobalKey<FormState>(); //Form key for email validation
+  final formKey3 = GlobalKey<FormState>(); //Form key for password validation
+  final formKey4 =
+      GlobalKey<FormState>(); //Form key for confirm password validation
+  final formKey5 = GlobalKey<FormState>(); //Form key for dropdown validation
+
   final CollectionReference patientProfileCollection =
       FirebaseFirestore.instance.collection('patientprofile');
   final CollectionReference doctorProfileCollection =
@@ -33,29 +42,6 @@ class _SignupPageState extends State<SignupPage> {
   var _chosenValue;
   bool isHidden = true;
   bool areCredsValid = false;
-  bool validemail = true;
-  bool validformat = true;
-
-  void checkEmail(String email, CollectionReference collection) {
-    validemail = true;
-    //checks if an email is being used in a collection already
-    //value is the email itself. This method could be adapted to work on other fields
-    collection.get().then((docSnap) => {
-          //take snapshot of the collection's documents
-          if (docSnap.size >
-              0) //if the collection isn't empty, iterate through each document
-            {
-              docSnap.docs.forEach((DocumentSnapshot doc) {
-                String comparedemail = doc.get('email');
-                if (email == comparedemail) {
-                  //if the email matches any of the
-                  //emails stored in the same valuetype, set validity to false
-                  validemail = false;
-                }
-              })
-            }
-        });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,24 +71,20 @@ class _SignupPageState extends State<SignupPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                SizedBox(height: 5.0),
+                Text(
+                  'Create an account. It\'s free!',
+                  style: TextStyle(
+                    fontSize: 25,
+                    color: Colors.grey[700],
+                  ),
+                ),
                 Column(
                   children: [
-                    SizedBox(height: 20.0),
-                    Text(
-                      'Create an account. It\'s free!',
-                      style: TextStyle(
-                        fontSize: 25,
-                        color: Colors.grey[700],
-                      ),
-                    )
-                  ],
-                ),
-                Form(
-                  key: formKey,
-                  child: Column(
-                    children: [
-                      SizedBox(height: 5.0),
-                      TextFormField(
+                    SizedBox(height: 5.0),
+                    Form(
+                      key: formKey0,
+                      child: TextFormField(
                         decoration: InputDecoration(
                           labelText: 'First Name',
                           labelStyle:
@@ -122,8 +104,11 @@ class _SignupPageState extends State<SignupPage> {
                         validator: Validators.required(
                             'First name is required'), //Each text form field contains a validator to ensure user has inputted information before signing up
                       ),
-                      SizedBox(height: 15.0),
-                      TextFormField(
+                    ),
+                    SizedBox(height: 15.0),
+                    Form(
+                      key: formKey1,
+                      child: TextFormField(
                         decoration: InputDecoration(
                           labelText: 'Last Name',
                           labelStyle:
@@ -142,8 +127,11 @@ class _SignupPageState extends State<SignupPage> {
                         },
                         validator: Validators.required('Last name is required'),
                       ),
-                      SizedBox(height: 15.0),
-                      TextFormField(
+                    ),
+                    SizedBox(height: 15.0),
+                    Form(
+                      key: formKey2,
+                      child: TextFormField(
                         decoration: InputDecoration(
                           labelText: 'Email',
                           labelStyle:
@@ -159,25 +147,16 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                         onChanged: (value) {
                           email = value;
-                          checkEmail(email!, patientProfileCollection);
-                          checkEmail(email!, doctorProfileCollection);
-                          validformat = RegExp(
-                                  r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                              .hasMatch(email);
                         },
                         validator: Validators.compose([
                           Validators.required('Email is required'),
-                          (value) {
-                            if (!validformat) {
-                              return 'Please enter a valid email adress.';
-                            } else if (!validemail) {
-                              return 'This email address is already in use.';
-                            }
-                          },
                         ]),
                       ),
-                      SizedBox(height: 15.0),
-                      TextFormField(
+                    ),
+                    SizedBox(height: 15.0),
+                    Form(
+                      key: formKey3,
+                      child: TextFormField(
                           decoration: InputDecoration(
                             labelText: 'Password',
                             labelStyle:
@@ -204,13 +183,25 @@ class _SignupPageState extends State<SignupPage> {
                             password = value;
                           },
                           validator: Validators.compose([
-                            //TODO: Currently, only password restriction is a minimum length of 6 characters, for tighter security it is necessary to include more restrictions on password
-                            Validators.required('Password is required'),
-                            Validators.minLength(
-                                6, 'Password must be at least 6 characters'),
+                            Validators.required(
+                                'Password is required'), //Ensures user has filled out password field
+                            Validators.minLength(6,
+                                'Password must be at least 6 characters'), //Ensures password is at least 6 characters
+                            Validators.patternRegExp(RegExp(r'[A-Z]'),
+                                'Password must contain at least one upper case letter'), //Following patternRegExp validators ensure specific restrictions are enforced on password
+                            Validators.patternRegExp(RegExp(r'[a-z]'),
+                                'Password must contain at least one lower case letter'),
+                            Validators.patternRegExp(RegExp(r'[0-9]'),
+                                'Password must contain at least one numerical digit'),
+                            Validators.patternRegExp(
+                                RegExp(r'[_!@#$%^&*(),.?":{}|<>]'),
+                                'Password must contain at least one special character'),
                           ])),
-                      SizedBox(height: 15.0),
-                      TextFormField(
+                    ),
+                    SizedBox(height: 15.0),
+                    Form(
+                      key: formKey4,
+                      child: TextFormField(
                         decoration: InputDecoration(
                           labelText: 'Confirm Password',
                           labelStyle:
@@ -245,59 +236,61 @@ class _SignupPageState extends State<SignupPage> {
                           }
                         ]),
                       ),
-                      SizedBox(height: 10.0),
-                      Center(
-                        child: Container(
-                          height: 50,
-                          width: 250,
-                          child: DropdownButtonFormField<String>(
-                            //Dropdown menu for users to choose an account type
-                            isExpanded: true,
-                            validator: (value) => value ==
-                                    null //Validator to ensure user has picked an account type
-                                ? 'Please select an account type'
-                                : null,
-                            value: _chosenValue,
-                            focusColor: Colors.white,
-                            elevation: 5,
-                            items: <String>[
-                              'Patient account',
-                              'Physician account',
-                            ].map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(
-                                  value,
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 18),
-                                ),
-                              );
-                            }).toList(),
-                            style: TextStyle(color: Colors.black),
-                            iconEnabledColor: Colors.black,
-                            hint: Text(
-                              'Account Type',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                    //SizedBox(height: 5.0),
+                  ],
+                ),
+                Form(
+                  key: formKey5,
+                  child: Center(
+                    child: Container(
+                      height: 50,
+                      width: 250,
+                      child: DropdownButtonFormField<String>(
+                        //Dropdown menu for users to choose an account type
+                        isExpanded: true,
+                        validator: (value) => value ==
+                                null //Validator to ensure user has picked an account type
+                            ? 'Please select an account type'
+                            : null,
+                        value: _chosenValue,
+                        focusColor: Colors.white,
+                        elevation: 5,
+                        items: <String>[
+                          'Patient account',
+                          'Physician account',
+                        ].map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(
+                              value,
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 18),
                             ),
-                            onChanged: (String? value) {
-                              setState(() {
-                                _chosenValue = value;
-                                accountType = value;
-                              });
-                            },
-                          ),
+                          );
+                        }).toList(),
+                        style: TextStyle(color: Colors.black),
+                        iconEnabledColor: Colors.black,
+                        hint: Text(
+                          'Account Type',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
                         ),
-                      )
-                    ],
+                        onChanged: (String? value) {
+                          setState(() {
+                            _chosenValue = value;
+                            accountType = value;
+                          });
+                        },
+                      ),
+                    ),
                   ),
                 ),
                 AuthenticationButton(
                     label: 'Sign up',
                     onPressed: () async {
-                      var areCredsValid = formKey.currentState
-                          ?.validate(); //Ensures all validators are satisfied
-                      if (areCredsValid == true) {
+                      var formsInvalid = checkForms();
+                      if (formsInvalid == false) {
                         setState(() {
                           showSpinner = true;
                         });
@@ -322,6 +315,7 @@ class _SignupPageState extends State<SignupPage> {
                             showSpinner = false;
                           });
                         } catch (signUpError) {
+                          print(signUpError);
                           ScaffoldMessenger.of(context).showSnackBar(
                             //Catches authentication errors from firebase and displays them in snackbar message
                             //TODO: Implement logic that handles specific firebase errors and displays custom, easily-interpreted messages for each. Current code displays messages as written by firebase which are not always easy to interpret
@@ -364,5 +358,94 @@ class _SignupPageState extends State<SignupPage> {
     setState(() {
       isHidden = !isHidden;
     });
+  }
+
+  bool checkForms() {
+    var formKeyResult0 = formKey0.currentState
+        ?.validate(); //Calls each form validator and stores result as bool value
+    var formKeyResult1 = formKey1.currentState?.validate();
+    var formKeyResult2 = formKey2.currentState?.validate();
+    var formKeyResult3 = formKey3.currentState?.validate();
+    var formKeyResult4 = formKey4.currentState?.validate();
+    var formKeyResult5 = formKey5.currentState?.validate();
+    List formList = [
+      formKeyResult0,
+      formKeyResult1,
+      formKeyResult2,
+      formKeyResult3,
+      formKeyResult4,
+      formKeyResult5
+    ]; //Stores validation results in list
+
+    bool validationFlag =
+        false; //Validation flag returns true if any forms are invalid
+
+    for (int i = 0; i < 6; i++) {
+      if (formList[i] == false) {
+        //Iterates through form results and checks if any are false (invalid)
+        switch (i) {
+          case 0:
+            {
+              //Switch statement checks with forms are invalid, waits 5 seconds and resets them
+              //Validation flag returns true if any forms are invalid
+              Timer(Duration(seconds: 5), () {
+                formKey0.currentState?.reset();
+              });
+
+              validationFlag = true;
+            }
+            break;
+          case 1:
+            {
+              Timer(Duration(seconds: 5), () {
+                formKey1.currentState?.reset();
+              });
+
+              validationFlag = true;
+            }
+            break;
+          case 2:
+            {
+              Timer(Duration(seconds: 5), () {
+                formKey2.currentState?.reset();
+              });
+
+              validationFlag = true;
+            }
+            break;
+          case 3:
+            {
+              Timer(Duration(seconds: 5), () {
+                formKey3.currentState?.reset();
+              });
+
+              validationFlag = true;
+            }
+            break;
+          case 4:
+            {
+              Timer(Duration(seconds: 5), () {
+                formKey4.currentState?.reset();
+              });
+
+              validationFlag = true;
+            }
+            break;
+          case 5:
+            {
+              Timer(Duration(seconds: 5), () {
+                formKey5.currentState?.reset();
+              });
+              validationFlag = true;
+            }
+            break;
+        }
+      }
+    }
+    if (validationFlag == true) {
+      return true; //Function returns true if any forms are invalid
+    } else {
+      return false; //Returns false if all forms are valid
+    }
   }
 }
