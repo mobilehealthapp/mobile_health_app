@@ -57,6 +57,8 @@ class HealthCharts extends StatelessWidget {
   
   static _generateTitleData(GraphType graphType) {
     ///Given a GraphType(a glorified tuple consisting of start, stop(both inclusive), step) yaxis range can be created.
+    ///
+    ///??? incorrect parameter passed for leftTitles, SideTitles has incorrect parameters being used
     return FlTitlesData(
       show: true,
       leftTitles: SideTitles(

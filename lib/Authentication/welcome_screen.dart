@@ -66,7 +66,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 // This is the channel we use defined above
                 channel.id,
                 channel.name,
-                channel.description,
+                channelDescription: channel.description,
                 //The icon is defined in android/app/src/main/res/drawable
                 icon: 'companyicon2',
                 playSound: true,

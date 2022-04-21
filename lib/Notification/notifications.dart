@@ -13,7 +13,7 @@ class NotificationApi {
         android: AndroidNotificationDetails(
           'channel id',
           'channel name',
-          'channel description',
+          channelDescription: 'channel description',
           importance: Importance.max,
         ),
         iOS: IOSNotificationDetails());
