@@ -15,7 +15,7 @@ import 'package:fl_chart/fl_chart.dart';
  </ramble>
 */
 
-class GraphType{
+class GraphType {
   const GraphType(this.start, this.stop, this.step);
   final int start;
   final int stop;
@@ -33,11 +33,13 @@ class HealthCharts extends StatelessWidget {
   /// [graphType] essentially acts as a way to specify scale of y-axis using start,stop(both inclusive),step
   /// within HealthCharts there are three predefined GraphType objects, HR, BP and BG.
   final List<FlSpot> primaryDataList;
-  final List<FlSpot>? secondaryDataList; // another list of data to display as fl spots (need to for BP)
+  final List<FlSpot>?
+      secondaryDataList; // another list of data to display as fl spots (need to for BP)
   final double? maxX; // length of x-axis
   final double? maxY; // length of y-axis
   final double? minY; // at what value does the y-axis start
-  final bool showDots; // show dots? yes (true) for home page, no (false) for health analysis
+  final bool
+      showDots; // show dots? yes (true) for home page, no (false) for health analysis
   final String unitOfMeasurement; // units of measurement (display along y-axis)
   final GraphType graphType;
 
@@ -47,22 +49,21 @@ class HealthCharts extends StatelessWidget {
 
   HealthCharts(
       {required this.primaryDataList,
-        required this.maxX,
-        required this.maxY,
-        required this.showDots,
-        required this.minY,
-        required this.unitOfMeasurement,
-        required this.graphType,
-        this.secondaryDataList});
-  
+      required this.maxX,
+      required this.maxY,
+      required this.showDots,
+      required this.minY,
+      required this.unitOfMeasurement,
+      required this.graphType,
+      this.secondaryDataList});
+
   static _generateTitleData(GraphType graphType) {
     ///Given a GraphType(a glorified tuple consisting of start, stop(both inclusive), step) yaxis range can be created.
     return FlTitlesData(
       show: true,
       leftTitles: SideTitles(
           showTitles: true,
-          getTextStyles: (context, value) =>
-              TextStyle(
+          getTextStyles: (context, value) => TextStyle(
                 color: Colors.black,
                 fontSize: 10,
               ),
@@ -80,8 +81,8 @@ class HealthCharts extends StatelessWidget {
           margin: 10),
     );
   }
-    
-  List<LineChartBarData> _generateBarDataList(){
+
+  List<LineChartBarData> _generateBarDataList() {
     ///Creates List<LineChartBarData> outside of build for neatness.
 
     //Create a LineChartBarData for the primaryDataList
@@ -95,22 +96,21 @@ class HealthCharts extends StatelessWidget {
           show: showDots,
         ),
         spots: primaryDataList,
-      )];
+      )
+    ];
 
     //and if secondaryDataList was instantiated, add it to the list.
     if (secondaryDataList != null) {
-      barData.add(
-          LineChartBarData(
-            preventCurveOverShooting: true,
-            isCurved: true,
-            colors: [Colors.black],
-            dotData: FlDotData(
-              // removes dots
-              show: showDots,
-            ),
-            spots: secondaryDataList,
-          )
-      );
+      barData.add(LineChartBarData(
+        preventCurveOverShooting: true,
+        isCurved: true,
+        colors: [Colors.black],
+        dotData: FlDotData(
+          // removes dots
+          show: showDots,
+        ),
+        spots: secondaryDataList,
+      ));
     }
     return barData;
   }
