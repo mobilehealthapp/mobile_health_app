@@ -5,6 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/material.dart';
 import '/Drawers/drawers.dart';
+import 'package:http/http.dart' as http;
+import '/config.dart' as config;
 
 final CollectionReference patientDataCollection =
     FirebaseFirestore.instance.collection('patientData');
@@ -28,6 +30,8 @@ class PredictiveGraphState extends State<PredictiveGraph> {
       patientDataCollection.doc('initalize');
   DocumentReference patientBGCollection =
       patientDataCollection.doc('initalize'); //to be initalized in initState
+  DocumentReference patientHRCollection =
+      patientDataCollection.doc('initalize');
 
   var bgdata = <BloodGlucose>[];
   var bgpredict = 4; //days that can be predicted into the future accurately -1
@@ -37,8 +41,13 @@ class PredictiveGraphState extends State<PredictiveGraph> {
   var bppredict = 4; //days that can be predicted into the future accurately -1
   List<charts.Series<BloodPressure, int>> bplist = [];
 
+  var hrdata = <HeartRate>[];
+  var hrpredict = 4;
+  List<charts.Series<HeartRate, int>> hrlist = [];
+
   Widget bgchart = Text("Loading...");
   Widget bpchart = Text("Loading...");
+  Widget hrchart = Text("Loading...");
 
   @override
   void initState() {
@@ -50,7 +59,7 @@ class PredictiveGraphState extends State<PredictiveGraph> {
   }
 
   void initializeReferences() {
-    //initialize BP and BG references
+    //initialize BP, BG and HR references
     //print(patientid + name);
     patientBPCollection = patientDataCollection
         .doc(patientid)
@@ -60,12 +69,18 @@ class PredictiveGraphState extends State<PredictiveGraph> {
         .doc(patientid)
         .collection('bloodGlucose')
         .doc("Last 100 Recordings");
+    patientHRCollection = patientDataCollection
+        .doc(patientid)
+        .collection('heartRate')
+        .doc("Last 100 Recordings");
     generateBGList();
     generateBPList();
+    generateHRList();
   }
 
   dayAssembler(num value) {
-    //returns a string according to the day for the day axis labels, assumes 1x daily bg recording
+    //returns a string according to the day for the day axis labels, assumes 1x daily recording
+    //TODO implement different day assembler functions depending on frequency of data uploads for each variable
     int val = value.toInt();
     if (val < bgpredict - 1) {
       if (val == bgpredict - 2) {
@@ -250,11 +265,86 @@ class PredictiveGraphState extends State<PredictiveGraph> {
     });
   }
 
+  void generateHRList() async {
+    int day = 0;
+    final customTickFormatter =
+        charts.BasicNumericTickFormatterSpec((num? value) {
+      //give each tick on the x-axis a name from the dayAssembler function
+      return dayAssembler(value!);
+    });
+    DocumentSnapshot docSnapshot = await patientHRCollection.get();
+    if (docSnapshot.exists) {
+      int docsize = docSnapshot.get("Data Entries").toInt();
+      //if the patient has hr readings, than take the last documents, based off of how many days can be accurately predicted
+      if (docsize < hrpredict && docsize > 0) {
+        hrpredict = docsize;
+      }
+      if (docsize >= hrpredict) {
+        for (int i = docsize - (hrpredict - 1); i < docsize + 1; i++) {
+          //get last measurements of the last 100
+          String heartrate;
+          if (i < 10) {
+            heartrate = docSnapshot.get("Data Submission 0$i");
+          } else {
+            heartrate = docSnapshot.get(
+                "Data Submission $i"); //get the persons heart rate for that day
+          } //get the persons heart rate for that day
+          num hr =
+              num.parse(heartrate.split(',')[0]); //get the heartrate recording
+          hrdata.add(new HeartRate(hr,
+              day)); //create a heartRate object for that day and append it to the hrdata list
+          day++;
+        }
+        //now add the 5 'predicted values' to hrdata before adding hrata to hr list
+        hrlist.add(charts.Series<HeartRate, int>(
+          //add hrdata list to hrlist (hrlist is the chart list)
+          id: 'heart rate',
+          colorFn: (HeartRate heartrate, __) {
+            //make the predicted values red
+            if (heartrate.day > hrpredict) {
+              return charts.MaterialPalette.red.shadeDefault;
+            } else {
+              return charts.MaterialPalette.blue.shadeDefault;
+            }
+          },
+          domainFn: (HeartRate heartrate, _) => heartrate.day,
+          measureFn: (HeartRate heartrate, _) => heartrate.hr,
+          data: hrdata,
+        ));
+        hrchart = charts.LineChart(hrlist,
+            defaultRenderer: new charts.LineRendererConfig(
+                includePoints: true, stacked: true),
+            animate: false,
+            animationDuration: Duration(seconds: 2),
+            domainAxis: charts.NumericAxisSpec(
+              renderSpec: charts.SmallTickRendererSpec(
+                  labelRotation:
+                      50), //rotates the labels on the x-axis so that they dont overlap eachother
+              tickProviderSpec: charts.BasicNumericTickProviderSpec(
+                  desiredTickCount: hrpredict *
+                      2), //make x-axis have same amount of ticks for recorded and predicted days
+              tickFormatterSpec: customTickFormatter,
+            ),
+            behaviors: [
+              new charts.ChartTitle('Heart Rate (bpm)',
+                  behaviorPosition: charts.BehaviorPosition.start,
+                  titleOutsideJustification:
+                      charts.OutsideJustification.middleDrawArea),
+            ]);
+      }
+    } else {
+      hrchart = Text('No Heart Rate Data');
+    }
+    setState(() {
+      //update hr chart when this function is called
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: DefaultTabController(
-        length: 2,
+        length: 3,
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
@@ -269,7 +359,8 @@ class PredictiveGraphState extends State<PredictiveGraph> {
                 Tab(
                   icon: Icon(FontAwesomeIcons.firstAid),
                 ),
-                Tab(icon: Icon(FontAwesomeIcons.heartbeat)),
+                Tab(icon: Icon(FontAwesomeIcons.briefcaseMedical)),
+                Tab(icon: Icon(FontAwesomeIcons.heartbeat))
               ],
             ),
             title: Text('$firstname\'s Future Predictions',
@@ -313,6 +404,24 @@ class PredictiveGraphState extends State<PredictiveGraph> {
                   ),
                 ),
               ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Container(
+                  child: Center(
+                    child: Column(
+                      children: <Widget>[
+                        Text(
+                          'Measured(blue) and Predicted(red) Heart Rate Levels',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 24.0, fontWeight: FontWeight.bold),
+                        ),
+                        Expanded(child: hrchart),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -334,4 +443,14 @@ class BloodPressure {
   final int day;
 
   BloodPressure(this.dia, this.sys, this.day);
+}
+
+class HeartRate {
+  final int day;
+  final num hr;
+
+  HeartRate(
+    this.hr,
+    this.day,
+  );
 }

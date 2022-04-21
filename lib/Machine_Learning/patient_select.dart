@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_health_app/Drawers/drawers.dart';
 import 'package:mobile_health_app/Machine_Learning/predictive_graph.dart';
+import '/config.dart' as config;
+import 'package:http/http.dart' as http;
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 User? user = _auth.currentUser;
@@ -68,6 +70,18 @@ class PatientSelectState extends State<PatientSelect> {
     setState(() {});
   }
 
+  Future<void> callAPI(patientid) async {
+    //Calls the ML model API to send patient's UID and update their predictions in firebase
+    var uid = patientid;
+    var url = Uri.parse('${config.apiUrl}/predict?uid=$uid');
+    try {
+      final response = await http.get(url);
+    } catch (exception) {
+      print(exception);
+      throw (exception);
+    }
+  }
+
   DropdownMenuItem<String> buildItem(String item) => DropdownMenuItem(
         value: item,
         child: Text(
@@ -123,7 +137,7 @@ class PatientSelectState extends State<PatientSelect> {
                 style: TextButton.styleFrom(backgroundColor: Colors.green),
                 child: Text('Proceed',
                     style: TextStyle(fontSize: 24, color: Colors.white)),
-                onPressed: () {
+                onPressed: () async {
                   if (index == -1) {
                     showDialog(
                         context: context,
@@ -146,6 +160,7 @@ class PatientSelectState extends State<PatientSelect> {
                   } else {
                     String patientid = uidList[index];
                     String name = patientList[index];
+                    await callAPI(patientid);
                     Navigator.push(
                         context,
                         MaterialPageRoute(
