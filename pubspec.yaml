@@ -21,7 +21,7 @@ dependencies:
   cupertino_icons: ^1.0.2 # icons package which provides access to cupertino (iOS) icons
   google_fonts: ^2.1.0 # fonts package
   bordered_text: ^2.0.0 # package to add a border to text (i.e. black text with a white border
-  font_awesome_flutter: ^9.1.0 # icons package
+  font_awesome_flutter: ^10.1.0 # icons package
   modal_progress_hud_nsn: ^0.1.0-nullsafety-1
   flutter_spinkit: ^5.0.0
 
