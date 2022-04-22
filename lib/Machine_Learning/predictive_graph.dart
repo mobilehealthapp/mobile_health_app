@@ -33,6 +33,13 @@ class PredictiveGraphState extends State<PredictiveGraph> {
   DocumentReference patientHRCollection =
       patientDataCollection.doc('initalize');
 
+  DocumentReference patientBPPredictions =
+      patientDataCollection.doc('initalize');
+  DocumentReference patientBGPredictions =
+      patientDataCollection.doc('initalize'); //to be initalized in initState
+  DocumentReference patientHRPredictions =
+      patientDataCollection.doc('initalize');
+
   var bgdata = <BloodGlucose>[];
   var bgpredict = 4; //days that can be predicted into the future accurately -1
   List<charts.Series<BloodGlucose, int>> bglist = [];
@@ -58,6 +65,42 @@ class PredictiveGraphState extends State<PredictiveGraph> {
     initializeReferences();
   }
 
+  Future<void> callHRAPI(patientid) async {
+    //Calls the ML model API to send patient's UID and update their predictions in firebase
+    var uid = patientid;
+    var url = Uri.parse('${config.apiUrl}/predict_HR?uid=$uid');
+    try {
+      await http.get(url);
+    } catch (exception) {
+      print(exception);
+      throw (exception);
+    }
+  }
+
+  Future<void> callBGAPI(patientid) async {
+    //Calls the ML model API to send patient's UID and update their predictions in firebase
+    var uid = patientid;
+    var url = Uri.parse('${config.apiUrl}/predict_BG?uid=$uid');
+    try {
+      await http.get(url);
+    } catch (exception) {
+      print(exception);
+      throw (exception);
+    }
+  }
+
+  Future<void> callBPAPI(patientid) async {
+    //Calls the ML model API to send patient's UID and update their predictions in firebase
+    var uid = patientid;
+    var url = Uri.parse('${config.apiUrl}/predict_BP?uid=$uid');
+    try {
+      await http.get(url);
+    } catch (exception) {
+      print(exception);
+      throw (exception);
+    }
+  }
+
   void initializeReferences() {
     //initialize BP, BG and HR references
     //print(patientid + name);
@@ -65,14 +108,26 @@ class PredictiveGraphState extends State<PredictiveGraph> {
         .doc(patientid)
         .collection('bloodPressure')
         .doc("Last 100 Recordings");
+    patientBPPredictions = patientDataCollection
+        .doc(patientid)
+        .collection('bloodPressure')
+        .doc("Predicted values");
     patientBGCollection = patientDataCollection
         .doc(patientid)
         .collection('bloodGlucose')
         .doc("Last 100 Recordings");
+    patientBGPredictions = patientDataCollection
+        .doc('patientid')
+        .collection('bloodGlucose')
+        .doc('Predicted values');
     patientHRCollection = patientDataCollection
         .doc(patientid)
         .collection('heartRate')
         .doc("Last 100 Recordings");
+    patientHRPredictions = patientDataCollection
+        .doc(patientid)
+        .collection('heartRate')
+        .doc("Predicted values");
     generateBGList();
     generateBPList();
     generateHRList();
@@ -108,6 +163,7 @@ class PredictiveGraphState extends State<PredictiveGraph> {
     });
     DocumentSnapshot docSnapshot = await patientBGCollection.get();
     if (docSnapshot.exists) {
+      await callBGAPI(patientid);
       int docsize = docSnapshot.get("Data Entries").toInt();
       //if the patient has bg readings, than take the last documents, based off of how many days can be accurately predicted
       if (docsize < bgpredict && docsize > 0) {
@@ -129,13 +185,25 @@ class PredictiveGraphState extends State<PredictiveGraph> {
               day)); //create a bloodGlucose object for that day and append it to the bgdata list
           day++;
         }
+        DocumentSnapshot predictSnapshot = await patientBGPredictions.get();
+        if (predictSnapshot.exists) {
+          int predictdocsize = predictSnapshot.get("Data Entries").toInt();
+          String predictedbloodglucose;
+          for (int i = 0; i < predictdocsize; i++) {
+            predictedbloodglucose = predictSnapshot.get('Prediction ${i + 1}');
+            num bg = num.parse(predictedbloodglucose);
+            bgdata.add(new BloodGlucose(bg, day));
+            day++;
+          }
+        }
+
         //now add the 5 'predicted values' to bgdata before adding bgata to bg list
         bglist.add(charts.Series<BloodGlucose, int>(
           //add bgdata list to bglist (bglist is the chart list)
           id: 'blood glucose',
           colorFn: (BloodGlucose bloodglucose, __) {
             //make the predicted values red
-            if (bloodglucose.day > bgpredict) {
+            if (bloodglucose.day >= bgpredict) {
               return charts.MaterialPalette.red.shadeDefault;
             } else {
               return charts.MaterialPalette.blue.shadeDefault;
@@ -183,6 +251,7 @@ class PredictiveGraphState extends State<PredictiveGraph> {
     });
     DocumentSnapshot docSnapshot = await patientBPCollection.get();
     if (docSnapshot.exists) {
+      await callBPAPI(patientid);
       int docsize = docSnapshot.get('Data Entries').toInt();
       //if the patient has bg readings, than take the last documents, based off of how many days can be accurrately predicted
       if (docsize < bppredict && docsize > 0) {
@@ -205,13 +274,25 @@ class PredictiveGraphState extends State<PredictiveGraph> {
               day)); //create a bloodGlucose object for that day and append it to the bgdata list
           day++;
         }
+        DocumentSnapshot predictSnapshot = await patientBPPredictions.get();
+        if (predictSnapshot.exists) {
+          int predictdocsize = predictSnapshot.get("Data Entries").toInt();
+          String predictedbloodpressure;
+          for (int i = 0; i < predictdocsize; i++) {
+            predictedbloodpressure = predictSnapshot.get('Prediction ${i + 1}');
+            num dia = num.parse(predictedbloodpressure.split(',')[1]);
+            num sys = num.parse(predictedbloodpressure.split(',')[0]) - dia;
+            bpdata.add(new BloodPressure(dia, sys, day));
+            day++;
+          }
+        }
         //now add the 5 'predicted values' to bpdata before adding bpdata to bplist
         bplist.add(charts.Series<BloodPressure, int>(
           //add bpdata list to bplist (bplist is the chart list)
           id: 'diastolic',
           colorFn: (BloodPressure bloodpressure, __) {
             //make the predicted values red
-            if (bloodpressure.day > bppredict) {
+            if (bloodpressure.day >= bppredict) {
               return charts.MaterialPalette.red.shadeDefault;
             } else {
               return charts.MaterialPalette.green.shadeDefault;
@@ -225,7 +306,7 @@ class PredictiveGraphState extends State<PredictiveGraph> {
         bplist.add(charts.Series<BloodPressure, int>(
           id: 'systolic',
           colorFn: (BloodPressure bloodpressure, __) {
-            if (bloodpressure.day > bppredict) {
+            if (bloodpressure.day >= bppredict) {
               return charts.MaterialPalette.red.shadeDefault;
             } else {
               return charts.MaterialPalette.blue.shadeDefault;
@@ -274,6 +355,7 @@ class PredictiveGraphState extends State<PredictiveGraph> {
     });
     DocumentSnapshot docSnapshot = await patientHRCollection.get();
     if (docSnapshot.exists) {
+      await callBGAPI(patientid);
       int docsize = docSnapshot.get("Data Entries").toInt();
       //if the patient has hr readings, than take the last documents, based off of how many days can be accurately predicted
       if (docsize < hrpredict && docsize > 0) {
@@ -295,13 +377,27 @@ class PredictiveGraphState extends State<PredictiveGraph> {
               day)); //create a heartRate object for that day and append it to the hrdata list
           day++;
         }
+        DocumentSnapshot predictSnapshot = await patientHRPredictions.get();
+        if (predictSnapshot.exists) {
+          int predictdocsize = predictSnapshot.get("Data Entries").toInt();
+          print(predictdocsize);
+          String predictedheartrate;
+          for (int i = 0; i < predictdocsize; i++) {
+            int predictionnumber = i + 1;
+            predictedheartrate =
+                predictSnapshot.get('Prediction $predictionnumber');
+            num hr = num.parse(predictedheartrate);
+            hrdata.add(new HeartRate(hr, day));
+            day++;
+          }
+        }
         //now add the 5 'predicted values' to hrdata before adding hrata to hr list
         hrlist.add(charts.Series<HeartRate, int>(
           //add hrdata list to hrlist (hrlist is the chart list)
           id: 'heart rate',
           colorFn: (HeartRate heartrate, __) {
             //make the predicted values red
-            if (heartrate.day > hrpredict) {
+            if (heartrate.day >= hrpredict) {
               return charts.MaterialPalette.red.shadeDefault;
             } else {
               return charts.MaterialPalette.blue.shadeDefault;
