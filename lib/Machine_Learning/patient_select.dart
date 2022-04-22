@@ -70,18 +70,6 @@ class PatientSelectState extends State<PatientSelect> {
     setState(() {});
   }
 
-  Future<void> callAPI(patientid) async {
-    //Calls the ML model API to send patient's UID and update their predictions in firebase
-    var uid = patientid;
-    var url = Uri.parse('${config.apiUrl}/predict?uid=$uid');
-    try {
-      final response = await http.get(url);
-    } catch (exception) {
-      print(exception);
-      throw (exception);
-    }
-  }
-
   DropdownMenuItem<String> buildItem(String item) => DropdownMenuItem(
         value: item,
         child: Text(
@@ -160,7 +148,6 @@ class PatientSelectState extends State<PatientSelect> {
                   } else {
                     String patientid = uidList[index];
                     String name = patientList[index];
-                    await callAPI(patientid);
                     Navigator.push(
                         context,
                         MaterialPageRoute(
