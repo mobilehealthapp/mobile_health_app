@@ -5,6 +5,7 @@ import 'package:mobile_health_app/Drawers/drawers.dart';
 import 'package:mobile_health_app/Machine_Learning/predictive_graph.dart';
 import '/config.dart' as config;
 import 'package:http/http.dart' as http;
+import 'predictive_graph.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 User? user = _auth.currentUser;
@@ -37,6 +38,17 @@ class PatientSelectState extends State<PatientSelect> {
     getPatientList();
   }
 
+    Future<void> callHRAPI(patientid) async {
+    //Calls the ML model API to send patient's UID and update their predictions in firebase
+    var uid = patientid;
+    var url = Uri.parse('${config.apiUrl}/predict_HR?uid=$uid');
+    try {
+      await http.get(url);
+    } catch (exception) {
+      print(exception);
+      throw (exception);
+    }
+  }
   getPatientList() async {
     int firstspot = 0;
     var list = [''];
@@ -148,11 +160,14 @@ class PatientSelectState extends State<PatientSelect> {
                   } else {
                     String patientid = uidList[index];
                     String name = patientList[index];
+                    await callHRAPI(patientid);
                     Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => PredictiveGraph(
-                                patientid: patientid, name: name)));
+                                patientid: patientid, name: name)
+                              )
+                            );
                     //navigate to predicted graph page with data
                   }
                 },

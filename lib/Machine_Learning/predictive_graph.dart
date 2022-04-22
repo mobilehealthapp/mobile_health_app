@@ -385,7 +385,7 @@ class PredictiveGraphState extends State<PredictiveGraph> {
           for (int i = 0; i < predictdocsize; i++) {
             int predictionnumber = i + 1;
             predictedheartrate =
-                predictSnapshot.get('Prediction $predictionnumber');
+                predictSnapshot.get('Prediction ${predictionnumber.toString().padLeft(2 , '0')}');
             num hr = num.parse(predictedheartrate);
             hrdata.add(new HeartRate(hr, day));
             day++;
